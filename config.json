@@ -7,7 +7,7 @@
 
   "// Configurazione del box novità importanti": "",
   "updateNotice": {
-    "enabled": true,
+    "enabled": false,
     "title": "Novità importanti!",
     "subtitle": "Sito rinnovato",
     "showBadge": true,
