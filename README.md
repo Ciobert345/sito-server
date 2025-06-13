@@ -1,2 +1,40 @@
-# sito-server
-Gestione sito-server
+![Screenshot 2025-06-13 163833](https://github.com/user-attachments/assets/8cebb0af-2ba7-42b1-a53f-a041ecbc1d47)
+
+# 🎮 Server Manfredonia
+
+![Netlify Status](https://api.netlify.com/api/v1/badges/tuo-badge/deploy-status)  
+
+**Server Manfredonia** è un’esperienza Minecraft moddata basata su **BetterMinecraft Fabric Edition**, arricchita da un **pannello di controllo web** per monitorare e gestire il server in tempo reale, e da un sistema di **accesso su whitelist** per garantire un ambiente di gioco sicuro e moderato.
+
+---
+
+## ✨ Caratteristiche principali
+
+- 🌍 **Modpack BetterMinecraft Fabric**  
+  - Nuove dimensioni, biomi e boss  
+  - Magia avanzata (Botania, Ars Nouveau)  
+  - Tecnologia (Create, Applied Energistics)  
+  - Performance ottimizzate e miglioramenti grafici  
+
+- 🔧 **Installazione semplificata**  
+  - Supporto per CurseForge, Modrinth e SKLauncher  
+  - Guida passo‑passo per importare il modpack  
+  - Raccomandazione: almeno 8 GB di RAM  
+
+- 🔒 **Whitelist e accesso**  
+  - Modulo online per richiedere l’accesso  
+  - Approvazione in 24 h  
+  - Canale Discord dedicato  
+
+- 📊 **Pannello di controllo web**  
+  - Monitoraggio in tempo reale (TPS, giocatori online)  
+  - Console live per log e comandi  
+  - Controllo alimentazione: avvia, spegni, riavvia  
+  - Integrazione Discord per notifiche  
+
+- ⚙️ **Ottimizzazione & FAQ**  
+  - Consigli RAM, mod performance (Optifine/Sodium)  
+  - Pre‑generazione mondo e caricamento chunk  
+  - Guida a crash, errori e mod consigliate  
+
+---
