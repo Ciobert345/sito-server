@@ -32,7 +32,7 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
+      "enabled": true,
       "title": "🚧 Server in manutenzione 🚧",
       "subtitle": "",
       "message": "Test in vista del prossimo update",
