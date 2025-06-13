@@ -32,12 +32,12 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
-      "title": "Novità!",
-      "subtitle": "Sito rinnovato",
-      "message": "Benvenuto nel nostro nuovo sito web completamente rinnovato!",
+      "enabled": true,
+      "title": "🚧 Server in manutenzione 🚧",
+      "subtitle": "",
+      "message": "Test in vista del prossimo update",
       "icon": "notification",
-      "style": "purple"
+      "style": "blue"
     },
     {
       "id": "banner2",
@@ -46,7 +46,7 @@
       "subtitle": "Caccia al tesoro",
       "message": "Partecipa alla nostra caccia al tesoro e vinci premi esclusivi!",
       "icon": "event",
-      "style": "blue"
+      "style": "purple"
     }
   ]
 
