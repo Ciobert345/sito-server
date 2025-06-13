@@ -1,0 +1,54 @@
+{
+  "// Informazioni generali del sito": "",
+  "siteInfo": {
+    "title": "Server Manfredonia",
+    "description": "Server Minecraft moddato con tecnologia, magia e avventura. Unisciti alla nostra community!"
+  },
+
+  "// Configurazione del box novità importanti": "",
+  "updateNotice": {
+    "enabled": true,
+    "title": "Novità importanti!",
+    "subtitle": "Sito rinnovato",
+    "showBadge": true,
+    "badgeText": "🚀 Aggiornamento importante in arrivo ✨",
+    "features": [
+      "Sezione <strong>Aggiornamenti</strong> con le wiki",
+      "Interfaccia <strong>migliorata</strong> e reattiva",
+      "Nuove funzionalità <strong>interattive</strong>",
+      "Maggiore <strong>velocità</strong> di caricamento"
+    ]
+  },
+
+  "// Configurazione del countdown": "",
+  "countdown": {
+    "enabled": true,
+    "date": "June 15, 2025 16:00:00",
+    "title": "Aggiornamento in arrivo",
+    "expiredMessage": "Il server è ora disponibile!"
+  },
+
+  "// Banner informativi (attivabili singolarmente)": "",
+  "infoBanners": [
+    {
+      "id": "banner1",
+      "enabled": false,
+      "title": "Novità!",
+      "subtitle": "Sito rinnovato",
+      "message": "Benvenuto nel nostro nuovo sito web completamente rinnovato!",
+      "icon": "notification",
+      "style": "purple"
+    },
+    {
+      "id": "banner2",
+      "enabled": false,
+      "title": "Evento speciale",
+      "subtitle": "Caccia al tesoro",
+      "message": "Partecipa alla nostra caccia al tesoro e vinci premi esclusivi!",
+      "icon": "event",
+      "style": "blue"
+    }
+  ]
+
+
+}
