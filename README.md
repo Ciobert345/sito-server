@@ -2,7 +2,6 @@
 
 # 🎮 Server Manfredonia
 
-![Netlify Status](https://api.netlify.com/api/v1/badges/tuo-badge/deploy-status)  
 
 **Server Manfredonia** è un’esperienza Minecraft moddata basata su **BetterMinecraft Fabric Edition**, arricchita da un **pannello di controllo web** per monitorare e gestire il server in tempo reale, e da un sistema di **accesso su whitelist** per garantire un ambiente di gioco sicuro e moderato.
 
