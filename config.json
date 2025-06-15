@@ -10,7 +10,7 @@
     "enabled": true,
     "title": "Novità importanti!",
     "subtitle": "Sito rinnovato",
-    "showBadge": true,
+    "showBadge": false,
     "badgeText": "🚀 Aggiornamento importante in arrivo ✨",
     "features": [
       "Sezione <strong>Aggiornamenti</strong> con le wiki",
