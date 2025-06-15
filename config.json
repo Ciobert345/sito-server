@@ -32,12 +32,12 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
-      "title": "🚧 Server in manutenzione 🚧",
+      "enabled": true,
+      "title": "🚨AGGIORNAMENTO DEL MODPACK🚨",
       "subtitle": "",
-      "message": "Test in vista del prossimo update",
+      "message": "Scarica la nuova versione per poter giocare",
       "icon": "notification",
-      "style": "blue"
+      "style": "purple"
     },
     {
       "id": "banner2",
