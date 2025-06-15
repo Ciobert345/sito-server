@@ -42,9 +42,9 @@
     {
       "id": "banner2",
       "enabled": false,
-      "title": "Evento speciale",
-      "subtitle": "Caccia al tesoro",
-      "message": "Partecipa alla nostra caccia al tesoro e vinci premi esclusivi!",
+      "title": "🚧ATTENZIONE🚧",
+      "subtitle": "BUG/CRASH",
+      "message": "Se avete già aggiornato il modpack rimuovete la mod Hephaestus, se non lo avete fatto è stato rilasciato un hotfix",
       "icon": "event",
       "style": "purple"
     }
