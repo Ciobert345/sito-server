@@ -41,7 +41,7 @@
     },
     {
       "id": "banner2",
-      "enabled": false,
+      "enabled": true,
       "title": "🚧ATTENZIONE🚧",
       "subtitle": "BUG/CRASH",
       "message": "Se avete già aggiornato il modpack rimuovete la mod Hephaestus, se non lo avete fatto è stato rilasciato un hotfix",
