@@ -45,7 +45,7 @@
       "enabled": true,
       "title": "🚧ATTENZIONE🚧",
       "subtitle": "BUG/CRASH",
-      "message": "Aggiornate la mod Iceberg: https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/Iceberg-1.21.1-fabric-1.3.2.jar",
+      "message": "Aggiornate la mod Iceberg: <strong>https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/Iceberg-1.21.1-fabric-1.3.2.jar</strong>",
       "icon": "event",
       "style": "purple"
     }
