@@ -9,24 +9,41 @@
   "updateNotice": {
     "enabled": true,
     "title": "Novità importanti!",
-    "subtitle": "Sito rinnovato",
+    "subtitle": "Aggiornamenti al sito",
     "showBadge": false,
     "badgeText": "🚀 Aggiornamento importante in arrivo ✨",
     "features": [
-      "Il nuovo <strong>aggiornamento</strong> è arrivato",
-      "Sezione <strong>Aggiornamenti</strong> con le wiki",
-      "Interfaccia <strong>migliorata</strong> e reattiva",
-      "Nuove funzionalità <strong>interattive</strong>",
-      "Maggiore <strong>velocità</strong> di caricamento"
+      "Il nuovo <strong>aggiornamento del server</strong> è in arrivo",
+      "Aggiornata <strong>Aggiornamenti</strong> la wiki",
+      "Aggiornata la sezione <strong>Modpack e Installazione</strong>"
     ]
   },
 
   "// Configurazione del countdown": "",
   "countdown": {
     "enabled": true,
-    "date": "June 15, 2025 16:00:00",
+    "date": "June 28, 2025 16:00:00",
     "title": "Aggiornamento in arrivo",
     "expiredMessage": "Il server è ora disponibile!"
+  },
+
+  "// Configurazione dei link di download": "",
+  "downloadLinks": {
+    "curseforge": {
+      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia-1.5.2.zip",
+      "launcher": "https://www.curseforge.com/download/app"
+    },
+    "modrinth": {
+      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia.1.5.2.mrpack",
+      "launcher": "https://modrinth.com/app"
+    },
+    "sklauncher": {
+      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia-1.5.2.zip",
+      "launcher": "https://skmedix.pl/"
+    },
+    "update": {
+      "latest": ""
+    }
   },
 
   "// Banner informativi (attivabili singolarmente)": "",
@@ -43,13 +60,11 @@
     {
       "id": "banner2",
       "enabled": true,
-      "title": "🚧ATTENZIONE🚧",
-      "subtitle": "BUG/CRASH",
-      "message": "Aggiornate la mod Iceberg: <strong>https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/Iceberg-1.21.1-fabric-1.3.2.jar</strong>",
+      "title": "Informazione",
+      "subtitle": "",
+      "message": "La parte di aggiornamento del modpack (il download) non sarà dispondibile fino a quando non arriverà il prossimo aggiornamento",
       "icon": "event",
       "style": "purple"
     }
   ]
-
-
 }
