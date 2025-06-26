@@ -46,7 +46,7 @@ class ConfigManager {
             console.error('ConfigManager non inizializzato. Chiamare init() prima.');
             return;
         }
-
+    
         // Applica le informazioni del sito
         this.applySiteInfo();
         
@@ -61,6 +61,9 @@ class ConfigManager {
         
         // Applica la configurazione del box Novità importanti
         this.applyUpdateNotice();
+        
+        // Applica i link di download
+        this.applyDownloadLinks();
         
         // Applica i testi del sito
         this.applyTexts();
@@ -546,6 +549,83 @@ class ConfigManager {
         window.globalCountdownInterval = setInterval(updateCountdown, 1000);
         window.globalCountdownExpired = false;
     }
+
+    applyDownloadLinks() {
+    if (!this.config.downloadLinks) return;
+    
+    // Aggiorna i link per CurseForge
+    if (this.config.downloadLinks.curseforge) {
+        // Link del modpack
+        const curseforgeBtns = document.querySelectorAll('.download-option:nth-child(1) .btn');
+        curseforgeBtns.forEach(btn => {
+            if (this.config.downloadLinks.curseforge.modpack) {
+                btn.href = this.config.downloadLinks.curseforge.modpack;
+            }
+        });
+        
+        // Link del launcher
+        const curseforgeLinks = document.querySelectorAll('.download-option:nth-child(1) a[href*="curseforge.com"]');
+        curseforgeLinks.forEach(link => {
+            if (this.config.downloadLinks.curseforge.launcher) {
+                link.href = this.config.downloadLinks.curseforge.launcher;
+            }
+        });
+    }
+    
+    // Aggiorna i link per Modrinth
+    if (this.config.downloadLinks.modrinth) {
+        // Link del modpack
+        const modrinthBtns = document.querySelectorAll('.download-option:nth-child(2) .btn');
+        modrinthBtns.forEach(btn => {
+            if (this.config.downloadLinks.modrinth.modpack) {
+                btn.href = this.config.downloadLinks.modrinth.modpack;
+            }
+        });
+        
+        // Link del launcher
+        const modrinthLinks = document.querySelectorAll('.download-option:nth-child(2) a[href*="modrinth.com"]');
+        modrinthLinks.forEach(link => {
+            if (this.config.downloadLinks.modrinth.launcher) {
+                link.href = this.config.downloadLinks.modrinth.launcher;
+            }
+        });
+    }
+    
+    // Aggiorna i link per SKLauncher
+    if (this.config.downloadLinks.sklauncher) {
+        // Link del modpack
+        const sklauncherBtns = document.querySelectorAll('.download-option:nth-child(3) .btn');
+        sklauncherBtns.forEach(btn => {
+            if (this.config.downloadLinks.sklauncher.modpack) {
+                btn.href = this.config.downloadLinks.sklauncher.modpack;
+            }
+        });
+        
+        // Link del launcher
+        const sklauncherLinks = document.querySelectorAll('.download-option:nth-child(3) a[href*="skmedix.pl"]');
+        sklauncherLinks.forEach(link => {
+            if (this.config.downloadLinks.sklauncher.launcher) {
+                link.href = this.config.downloadLinks.sklauncher.launcher;
+            }
+        });
+    }
+    
+    // Aggiorna il link per l'aggiornamento del modpack
+    if (this.config.downloadLinks.update && this.config.downloadLinks.update.latest) {
+        // Aggiorna tutti i pulsanti di aggiornamento nella pagina
+        const updateBtns = document.querySelectorAll('.update-image-container .btn');
+        updateBtns.forEach(btn => {
+            btn.href = this.config.downloadLinks.update.latest;
+        });
+        
+        // Cerca anche i pulsanti con il testo "SCARICA AGGIORNAMENTO"
+        document.querySelectorAll('a').forEach(link => {
+            if (link.textContent.trim() === 'SCARICA AGGIORNAMENTO') {
+                link.href = this.config.downloadLinks.update.latest;
+            }
+        });
+    }
+}
 }
 
 // Inizializza il ConfigManager quando il documento è pronto
@@ -559,3 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+/**
+ * Applica i link di download dal config.json
+ */
