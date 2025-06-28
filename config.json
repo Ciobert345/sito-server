@@ -63,7 +63,7 @@
       "enabled": true,
       "title": "Informazione",
       "subtitle": "",
-      "message": "La parte di aggiornamento del modpack (il download) non sarà dispondibile fino a quando non arriverà il prossimo aggiornamento",
+      "message": "La sezione di aggiornamento del modpack (il download) è ora disponibile",
       "icon": "notification",
       "style": "banner-green"
     }
