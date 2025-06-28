@@ -10,10 +10,9 @@
     "enabled": true,
     "title": "Novità importanti!",
     "subtitle": "Aggiornamenti al sito",
-    "showBadge": false,
-    "badgeText": "🚀 Aggiornamento importante in arrivo ✨",
+    "showBadge": true,
+    "badgeText": "🚀 Il nuovo aggiornamento è arrivato ✨",
     "features": [
-      "Il nuovo <strong>aggiornamento del server</strong> è in arrivo",
       "Aggiornata <strong>Aggiornamenti</strong> la wiki",
       "Aggiornata la sezione <strong>Modpack e Installazione</strong>"
     ]
