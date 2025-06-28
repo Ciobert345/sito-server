@@ -46,6 +46,7 @@
     }
   },
 
+  
   "// Banner informativi (attivabili singolarmente)": "",
   "infoBanners": [
     {
@@ -55,7 +56,7 @@
       "subtitle": "",
       "message": "Scarica la nuova versione per poter giocare",
       "icon": "notification",
-      "style": "purple"
+      "style": "banner-blue"
     },
     {
       "id": "banner2",
@@ -63,8 +64,11 @@
       "title": "Informazione",
       "subtitle": "",
       "message": "La parte di aggiornamento del modpack (il download) non sarà dispondibile fino a quando non arriverà il prossimo aggiornamento",
-      "icon": "event",
-      "style": "purple"
+      "icon": "notification",
+      "style": "banner-green"
     }
+    
   ]
+  
 }
+
