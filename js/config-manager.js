@@ -318,38 +318,75 @@ class ConfigManager {
         this.config.infoBanners.forEach(banner => {
             if (!banner.enabled) return;
             
-            // Crea il banner
+            // Crea il banner ridotto ad icona
             const bannerElement = document.createElement('div');
-            bannerElement.className = `info-banner ${banner.style || 'default'}`;
+            bannerElement.className = `info-banner minimized never-opened ${banner.style || 'default'}`;
             bannerElement.id = banner.id;
-            
+            bannerElement.setAttribute('tabindex', '0');
+            bannerElement.setAttribute('role', 'button');
+            bannerElement.setAttribute('aria-expanded', 'false');
+            bannerElement.setAttribute('aria-label', banner.title);
+
             // Crea l'icona
             let iconSvg = '';
             switch (banner.icon) {
                 case 'notification':
-                    iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><circle cx="12" cy="4" r="2"></circle></svg>';
+                    iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><circle cx="12" cy="4" r="2"></circle></svg>';
                     break;
                 case 'event':
-                    iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+                    iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
                     break;
                 default:
-                    iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                    iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
             }
             
-            // Crea il contenuto del banner
+            // Struttura base: solo icona visibile da minimizzato
             bannerElement.innerHTML = `
                 <div class="banner-icon">${iconSvg}</div>
-                <div class="banner-content">
+                <div class="banner-content" style="display:none">
                     <h4 class="banner-title">
                         <span class="banner-highlight">${banner.title}</span> ${banner.subtitle}
                     </h4>
                     <p class="banner-message">${banner.message}</p>
+                    <button class="banner-close" aria-label="Riduci notifica" title="Riduci">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
                 </div>
-                <button class="banner-close" onclick="document.getElementById('${banner.id}').style.display='none'">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
             `;
             
+            // Espansione al click/tastiera
+            const iconDiv = bannerElement.querySelector('.banner-icon');
+            const contentDiv = bannerElement.querySelector('.banner-content');
+            // Aggiungi pulsazione solo se never-opened
+            if (bannerElement.classList.contains('never-opened')) {
+                iconDiv.classList.add('pulse-anim');
+            }
+            iconDiv.addEventListener('click', e => {
+                if (bannerElement.classList.contains('minimized')) {
+                    bannerElement.classList.remove('minimized');
+                    bannerElement.classList.remove('never-opened'); // Disattiva pulsazione per sempre
+                    iconDiv.classList.remove('pulse-anim');
+                    bannerElement.setAttribute('aria-expanded','true');
+                    contentDiv.style.display = '';
+                }
+            });
+            bannerElement.addEventListener('keydown', e => {
+                if ((e.key === 'Enter' || e.key === ' ') && bannerElement.classList.contains('minimized')) {
+                    bannerElement.classList.remove('minimized');
+                    bannerElement.classList.remove('never-opened'); // Disattiva pulsazione per sempre
+                    iconDiv.classList.remove('pulse-anim');
+                    bannerElement.setAttribute('aria-expanded','true');
+                    contentDiv.style.display = '';
+                }
+            });
+            // Riduci al click su close
+            contentDiv.querySelector('.banner-close').addEventListener('click', e => {
+                e.stopPropagation();
+                bannerElement.classList.add('minimized');
+                bannerElement.setAttribute('aria-expanded','false');
+                contentDiv.style.display = 'none';
+                // NON riaggiungere la pulsazione dopo il primo open
+            });
             // Aggiungi il banner al container
             bannerContainer.appendChild(bannerElement);
         });
