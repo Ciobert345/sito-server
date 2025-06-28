@@ -30,19 +30,19 @@
   "// Configurazione dei link di download": "",
   "downloadLinks": {
     "curseforge": {
-      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia-1.5.2.zip",
+      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.7.0/Manfredonia-1.7.0.zip",
       "launcher": "https://www.curseforge.com/download/app"
     },
     "modrinth": {
-      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia.1.5.2.mrpack",
+      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.7.0/ModManfredonia-1.7.0.mrpack",
       "launcher": "https://modrinth.com/app"
     },
     "sklauncher": {
-      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia-1.5.2.zip",
+      "modpack": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.7.0/Manfredonia-1.7.0.zip",
       "launcher": "https://skmedix.pl/"
     },
     "update": {
-      "latest": ""
+      "latest": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.7.0/Mafredonia-updatePack-1.7.0.zip"
     }
   },
 
