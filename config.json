@@ -4,28 +4,27 @@
     "title": "Server Manfredonia",
     "description": "Server Minecraft moddato con tecnologia, magia e avventura. Unisciti alla nostra community!"
   },
-
   "// Configurazione del box novità importanti": "",
   "updateNotice": {
     "enabled": true,
+    "Disattivare quando scade il timer": "comment",
     "title": "Novità importanti!",
-    "subtitle": "Aggiornamenti al sito",
+    "subtitle": "",
     "showBadge": true,
-    "badgeText": "🚀 Il nuovo aggiornamento è arrivato ✨",
+    "badgeText": "🚀 Aggiornamento del sito ✨",
     "features": [
-      "Aggiornata <strong>Aggiornamenti</strong> la wiki",
-      "Aggiornata la sezione <strong>Modpack e Installazione</strong>"
+      "Il sito è stato rifatto <strong>da capo</strong> per ottimizzarlo",
+      "Aggiunti il tutorial per la <strong>Dashboard</strong>",
+      "Aggiunta la sezione <strong>Dashboard</strong>"
     ]
   },
-
   "// Configurazione del countdown": "",
   "countdown": {
     "enabled": true,
-    "date": "June 28, 2025 16:00:00",
+    "date": "July 21, 2025 12:59:30",
     "title": "Aggiornamento in arrivo",
     "expiredMessage": "Il server è ora disponibile!"
   },
-
   "// Configurazione dei link di download": "",
   "downloadLinks": {
     "curseforge": {
@@ -44,30 +43,27 @@
       "latest": "https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.7.0/Mafredonia-updatePack-1.7.0.zip"
     }
   },
-
-  
   "// Banner informativi (attivabili singolarmente)": "",
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
+      "enabled": true,
       "title": "🚨AGGIORNAMENTO DEL MODPACK🚨",
       "subtitle": "",
       "message": "Scarica la nuova versione per poter giocare",
       "icon": "notification",
-      "style": "banner-blue"
+      "style": "banner-red"
     },
     {
       "id": "banner2",
-      "enabled": true,
+      "enabled": false,
       "title": "Informazione",
       "subtitle": "",
       "message": "La sezione di aggiornamento del modpack (il download) è ora disponibile",
       "icon": "notification",
       "style": "banner-green"
     }
-    
-  ]
-  
+  ],
+  "// Abilita/disabilita il controllo server iframe": "",
+  "checkIframeServer": false
 }
-
