@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard - Server Manfredonia">
+    <link rel="shortcut icon" href="img/favicon.png" type="image/png">
+    <link rel="icon" href="img/favicon.png" type="image/png">
+    <title>Dashboard | Server Manfredonia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Server Manfredonia</h1>
+                <nav id="mainNav">
+                    <ul id="mainNavLinks" class="nav-links">
+                        <li><a href="index.html">Stato server</a></li>
+                        <li><a href="section-informazioni.html">Informazioni</a></li>
+                        <li><a href="section-modpack.html">Modpack</a></li>
+                        <li><a href="updates.html">Aggiornamenti</a></li>
+                        <li><a href="section-richiedi-accesso.html">Richiedi Accesso</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main style="min-height: 60vh; display: flex; align-items: center; justify-content: center;">
+
+        <div class="dashboard-content" style="text-align: center;">
+            <div class="tutorial-invite">
+                <span class="icon-info">&#9432;</span>
+                Consulta il tutorial qui sotto prima di usare la dashboard!
+            </div>
+            <a href="section-controllo-remoto.html" class="btn btn-remote-wide">Tutorial</a>
+            <div class="iframe-glass-wrapper">
+                <iframe src="http://server-manfredonia.duckdns.org:25560/" allowfullscreen></iframe>
+            </div>
+            
+        </div>
+        
+
+
+
+    </main>
+    <footer>
+        <div class="credits">© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato di
+            Mojang AB.</div>
+    </footer>
+    <script>
+        // Animazione di caricamento fade-in come nelle altre pagine
+        document.body.style.opacity = 0;
+        window.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.body.style.transition = 'opacity 0.7s cubic-bezier(.4,1.4,.6,1)';
+                document.body.style.opacity = 1;
+            }, 80);
+        });
+    </script>
+    <script src="js/transition.js"></script>
+    <script>
+        const iframeWrapper = document.querySelector('.iframe-glass-wrapper');
+        const iframe = document.querySelector('.iframe-glass-wrapper iframe');
+        const serverUrl = 'http://server-manfredonia.duckdns.org:25560/';
+
+        // Crea un messaggio di errore migliorato
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'iframe-error-message';
+        errorMsg.style.display = 'none';
+        errorMsg.innerHTML = '<span class="icon-alert">&#9888;</span> <span>ATTENZIONE!<br>Il server NON è raggiungibile.<br>Riprova più tardi o prova a ricaricare la pagina.</span>';
+        iframeWrapper.appendChild(errorMsg);
+
+        // Nascondi l'iframe finché non sappiamo se il server è online
+        iframe.style.display = 'none';
+
+        // Prova a fare una richiesta fetch al server
+        function checkIframeServer() {
+            // Timeout breve per la fetch (1 secondo)
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 1000);
+            fetch(serverUrl, { mode: 'no-cors', signal: controller.signal })
+                .then(() => {
+                    clearTimeout(timeout);
+                    iframe.style.display = '';
+                    errorMsg.classList.remove('visible');
+                    setTimeout(() => { errorMsg.style.display = 'none'; }, 500);
+                })
+                .catch(() => {
+                    clearTimeout(timeout);
+                    iframe.style.display = 'none';
+                    if (errorMsg.style.display !== '') {
+                        errorMsg.style.display = '';
+                        setTimeout(() => errorMsg.classList.add('visible'), 10);
+                    } else {
+                        errorMsg.classList.add('visible');
+                    }
+                });
+        }
+
+        // Primo controllo all'avvio
+        checkIframeServer();
+        // Controllo periodico ogni 5 secondi
+        setInterval(checkIframeServer, 5000);
+    </script>
+</body>
+
+</html>

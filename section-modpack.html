@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modpack - Server Manfredonia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/favicon.png" type="image/png">
+    <script src="js/config-manager.js"></script>
+</head>
+
+<body class="fade-transition">
+    <!-- Barra di navigazione -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Server Manfredonia</h1>
+                <nav id="mainNav">
+                    <ul id="mainNavLinks" class="nav-links">
+                        <li><a href="index.html">Stato server</a></li>
+                        <li><a href="section-informazioni.html">Informazioni</a></li>
+                        <li><a href="section-modpack.html">Modpack</a></li>
+                        <li><a href="updates.html">Aggiornamenti</a></li>
+                        <li><a href="section-richiedi-accesso.html">Richiedi Accesso</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <section id="modpack" class="section-delay-2">
+            <div class="container">
+                <div class="glass-card pop-card">
+
+
+                    <div class="download-options-container"
+                        style="margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; width: 100%;">
+                        <h3 class="text-center"
+                            style="margin-bottom: 25px; font-size: 2rem; color: white; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); letter-spacing: 1px; position: relative; display: block; padding-bottom: 10px; text-align: center; width: 100%;">
+                            <span style="position: relative; z-index: 1;">Scegli il tuo Launcher</span>
+                            <span
+                                style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: white; border-radius: 3px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);"></span>
+                        </h3>
+
+                        <div class="download-options"
+                            style="display: flex; flex-wrap: wrap; gap: 30px; margin-top: 20px; width: 100%; max-width: 1200px; justify-content: center; padding: 0 15px;">
+                            <!-- Opzione CurseForge -->
+                            <div class="download-option"
+                                style="background: linear-gradient(135deg, rgba(30, 30, 35, 0.8), rgba(15, 15, 20, 0.9)); border-radius: 15px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.05) inset; transition: all 0.4s ease; position: relative; overflow: hidden; backdrop-filter: blur(10px); transform: translateZ(0); flex: 0 1 320px;"
+                                onmouseover="this.style.transform='translateY(-8px) scale(1.02) translateZ(0)'; this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.1) inset';"
+                                onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.05) inset';">
+                                <!-- Effetto glow nell'angolo -->
+                                <div
+                                    style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none;">
+                                </div>
+
+                                <div class="download-icon"
+                                    style="text-align: center; margin-bottom: 15px; position: relative;">
+                                    <div style="background: rgba(255, 255, 255, 0.1); width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2)';"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)';">
+                                        <img src="https://img.icons8.com/?size=512&id=rvlug1G94cK9&format=png"
+                                            alt="CurseForge Logo"
+                                            style="max-width: 60px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));">
+                                    </div>
+                                </div>
+
+                                <h3
+                                    style="text-align: center; font-size: 1.6rem; color: white; margin-bottom: 10px; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);">
+                                    CurseForge</h3>
+
+                                <p
+                                    style="text-align: center; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px; font-size: 1rem; line-height: 1.4;">
+                                    Launcher ufficiale con supporto completo per modpack</p>
+
+                                <div class="download-steps"
+                                    style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 3px solid rgba(255, 255, 255, 0.3);">
+                                    <p
+                                        style="color: rgba(255, 255, 255, 0.9); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <span
+                                            style="background: rgba(255, 255, 255, 0.9); color: #121212; width: 24px; height: 24px; min-width: 24px; min-height: 24px; max-width: 24px; max-height: 24px; aspect-ratio: 1/1; overflow: hidden; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);">1</span>
+                                        Scarica <a href="https://www.curseforge.com/download/app" target="_blank"
+                                            style="color: white; text-decoration: underline; font-weight: 500; transition: all 0.3s ease;"
+                                            onmouseover="this.style.color='rgba(255, 255, 255, 0.7)';"
+                                            onmouseout="this.style.color='white';">CurseForge App</a>
+                                    </p>
+                                    <p style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center;">
+                                        <span
+                                            style="background: rgba(255, 255, 255, 0.9); color: #121212; width: 24px; height: 24px; min-width: 24px; min-height: 24px; max-width: 24px; max-height: 24px; aspect-ratio: 1/1; overflow: hidden; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);">2</span>
+                                        Scarica il nostro modpack dal link sotto
+                                    </p>
+                                </div>
+
+                                <a href="https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia-1.5.2.zip"
+                                    class="btn" target="_blank"
+                                    style="display: block; text-align: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); color: white; padding: 12px 15px; border-radius: 25px; text-decoration: none; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;"
+                                    onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 25px rgba(0, 0, 0, 0.4)'; this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))';"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 15px rgba(0, 0, 0, 0.3)'; this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';">
+                                    <span
+                                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Scarica Modpack
+                                    </span>
+                                </a>
+                            </div>
+
+                            <!-- Opzione Modrinth -->
+                            <div class="download-option"
+                                style="background: linear-gradient(135deg, rgba(30, 30, 35, 0.8), rgba(15, 15, 20, 0.9)); border-radius: 15px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.05) inset; transition: all 0.4s ease; position: relative; overflow: hidden; backdrop-filter: blur(10px); transform: translateZ(0); flex: 0 1 320px;"
+                                onmouseover="this.style.transform='translateY(-8px) scale(1.02) translateZ(0)'; this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.1) inset';"
+                                onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.05) inset';">
+                                <!-- Effetto glow nell'angolo -->
+                                <div
+                                    style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none;">
+                                </div>
+
+                                <div class="download-icon"
+                                    style="text-align: center; margin-bottom: 15px; position: relative;">
+                                    <div style="background: rgba(255, 255, 255, 0.1); width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2)';"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)';">
+                                        <img src="https://modrinth.com/favicon.ico" alt="Modrinth"
+                                            style="max-width: 60px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));">
+                                    </div>
+                                </div>
+
+                                <h3
+                                    style="text-align: center; font-size: 1.6rem; color: white; margin-bottom: 10px; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);">
+                                    Modrinth</h3>
+
+                                <p
+                                    style="text-align: center; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px; font-size: 1rem; line-height: 1.4;">
+                                    Launcher open-source con supporto per modpack</p>
+
+                                <div class="download-steps"
+                                    style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 3px solid rgba(255, 255, 255, 0.3);">
+                                    <p
+                                        style="color: rgba(255, 255, 255, 0.9); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <span
+                                            style="background: rgba(255, 255, 255, 0.9); color: #121212; width: 24px; height: 24px; min-width: 24px; min-height: 24px; max-width: 24px; max-height: 24px; aspect-ratio: 1/1; overflow: hidden; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);">1</span>
+                                        Scarica <a href="https://modrinth.com/app" target="_blank"
+                                            style="color: white; text-decoration: underline; font-weight: 500; transition: all 0.3s ease;"
+                                            onmouseover="this.style.color='rgba(255, 255, 255, 0.7)';"
+                                            onmouseout="this.style.color='white';">Modrinth App</a>
+                                    </p>
+                                    <p style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center;">
+                                        <span
+                                            style="background: rgba(255, 255, 255, 0.9); color: #121212; width: 24px; height: 24px; min-width: 24px; min-height: 24px; max-width: 24px; max-height: 24px; aspect-ratio: 1/1; overflow: hidden; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);">2</span>
+                                        Scarica il nostro modpack dal link sotto
+                                    </p>
+                                </div>
+
+                                <a href="https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia.1.5.2.mrpack"
+                                    class="btn" target="_blank"
+                                    style="display: block; text-align: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); color: white; padding: 12px 15px; border-radius: 25px; text-decoration: none; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;"
+                                    onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 25px rgba(0, 0, 0, 0.4)'; this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))';"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 15px rgba(0, 0, 0, 0.3)'; this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';">
+                                    <span
+                                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Scarica Modpack
+                                    </span>
+                                </a>
+                            </div>
+
+                            <!-- Opzione SKLauncher -->
+                            <div class="download-option"
+                                style="background: linear-gradient(135deg, rgba(30, 30, 35, 0.8), rgba(15, 15, 20, 0.9)); border-radius: 15px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.05) inset; transition: all 0.4s ease; position: relative; overflow: hidden; backdrop-filter: blur(10px); transform: translateZ(0); flex: 0 1 320px;"
+                                onmouseover="this.style.transform='translateY(-8px) scale(1.02) translateZ(0)'; this.style.boxShadow='0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 255, 255, 0.1) inset';"
+                                onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 15px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 255, 255, 0.05) inset';">
+                                <!-- Effetto glow nell'angolo -->
+                                <div
+                                    style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none;">
+                                </div>
+
+                                <div class="download-icon"
+                                    style="text-align: center; margin-bottom: 15px; position: relative;">
+                                    <div style="background: rgba(255, 255, 255, 0.1); width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1); transition: all 0.3s ease;"
+                                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2)';"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)';">
+                                        <img src="https://skmedix.pl/favicon.ico" alt="SKLauncher"
+                                            style="max-width: 60px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));">
+                                    </div>
+                                </div>
+
+                                <h3
+                                    style="text-align: center; font-size: 1.6rem; color: white; margin-bottom: 10px; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);">
+                                    SKLauncher</h3>
+
+                                <p
+                                    style="text-align: center; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px; font-size: 1rem; line-height: 1.4;">
+                                    Launcher alternativo (supporto offline/craccato)</p>
+
+                                <div class="download-steps"
+                                    style="background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 3px solid rgba(255, 255, 255, 0.3);">
+                                    <p
+                                        style="color: rgba(255, 255, 255, 0.9); margin-bottom: 10px; display: flex; align-items: center;">
+                                        <span
+                                            style="background: rgba(255, 255, 255, 0.9); color: #121212; width: 24px; height: 24px; min-width: 24px; min-height: 24px; max-width: 24px; max-height: 24px; aspect-ratio: 1/1; overflow: hidden; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);">1</span>
+                                        Scarica <a href="https://skmedix.pl/" target="_blank"
+                                            style="color: white; text-decoration: underline; font-weight: 500; transition: all 0.3s ease;"
+                                            onmouseover="this.style.color='rgba(255, 255, 255, 0.7)';"
+                                            onmouseout="this.style.color='white';">SKLauncher</a>
+                                    </p>
+                                    <p style="color: rgba(255, 255, 255, 0.9); display: flex; align-items: center;">
+                                        <span
+                                            style="background: rgba(255, 255, 255, 0.9); color: #121212; width: 24px; height: 24px; min-width: 24px; min-height: 24px; max-width: 24px; max-height: 24px; aspect-ratio: 1/1; overflow: hidden; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);">2</span>
+                                        Scarica il modpack dal link sotto
+                                    </p>
+                                </div>
+
+                                <a href="https://github.com/sHaDow105off/Mod-server-Manfredonia/releases/download/v1.5.1/ModManfredonia-1.5.2.zip"
+                                    class="btn" target="_blank"
+                                    style="display: block; text-align: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); color: white; padding: 12px 15px; border-radius: 25px; text-decoration: none; font-weight: 600; letter-spacing: 0.5px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; position: relative; overflow: hidden;"
+                                    onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 12px 25px rgba(0, 0, 0, 0.4)'; this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))';"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 15px rgba(0, 0, 0, 0.3)'; this.style.background='linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';">
+                                    <span
+                                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7 10 12 15 17 10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Scarica Modpack
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div class="installation-tabs" style="margin-top: 25px;">
+                            <div class="launcher-selector"
+                                style="display: flex; align-items: center; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;">
+                            </div>
+
+                            <div id="tab-content-container" class="tab-content-container"
+                                style="display: none; background: linear-gradient(135deg, rgba(25, 25, 30, 0.7), rgba(15, 15, 20, 0.8)); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 35px; backdrop-filter: blur(10px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.05) inset; margin-top: 8px; position: relative; overflow: hidden;">
+                                <!-- Effetto glow nell'angolo -->
+                                <div
+                                    style="position: absolute; top: -80px; right: -80px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none;">
+                                </div>
+
+                                <div id="curseforge" class="tab-content"
+                                    style="display: none; min-height: 400px; max-width: 1200px; min-width: 1200px; margin: 0 auto; padding: 16px 28px 12px 28px; border-radius: 32px; box-shadow: 0 0 38px 0 rgba(180,180,180,0.17), 0 8px 40px 0 rgba(0,0,0,0.33); border: 1.7px solid rgba(220,220,220,0.19); backdrop-filter: blur(14px); background: linear-gradient(135deg, rgba(38,38,38,0.85), rgba(18,18,18,0.97)); transition: box-shadow 0.25s, border 0.25s;">
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 30px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 25px; border-left: 4px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-5px) translateZ(0)'; this.style.boxShadow='0 15px 35px rgba(0, 0, 0, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)';"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'; this.style.background='rgba(255, 255, 255, 0.07)';">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(220, 220, 220, 0.8)); color: #121212; width: 50px; height: 50px; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; margin-right: 25px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); flex-shrink: 0; aspect-ratio: 1/1; overflow: hidden;">
+                                            1</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 12px; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                                                Installa CurseForge</h4>
+                                            <p
+                                                style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                                                Scarica e installa l'app <a
+                                                    href="https://www.curseforge.com/download/app" target="_blank"
+                                                    style="color: white; text-decoration: underline; font-weight: 500; transition: all 0.3s ease; position: relative;"
+                                                    onmouseover="this.style.color='rgba(255, 255, 255, 0.7)';"
+                                                    onmouseout="this.style.color='white';">CurseForge</a>, avviala e
+                                                seleziona Minecraft.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 30px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 25px; border-left: 4px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-5px) translateZ(0)'; this.style.boxShadow='0 15px 35px rgba(0, 0, 0, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)';"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'; this.style.background='rgba(255, 255, 255, 0.07)';">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(220, 220, 220, 0.8)); color: #121212; width: 50px; height: 50px; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; margin-right: 25px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); flex-shrink: 0; aspect-ratio: 1/1; overflow: hidden;">
+                                            2</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 12px; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                                                Installa e Avvia</h4>
+                                            <p
+                                                style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                                                Importa il modpack scaricato, alloca 8GB di RAM nelle impostazioni e
+                                                clicca "Play".</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="modrinth" class="tab-content"
+                                    style="display: none; min-height: 400px; max-width: 1200px; min-width: 1200px; margin: 0 auto; padding: 16px 28px 12px 28px; border-radius: 32px; box-shadow: 0 0 38px 0 rgba(180,180,180,0.17), 0 8px 40px 0 rgba(0,0,0,0.33); border: 1.7px solid rgba(220,220,220,0.19); backdrop-filter: blur(14px); background: linear-gradient(135deg, rgba(38,38,38,0.85), rgba(18,18,18,0.97)); transition: box-shadow 0.25s, border 0.25s;">
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 30px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 25px; border-left: 4px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-5px) translateZ(0)'; this.style.boxShadow='0 15px 35px rgba(0, 0, 0, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)';"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'; this.style.background='rgba(255, 255, 255, 0.07)';">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(220, 220, 220, 0.8)); color: #121212; width: 50px; height: 50px; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; margin-right: 25px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); flex-shrink: 0; aspect-ratio: 1/1; overflow: hidden;">
+                                            1</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 12px; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                                                Installa Modrinth</h4>
+                                            <p
+                                                style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                                                Scarica e installa l'app <a href="https://modrinth.com/app"
+                                                    target="_blank"
+                                                    style="color: white; text-decoration: underline; font-weight: 500; transition: all 0.3s ease; position: relative;"
+                                                    onmouseover="this.style.color='rgba(255, 255, 255, 0.7)';"
+                                                    onmouseout="this.style.color='white';">Modrinth</a>, avviala e crea
+                                                una nuova istanza.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 30px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 25px; border-left: 4px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-5px) translateZ(0)'; this.style.boxShadow='0 15px 35px rgba(0, 0, 0, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)';"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'; this.style.background='rgba(255, 255, 255, 0.07)';">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(220, 220, 220, 0.8)); color: #121212; width: 50px; height: 50px; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; margin-right: 25px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); flex-shrink: 0; aspect-ratio: 1/1; overflow: hidden;">
+                                            2</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 12px; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                                                Importa e Avvia</h4>
+                                            <p
+                                                style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                                                Importa il modpack scaricato, alloca 8GB di RAM nelle impostazioni e
+                                                clicca "Play".</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="sklauncher" class="tab-content"
+                                    style="display: none; min-height: 400px; max-width: 1200px; min-width: 1200px; margin: 0 auto; padding: 16px 28px 12px 28px; border-radius: 32px; box-shadow: 0 0 38px 0 rgba(180,180,180,0.17), 0 8px 40px 0 rgba(0,0,0,0.33); border: 1.7px solid rgba(220,220,220,0.19); backdrop-filter: blur(14px); background: linear-gradient(135deg, rgba(38,38,38,0.85), rgba(18,18,18,0.97)); transition: box-shadow 0.25s, border 0.25s;">
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 30px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 25px; border-left: 4px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-5px) translateZ(0)'; this.style.boxShadow='0 15px 35px rgba(0, 0, 0, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)';"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'; this.style.background='rgba(255, 255, 255, 0.07)';">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(220, 220, 220, 0.8)); color: #121212; width: 50px; height: 50px; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; margin-right: 25px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); flex-shrink: 0; aspect-ratio: 1/1; overflow: hidden;">
+                                            1</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 12px; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                                                Installa SKLauncher</h4>
+                                            <p
+                                                style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                                                Scarica e installa <a href="https://skmedix.pl/sklauncher"
+                                                    target="_blank"
+                                                    style="color: white; text-decoration: underline; font-weight: 500; transition: all 0.3s ease; position: relative;"
+                                                    onmouseover="this.style.color='rgba(255, 255, 255, 0.7)';"
+                                                    onmouseout="this.style.color='white';">SKLauncher</a> dal sito
+                                                ufficiale.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 30px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 25px; border-left: 4px solid rgba(255, 255, 255, 0.5); transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-5px) translateZ(0)'; this.style.boxShadow='0 15px 35px rgba(0, 0, 0, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)';"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.2)'; this.style.background='rgba(255, 255, 255, 0.07)';">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(220, 220, 220, 0.8)); color: #121212; width: 50px; height: 50px; min-width: 50px; min-height: 50px; max-width: 50px; max-height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.3rem; margin-right: 25px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); flex-shrink: 0; aspect-ratio: 1/1; overflow: hidden;">
+                                            2</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 12px; font-size: 1.3rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                                                Installa e Avvia</h4>
+                                            <p
+                                                style="color: rgba(255, 255, 255, 0.9); line-height: 1.7; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                                                Estrai il modpack scaricato nella cartella <code
+                                                    style="background: rgba(255, 255, 255, 0.15); padding: 3px 7px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.2); font-family: 'Consolas', monospace;">.minecraft</code>,
+                                                avvia SKLauncher con la versione "fabric-loader-0.14.21-1.20.1" e alloca
+                                                8GB di RAM.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Inizio sezione aggiornamento modpack -->
+                        <div style="width:100%; margin: 28px 0 0 0; display: flex; justify-content: center;">
+                            <hr
+                                style="width: 80%; max-width: 600px; border: none; border-top: 2px solid rgba(255,255,255,0.18); margin: 0 auto 18px auto; background: transparent;">
+                        </div>
+                        <h3
+                            style="margin: 0 auto 18px auto; font-size: 2rem; color: white; text-shadow: 0 0 15px rgba(255, 255, 255, 0.3); letter-spacing: 1px; position: relative; display: inline-block;">
+                            <button id="toggle-update-modpack" aria-expanded="false">
+                                <span class="update-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="display:block;">
+                                        <path d="M12 2v8m0 0l3-3m-3 3l-3-3" />
+                                        <rect x="3" y="12" width="18" height="8" rx="4" />
+                                    </svg>
+                                </span>
+                                <span class="update-label">Come aggiornare il Modpack</span>
+                                <span class="update-arrow">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                                        style="display:block;">
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </h3>
+                        <div id="update-modpack-content">
+                            <div class="glass-card"
+                                style="padding: 40px; border-radius: 20px; background: linear-gradient(135deg, rgba(20, 20, 25, 0.6), rgba(10, 10, 15, 0.8)); border: 1px solid rgba(255, 255, 255, 0.18); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.05) inset; margin-bottom: 18px; backdrop-filter: blur(10px); position: relative; overflow: hidden;">
+                                <!-- Effetto glow nell'angolo -->
+                                <div
+                                    style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none;">
+                                </div>
+                                <p
+                                    style="color: rgba(255, 255, 255, 0.95); line-height: 1.7; margin-bottom: 30px; font-size: 1.1rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);">
+                                    Mantenere il modpack aggiornato è essenziale per accedere alle nuove funzionalità,
+                                    correzioni di bug e miglioramenti delle prestazioni. Segui questa semplice guida per
+                                    aggiornare la tua installazione esistente.
+                                </p>
+                                <div class="update-steps-container">
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 25px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 20px; border-left: 4px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-3px) translateZ(0)'; this.style.boxShadow='0 12px 30px rgba(0, 0, 0, 0.25)'"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.15)'">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(200, 200, 200, 0.8)); color: #121212; width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-right: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); aspect-ratio: 1/1; overflow: hidden;">
+                                            1</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 10px; font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);">
+                                                Scarica l'aggiornamento</h4>
+                                            <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6;">Scarica il
+                                                pacchetto di aggiornamento più recente cliccando sul pulsante qui sotto.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 25px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 20px; border-left: 4px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-3px) translateZ(0)'; this.style.boxShadow='0 12px 30px rgba(0, 0, 0, 0.25)'"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.15)'">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(200, 200, 200, 0.8)); color: #121212; width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-right: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); aspect-ratio: 1/1; overflow: hidden;">
+                                            2</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 10px; font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);">
+                                                Apri l'archivio scaricato</h4>
+                                            <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6;">Estrai il
+                                                contenuto dell'archivio ZIP scaricato in una cartella temporanea.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 25px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 20px; border-left: 4px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-3px) translateZ(0)'; this.style.boxShadow='0 12px 30px rgba(0, 0, 0, 0.25)'"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.15)'">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(200, 200, 200, 0.8)); color: #121212; width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-right: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); aspect-ratio: 1/1; overflow: hidden;">
+                                            3</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 10px; font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);">
+                                                Copia le cartelle</h4>
+                                            <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6;">Copia le
+                                                cartelle <code
+                                                    style="background: rgba(255, 255, 255, 0.15); padding: 3px 7px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.2); font-family: 'Consolas', monospace;">mods</code>
+                                                e <code
+                                                    style="background: rgba(255, 255, 255, 0.15); padding: 3px 7px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.2); font-family: 'Consolas', monospace;">config</code>
+                                                dall'archivio estratto.</p>
+                                        </div>
+                                    </div>
+                                    <div class="step"
+                                        style="display: flex; margin-bottom: 25px; background: rgba(255, 255, 255, 0.07); border-radius: 16px; padding: 20px; border-left: 4px solid rgba(255, 255, 255, 0.3); transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); transform: translateZ(0);"
+                                        onmouseover="this.style.transform='translateY(-3px) translateZ(0)'; this.style.boxShadow='0 12px 30px rgba(0, 0, 0, 0.25)'"
+                                        onmouseout="this.style.transform='translateZ(0)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.15)'">
+                                        <div class="step-number"
+                                            style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(200, 200, 200, 0.8)); color: #121212; width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-right: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2); aspect-ratio: 1/1; overflow: hidden;">
+                                            4</div>
+                                        <div class="step-content">
+                                            <h4
+                                                style="color: white; margin-bottom: 10px; font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);">
+                                                Sostituisci i file esistenti</h4>
+                                            <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6;">Incolla e
+                                                sostituisci le cartelle nella tua cartella di installazione esistente di
+                                                Minecraft.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Box immagine migliorato con pulsante centrato sopra -->
+                                <div class="update-image-container"
+                                    style="margin-top: 40px; text-align: center; position: relative;">
+                                    <!-- Decorazione superiore -->
+                                    <div
+                                        style="margin: 0 auto 20px; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); height: 2px; width: 70%;">
+                                    </div>
+                                    <!-- Pulsante di download centrato e migliorato -->
+                                    <div style="text-align: center; margin-bottom: 25px;">
+                                        <a href="" id="update-download-btn" class="btn"
+                                            style="display: inline-flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(135deg, #ffffff, #e0e0e0); padding: 16px 35px; border-radius: 30px; color: #121212; text-decoration: none; font-weight: 700; font-size: 1.2rem; letter-spacing: 0.5px; transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 15px rgba(255, 255, 255, 0.3); position: relative; overflow: hidden; transform: translateZ(0);"
+                                            onmouseover="this.style.transform='translateY(-5px) scale(1.05) translateZ(0)'; this.style.boxShadow='0 15px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(255, 255, 255, 0.5)'"
+                                            onmouseout="this.style.transform='translateY(0) scale(1) translateZ(0)'; this.style.boxShadow='0 10px 25px rgba(0, 0, 0, 0.25), 0 0 15px rgba(255, 255, 255, 0.3)'">
+                                            <span
+                                                style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%); transform: scale(0); border-radius: 50%; transition: transform 0.5s ease-out; pointer-events: none;"></span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                <polyline points="7 10 12 15 17 10"></polyline>
+                                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                                            </svg>
+                                            SCARICA AGGIORNAMENTO
+                                        </a>
+                                    </div>
+                                    <!-- Contenitore immagine con effetti -->
+                                    <div style="position: relative; display: inline-block; max-width: 85%; border-radius: 18px; overflow: hidden; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.1); transition: all 0.5s ease;"
+                                        onmouseover="this.style.transform='scale(1.02) translateY(-5px)'; this.style.boxShadow='0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 255, 255, 0.15)'"
+                                        onmouseout="this.style.transform='scale(1) translateY(0)'; this.style.boxShadow='0 25px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.1)';">
+                                        <!-- Overlay con effetto gradiente -->
+                                        <div
+                                            style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 50%); z-index: 2; pointer-events: none;">
+                                        </div>
+                                        <!-- Bordo luminoso -->
+                                        <div
+                                            style="position: absolute; top: -1px; left: -1px; right: -1px; bottom: -1px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 18px; z-index: 3; pointer-events: none; box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);">
+                                        </div>
+                                        <!-- Immagine con effetto hover -->
+                                        <img src="img/Immagine-update.png" alt="Processo di aggiornamento"
+                                            style="max-width: 100%; height: auto; display: block; transition: all 0.5s ease; filter: contrast(1.05) brightness(1.05);"
+                                            onmouseover="this.style.filter='contrast(1.1) brightness(1.1)'"
+                                            onmouseout="this.style.filter='contrast(1.05) brightness(1.05)'">
+                                        <!-- Etichetta nell'angolo -->
+                                        <div
+                                            style="position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.85); color: #121212; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); z-index: 4; backdrop-filter: blur(5px);">
+                                            Aggiornamento</div>
+                                    </div>
+                                    <!-- Didascalia migliorata -->
+                                    <p
+                                        style="color: rgba(255, 255, 255, 0.85); font-size: 1rem; margin-top: 18px; font-style: italic; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); max-width: 80%; margin-left: auto; margin-right: auto;">
+                                        <span
+                                            style="display: inline-block; width: 8px; height: 8px; background: white; border-radius: 50%; margin-right: 8px; box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);"></span>
+                                        Sostituisci i file esistenti quando richiesto per completare l'aggiornamento
+                                    </p>
+                                    <!-- Decorazione inferiore -->
+                                    <div
+                                        style="margin: 20px auto 0; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%); height: 2px; width: 70%;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            document.getElementById('toggle-update-modpack').addEventListener('click', function () {
+                                var content = document.getElementById('update-modpack-content');
+                                var arrow = document.querySelector('.update-arrow');
+                                var btn = document.getElementById('toggle-update-modpack');
+                                var expanded = btn.getAttribute('aria-expanded') === 'true';
+                                if (!expanded) {
+                                    content.classList.add('open');
+                                    btn.setAttribute('aria-expanded', 'true');
+                                    arrow.style.transform = 'rotate(180deg)';
+                                } else {
+                                    content.classList.remove('open');
+                                    btn.setAttribute('aria-expanded', 'false');
+                                    arrow.style.transform = 'rotate(0deg)';
+                                }
+                            });
+                        </script>
+                        <!-- Fine sezione aggiornamento modpack -->
+
+
+
+
+                        <!-- FAQ come footer integrato a tutta larghezza - centrato e migliorato esteticamente -->
+                        <div
+                            style="margin-top: 40px; border-top: 2px solid rgba(255, 255, 255, 0.15); padding-top: 25px; position: relative;">
+                            <!-- Decorazione superiore -->
+                            <div
+                                style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%); height: 2px; width: 60%; max-width: 400px;">
+                            </div>
+
+                            <h3
+                                style="font-size: 1.1rem; margin-bottom: 20px; color: #ffffff; text-align: center; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;">
+                                FAQ Tecniche</h3>
+
+                            <!-- Layout orizzontale compatto per le FAQ - centrato -->
+                            <div
+                                style="display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 15px; padding: 5px 0 15px; justify-content: center; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.3) transparent; mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);">
+                                <!-- FAQ Item 1 -->
+                                <div style="flex: 0 0 auto; width: 210px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);"
+                                    onmouseover="this.style.transform='translateY(-5px)';"
+                                    onmouseout="this.style.transform='translateY(0)';">
+                                    <h4
+                                        style="color: #ffffff; margin-bottom: 10px; border-left: 3px solid #ffffff; padding-left: 10px; font-size: 0.95rem; font-weight: 600;">
+                                        Caricamento Chunk</h4>
+                                    <p style="line-height: 1.5; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);">
+                                        BetterMinecraft include 358 mod che aggiungono nuovi contenuti. Quando esplori
+                                        una nuova area, il server deve generare tutti questi contenuti gradualmente.</p>
+                                </div>
+
+                                <!-- FAQ Item 2 -->
+                                <div style="flex: 0 0 auto; width: 210px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);"
+                                    onmouseover="this.style.transform='translateY(-5px)';"
+                                    onmouseout="this.style.transform='translateY(0)';">
+                                    <h4
+                                        style="color: #ffffff; margin-bottom: 10px; border-left: 3px solid #ffffff; padding-left: 10px; font-size: 0.95rem; font-weight: 600;">
+                                        Velocità Server</h4>
+                                    <p style="line-height: 1.5; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);">
+                                        No! Una volta che un\'area è stata esplorata, il caricamento successivo sarà
+                                        molto veloce. Il server è ottimizzato per performance fluide.</p>
+                                </div>
+
+                                <!-- FAQ Item 3 -->
+                                <div style="flex: 0 0 auto; width: 210px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);"
+                                    onmouseover="this.style.transform='translateY(-5px)';"
+                                    onmouseout="this.style.transform='translateY(0)';">
+                                    <h4
+                                        style="color: #ffffff; margin-bottom: 10px; border-left: 3px solid #ffffff; padding-left: 10px; font-size: 0.95rem; font-weight: 600;">
+                                        Generazione Mondo</h4>
+                                    <p style="line-height: 1.5; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);">
+                                        Il nostro server utilizza tecniche avanzate di pre-generazione e ottimizzazione
+                                        per bilanciare la qualità del mondo con le performance.</p>
+                                </div>
+
+                                <!-- FAQ Item 4 -->
+                                <div style="flex: 0 0 auto; width: 210px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);"
+                                    onmouseover="this.style.transform='translateY(-5px)';"
+                                    onmouseout="this.style.transform='translateY(0)';">
+                                    <h4
+                                        style="color: #ffffff; margin-bottom: 10px; border-left: 3px solid #ffffff; padding-left: 10px; font-size: 0.95rem; font-weight: 600;">
+                                        Migliorare Performance</h4>
+                                    <p style="line-height: 1.5; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);">
+                                        Alloca 6-8GB di RAM, installa Optifine/Sodium, riduci la distanza di rendering a
+                                        12-16 chunk e disattiva animazioni non essenziali.</p>
+                                </div>
+
+                                <!-- FAQ Item 5 -->
+                                <div style="flex: 0 0 auto; width: 210px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);"
+                                    onmouseover="this.style.transform='translateY(-5px)';"
+                                    onmouseout="this.style.transform='translateY(0)';">
+                                    <h4
+                                        style="color: #ffffff; margin-bottom: 10px; border-left: 3px solid #ffffff; padding-left: 10px; font-size: 0.95rem; font-weight: 600;">
+                                        Crash e Errori</h4>
+                                    <p style="line-height: 1.5; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);">
+                                        Verifica Java 17+, controlla l\'installazione delle mod, riavvia il
+                                        launcher/gioco, e se necessario controlla i log o contatta un admin.</p>
+                                </div>
+
+                                <!-- FAQ Item 6 -->
+                                <div style="flex: 0 0 auto; width: 210px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.15); padding: 15px; transition: all 0.3s ease; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.05); backdrop-filter: blur(5px);"
+                                    onmouseover="this.style.transform='translateY(-5px)';"
+                                    onmouseout="this.style.transform='translateY(0)';">
+                                    <h4
+                                        style="color: #ffffff; margin-bottom: 10px; border-left: 3px solid #ffffff; padding-left: 10px; font-size: 0.95rem; font-weight: 600;">
+                                        Mod Consigliate</h4>
+                                    <p style="line-height: 1.5; font-size: 0.85rem; color: rgba(255, 255, 255, 0.85);">
+                                        Optifine/Sodium per le performance, JourneyMap per la navigazione, Inventory
+                                        Tweaks per gestire gli inventari, e WAILA per identificare blocchi e oggetti.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Decorazione inferiore -->
+                            <div
+                                style="margin: 5px auto 0; background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%); height: 1px; width: 80%; max-width: 600px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+    </main>
+    <<!-- Footer -->
+        <footer>
+
+            <div class="credits">© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato
+                di Mojang AB.</div>
+        </footer>
+        <script>
+            // Gestione selettore launcher (Modpack)
+            window.selectLauncher = function (launcherId) {
+                var placeholder = document.getElementById('tab-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                var tabContainer = document.getElementById('tab-content-container');
+                if (tabContainer) tabContainer.style.display = 'block';
+                var placeholder = document.getElementById('tab-placeholder');
+                if (placeholder) placeholder.style.display = 'none';
+                const installationContents = document.querySelectorAll('.installation-tabs .tab-content-container .tab-content');
+                installationContents.forEach(content => {
+                    content.style.display = 'none';
+                });
+                const selectedContent = document.getElementById(launcherId);
+                if (selectedContent) {
+                    selectedContent.style.display = 'block';
+                    selectedContent.style.animation = 'none';
+                    void selectedContent.offsetWidth;
+                    selectedContent.style.animation = 'fadeIn 0.6s ease-in-out';
+                }
+                const buttons = document.querySelectorAll('.launcher-btn');
+                buttons.forEach(button => {
+                    button.classList.remove('active');
+                    button.setAttribute('aria-pressed', 'false');
+                    const indicator = button.querySelector('.active-indicator');
+                    if (indicator) indicator.style.transform = 'scaleX(0)';
+                    button.style.transform = '';
+                    button.style.boxShadow = '';
+                });
+                const activeButton = document.getElementById(`${launcherId}-btn`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                    activeButton.setAttribute('aria-pressed', 'true');
+                    const indicator = activeButton.querySelector('.active-indicator');
+                    if (indicator) indicator.style.transform = 'scaleX(1)';
+                    activeButton.style.transform = '';
+                    activeButton.style.boxShadow = '';
+                }
+            }
+            // Gestione tab (se usati)
+            window.showTab = function (tabId) {
+                const tabContents = document.querySelectorAll('#modpack-section .tab-content');
+                tabContents.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                const selectedTab = document.getElementById(tabId);
+                if (selectedTab) {
+                    selectedTab.classList.add('active');
+                }
+                const tabButtons = document.querySelectorAll('#modpack-section .tab-button');
+                tabButtons.forEach(button => {
+                    button.classList.remove('active');
+                });
+                const activeButton = document.querySelector(`#modpack-section .tab-button[onclick="showTab('${tabId}')"]`);
+                if (activeButton) {
+                    activeButton.classList.add('active');
+                }
+            }
+            // Gestione FAQ accordion/tab
+            window.addEventListener('DOMContentLoaded', function () {
+                const faqItems = document.querySelectorAll('.faq-accordion .faq-item');
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question');
+                    const answer = item.querySelector('.faq-answer');
+                    if (!question || !answer) return;
+                    if (item.classList.contains('active')) {
+                        answer.style.height = answer.scrollHeight + 'px';
+                        answer.style.opacity = '1';
+                        answer.style.paddingTop = '20px';
+                    } else {
+                        answer.style.height = '0';
+                        answer.style.opacity = '0';
+                        answer.style.paddingTop = '0';
+                    }
+                    question.addEventListener('click', function () {
+                        const isActive = item.classList.toggle('active');
+                        faqItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.classList.contains('active')) {
+                                otherItem.classList.remove('active');
+                                const otherAnswer = otherItem.querySelector('.faq-answer');
+                                if (otherAnswer) {
+                                    otherAnswer.style.height = '0';
+                                    otherAnswer.style.opacity = '0';
+                                    otherAnswer.style.paddingTop = '0';
+                                }
+                            }
+                        });
+                        if (isActive) {
+                            answer.style.height = answer.scrollHeight + 'px';
+                            answer.style.opacity = '1';
+                            answer.style.paddingTop = '20px';
+                        } else {
+                            answer.style.height = '0';
+                            answer.style.opacity = '0';
+                            answer.style.paddingTop = '0';
+                        }
+                    });
+                });
+            });
+        </script>
+        <script src="js/transition.js"></script>
+</body>
+
+</html>

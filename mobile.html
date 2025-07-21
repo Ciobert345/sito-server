@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sito Server - Mobile</title>
+    <link rel="stylesheet" href="mobile.css?v=1.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+</head>
+<body id="top">
+
+    <header class="main-header">
+        <a href="#top" aria-label="Torna in cima" class="header-item">
+            <img src="img/favicon.png" alt="Logo" class="logo">
+        </a>
+        <div class="header-item">
+            <div class="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <nav class="mobile-nav">
+        <h3 class="nav-title">Menu di Navigazione</h3>
+        <ul>
+            <li><a href="#top">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <span>Stato</span>
+            </a></li>
+            <li><a href="#informazioni">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                <span>Informazioni</span>
+            </a></li>
+            <li><a href="#dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                <span>Dashboard</span>
+            </a></li>
+            <li><a href="#richiedi-accesso">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                <span>Accesso</span>
+            </a></li>
+            <li><a href="#aggiornamenti">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                <span>Novità</span>
+            </a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="stato-server" class="hero-section">
+            <div class="background-image-container"></div>
+            <div class="hero-content-wrapper">
+                <div id="info-banners"></div>
+                <div class="countdown-card">
+                    <h2 id="countdown-title" class="countdown-title-mobile">L'aggiornamento arriverà tra</h2>
+                    <div id="countdown" class="countdown-boxes-mobile">
+                        <div class="countdown-box-mobile">
+                            <div class="countdown-value-mobile" id="countdown-days">00</div>
+                            <div class="countdown-label-mobile">Giorni</div>
+                        </div>
+                        <div class="countdown-box-mobile">
+                            <div class="countdown-value-mobile" id="countdown-hours">00</div>
+                            <div class="countdown-label-mobile">Ore</div>
+                        </div>
+                        <div class="countdown-box-mobile">
+                            <div class="countdown-value-mobile" id="countdown-minutes">00</div>
+                            <div class="countdown-label-mobile">Minuti</div>
+                        </div>
+                        <div class="countdown-box-mobile">
+                            <div class="countdown-value-mobile" id="countdown-seconds">00</div>
+                            <div class="countdown-label-mobile">Secondi</div>
+                        </div>
+                    </div>
+                    <div id="countdown-complete" style="display: none;">
+                        <div class="countdown-complete-mobile">Aggiornamento disponibile!</div>
+                    </div>
+                </div>
+                <div id="countdown-complete-card" style="display: none;">
+                    <div class="success-icon-mobile">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9 12l2 2l4-4"></path>
+                        </svg>
+                    </div>
+                    <h3>L'aggiornamento è arrivato!</h3>
+                    <p>Il server è ora disponibile e aggiornato. Scopri tutte le novità!</p>
+                    <div class="complete-buttons">
+                        <a href="#aggiornamenti" class="btn-learn-more">News</a>
+                        <a href="#informazioni" class="btn-learn-more secondary">Informazioni</a>
+                    </div>
+                </div>
+                <div class="hero-card hero-card-main">
+                    <h1>Server Manfredonia</h1>
+                    <p>Un'esperienza di gioco unica. Esplora un mondo vasto e personalizzato, costruisci sistemi complessi e affronta sfide epiche.</p>
+                    <a href="https://github.com/sHaDow105off/Mod-server-Manfredonia" target="_blank" class="btn-learn-more">Progetto su GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="informazioni">
+            <div class="section-content premium-card">
+                <h2>Benvenuto a Manfredonia</h2>
+                <img src="https://media.forgecdn.net/attachments/1108/547/bbqax1n-jpeg.jpeg" alt="BetterMinecraft landscape" class="section-image rounded-image">
+                <p>
+                    Il server è basato sul modpack <b>BetterMinecraft</b>, che combina le migliori mod di avventura, tecnologia e magia.
+                </p>
+                <h3>Caratteristiche principali:</h3>
+                <ul class="features-list">
+                    <li>Nuove dimensioni e biomi da esplorare</li>
+                    <li>Miglioramenti grafici e di performance</li>
+                    <li>Nuove creature e boss da combattere</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="dashboard">
+            <div class="section-content premium-card">
+                <h2>Pannello di Controllo</h2>
+                <p>
+                   Il nostro server dispone di un pannello di controllo web che permette ai membri di monitorare lo stato del server e interagire con esso. Accedi tramite il nostro server Discord per avviare, spegnere o riavviare il server.
+                </p>
+                <div class="carousel-container">
+                    <div class="carousel-slides">
+                        <img src="img/pannello1.png" alt="Dashboard del server" class="carousel-slide">
+                        <img src="img/pannello2.png" alt="Console del server" class="carousel-slide">
+                        <img src="img/pannello3.png" alt="Controlli del server" class="carousel-slide">
+                    </div>
+                    <button class="carousel-prev">&#10094;</button>
+                    <button class="carousel-next">&#10095;</button>
+                    <div class="carousel-indicators"></div>
+                </div>
+                <a href="http://server-manfredonia.duckdns.org:25560/" target="_blank" class="btn-learn-more" style="margin-top: 25px; display: block; text-align: center;">Vai alla dashboard</a>
+            </div>
+        </section>
+
+        <section id="richiedi-accesso">
+            <div class="section-content premium-card">
+                <h2>Richiedi accesso</h2>
+                <p>Compila il modulo seguente per richiedere l'accesso al server.</p>
+                <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg" alt="Minecraft community" class="section-image rounded-image" loading="lazy" style="margin-top: 15px;">
+                
+                <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="name">Nome e Cognome</label>
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Es. Max Emilian Verstappen" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="minecraft">Nome Account Minecraft</label>
+                        <input type="text" name="minecraft" id="minecraft" class="form-control" placeholder="Es. FranzHermann" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="discord">Nome Utente Discord</label>
+                        <input type="text" name="discord" id="discord" class="form-control" placeholder="Es. FranzHermann#33" required>
+                    </div>
+                    <input type="hidden" name="_subject" value="Nuova richiesta di accesso al server Minecraft">
+                    <input type="hidden" name="_next" value="#richiedi-accesso">
+                    <input type="hidden" name="_replyto" value="%email%">
+                    <input type="hidden" name="_autoresponse" value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
+                    <button type="submit" class="btn-learn-more" style="width: 100%;">Invia Richiesta</button>
+                </form>
+
+                <div id="successMessage" class="success-message" style="display: none;">
+                    <p><strong>Richiesta inviata con successo!</strong><br>Ti contatteremo presto via email o Discord.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="aggiornamenti">
+            <div class="section-content premium-card">
+                 <h2>Aggiornamenti</h2>
+                 <p>Segui qui tutte le patch notes e le novità del server.</p>
+                 <div class="iframe-container">
+                    <iframe src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2" loading="lazy"></iframe>
+                 </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato di Mojang AB.</p>
+    </footer>
+
+    <div id="image-zoom-overlay" style="display:none;">
+        <span class="zoom-close">&times;</span>
+        <button class="zoom-reset" style="position:absolute;bottom:30px;right:30px;z-index:10002;display:none;padding:8px 16px;font-size:1.1em;border-radius:8px;background:rgba(0,0,0,0.7);color:#fff;border:none;">Reset</button>
+        <img src="" alt="Zoom" class="zoomed-img">
+    </div>
+
+    <script src="js/config-manager.js"></script>
+    <script src="js/mobile-scripts.js"></script>
+</body>
+</html>

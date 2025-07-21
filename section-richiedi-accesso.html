@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Richiedi Accesso - Server Manfredonia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/favicon.png" type="image/png">
+</head>
+
+<body class="fade-transition">
+    <!-- Barra di navigazione -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <h1>Server Manfredonia</h1>
+                <nav id="mainNav">
+                    <ul id="mainNavLinks" class="nav-links">
+                        <li><a href="index.html">Stato server</a></li>
+                        <li><a href="section-informazioni.html">Informazioni</a></li>
+                        <li><a href="section-modpack.html">Modpack</a></li>
+                        <li><a href="updates.html">Aggiornamenti</a></li>
+                        <li><a href="section-richiedi-accesso.html">Richiedi Accesso</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <!-- Contenuto della pagina -->
+    <main class="container">
+        <div class="container">
+            <div class="glass-card pop-card" style="margin-top: 100px;">
+                <h2>Richiesta di Accesso</h2>
+                <p>Compila il modulo seguente per richiedere l'accesso al server. Tutti i campi sono obbligatori.</p>
+                <div class="grid-2-col">
+                    <div>
+                        <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST">
+                            <div class="form-group">
+                                <label for="name">Nome e Cognome</label>
+                                <input type="text" name="name" id="name" class="form-control"
+                                    placeholder="Es. Max Emilian Verstappen" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" name="email" id="email" class="form-control"
+                                    placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="minecraft">Nome Account Minecraft</label>
+                                <input type="text" name="minecraft" id="minecraft" class="form-control"
+                                    placeholder="Es. FranzHermann" required>
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="discord">Nome Utente Discord</label>
+                                <input type="text" name="discord" id="discord" class="form-control"
+                                    placeholder="Es. FranzHermann#33" required>
+                            </div>
+                            <br>
+                            <input type="hidden" name="_subject" value="Nuova richiesta di accesso al server Minecraft">
+                            <input type="hidden" name="_next" value="#request">
+                            <input type="hidden" name="_replyto" value="%email%">
+                            <input type="hidden" name="_autoresponse"
+                                value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
+                            <br>
+                            <button type="submit" class="btn" style="width: 100%;">Invia Richiesta</button>
+                        </form>
+                        <div id="successMessage" class="success-message" style="display: none;">
+                            <p><strong></strong> La tua richiesta è stata inviata con successo! Ti contatteremo presto.
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="image-container">
+                            <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg"
+                                alt="Minecraft community" class="screenshot" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Mostra il messaggio di successo dopo l'invio del form (Formspree)
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.getElementById('accessForm');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    setTimeout(function () {
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                        setTimeout(function () {
+                            document.getElementById('successMessage').style.display = 'none';
+                        }, 8000);
+                    }, 1000);
+                });
+            }
+        });
+    </script>
+    <script src="js/transition.js"></script>
+    <!-- Footer -->
+    <footer>
+
+        <div class="credits">© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato di
+            Mojang AB.</div>
+    </footer>
+
+</body>
+
+</html>
