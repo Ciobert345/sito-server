@@ -14,7 +14,7 @@ class ConfigManager {
      */
     async init() {
         try {
-            const response = await fetch('/config.json');
+            const response = await fetch('config.json');
             if (!response.ok) {
                 throw new Error(`Errore nel caricamento della configurazione: ${response.status}`);
             }
@@ -22,6 +22,16 @@ class ConfigManager {
             this.config = await response.json();
             this.initialized = true;
             console.log('Configurazione caricata con successo:', this.config);
+
+            // Controllo immediato: se il countdown è già scaduto, nascondi subito la sezione Novità importanti
+            if (this.config.countdown && this.config.countdown.enabled && this.config.countdown.date) {
+                const now = new Date().getTime();
+                const countdownDate = new Date(this.config.countdown.date).getTime();
+                if (now > countdownDate) {
+                    const updateNoticeBox = document.getElementById('update-notice-box');
+                    if (updateNoticeBox) updateNoticeBox.style.display = 'none';
+                }
+            }
 
             // Applica le configurazioni
             this.applyConfigurations();
@@ -212,6 +222,20 @@ class ConfigManager {
      * Applica la configurazione del box Novità importanti
      */
     applyUpdateNotice() {
+        console.log('[DEBUG] applyUpdateNotice chiamata', window.ConfigManager && window.ConfigManager.config && window.ConfigManager.config.countdown);
+        // Nascondi subito la sezione se il countdown è già scaduto
+        if (window.ConfigManager && window.ConfigManager.config && window.ConfigManager.config.countdown) {
+            const cfg = window.ConfigManager.config.countdown;
+            if (cfg.enabled && cfg.date) {
+                const now = new Date().getTime();
+                const countdownDate = new Date(cfg.date).getTime();
+                if (now > countdownDate) {
+                    console.log('[DEBUG] Countdown scaduto, nascondo box novità');
+                    const box = document.getElementById('update-notice-box');
+                    if (box) box.style.display = 'none';
+                }
+            }
+        }
         const cfg = this.config.updateNotice;
         const box = document.getElementById('update-notice-box');
         if (!cfg || !box) return;
@@ -477,6 +501,7 @@ class ConfigManager {
      * Inizializza il countdown con la data corrente
      */
     initializeCountdown() {
+        console.log('[DEBUG] initializeCountdown chiamata', window.countdownDateString);
         if (!window.countdownDateString) return;
 
         console.log('[ConfigManager] Inizializzazione countdown con data:', window.countdownDateString);
@@ -511,6 +536,11 @@ class ConfigManager {
 
                 if (!window.globalCountdownExpired) {
                     window.globalCountdownExpired = true;
+
+                    // Nascondi la sezione Novità importanti
+                    const updateNoticeBox = document.getElementById('update-notice-box');
+                    console.log('DEBUG: Countdown scaduto, provo a nascondere update-notice-box', updateNoticeBox);
+                    if (updateNoticeBox) updateNoticeBox.style.display = 'none';
 
                     // Verifica se siamo sulla pagina mobile
                     const isMobilePage = document.querySelector('.hero-content-wrapper') !== null;
@@ -673,6 +703,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+window.ConfigManager = ConfigManager;
 
 /**
  * Applica i link di download dal config.json
