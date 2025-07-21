@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sito Server - Mobile</title>
+    <link rel="preload" href="img/pannello1.png" as="image">
+    <link rel="preload" href="img/pannello2.png" as="image">
+    <link rel="preload" href="img/pannello3.png" as="image">
     <link rel="stylesheet" href="mobile.min.css?v=1.1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="img/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body id="top">
 
@@ -125,9 +129,18 @@
                 </p>
                 <div class="carousel-container">
                     <div class="carousel-slides">
-                        <img src="img/pannello1.png" alt="Dashboard del server" class="carousel-slide" loading="lazy">
-                        <img src="img/pannello2.png" alt="Console del server" class="carousel-slide" loading="lazy">
-                        <img src="img/pannello3.png" alt="Controlli del server" class="carousel-slide" loading="lazy">
+                        <picture>
+                          <source srcset="img/pannello1.webp" type="image/webp">
+                          <img src="img/pannello1.png" alt="Dashboard del server" class="carousel-slide" loading="lazy" decoding="async">
+                        </picture>
+                        <picture>
+                          <source srcset="img/pannello2.webp" type="image/webp">
+                          <img src="img/pannello2.png" alt="Console del server" class="carousel-slide" loading="lazy" decoding="async">
+                        </picture>
+                        <picture>
+                          <source srcset="img/pannello3.webp" type="image/webp">
+                          <img src="img/pannello3.png" alt="Controlli del server" class="carousel-slide" loading="lazy" decoding="async">
+                        </picture>
                     </div>
                     <button class="carousel-prev">&#10094;</button>
                     <button class="carousel-next">&#10095;</button>
@@ -177,8 +190,9 @@
             <div class="section-content premium-card">
                  <h2>Aggiornamenti</h2>
                  <p>Segui qui tutte le patch notes e le novità del server.</p>
-                 <div class="iframe-container">
-                    <iframe src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2" loading="lazy"></iframe>
+                 <button id="show-news-btn" class="btn-learn-more" style="margin-bottom:20px;">Mostra aggiornamenti</button>
+                 <div class="iframe-container" id="news-iframe-container" style="display:none;">
+                     <iframe id="news-iframe" src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2" loading="lazy"></iframe>
                  </div>
             </div>
         </section>
@@ -194,7 +208,24 @@
         <img src="" alt="Zoom" class="zoomed-img">
     </div>
 
-    <script src="js/config-manager.js"></script>
-    <script src="js/mobile-scripts.min.js"></script>
+    <script src="js/config-manager.js" defer></script>
+    <script src="js/mobile-scripts.min.js" defer></script>
+    <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('show-news-btn');
+      var container = document.getElementById('news-iframe-container');
+      if(btn && container) {
+        btn.addEventListener('click', function() {
+          container.style.display = 'block';
+          btn.style.display = 'none';
+        });
+      }
+    });
+    </script>
 </body>
 </html>
