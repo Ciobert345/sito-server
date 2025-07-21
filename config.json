@@ -21,7 +21,7 @@
   "// Configurazione del countdown": "",
   "countdown": {
     "enabled": true,
-    "date": "July 21, 2025 21:06:30",
+    "date": "July 20, 2025 21:06:30",
     "title": "Aggiornamento in arrivo",
     "expiredMessage": "Il server è ora disponibile!"
   },
