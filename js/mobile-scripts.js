@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!slidesContainer || !prevButton || !nextButton || !indicatorsContainer) return;
 
-        const slides = Array.from(slidesContainer.children);
+        const slides = Array.from(slidesContainer.querySelectorAll('img.carousel-slide'));
         const slideCount = slides.length;
         if (slideCount === 0) return;
         
