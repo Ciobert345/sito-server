@@ -3,21 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Server Minecraft moddato con tecnologia, magia e avventura. Unisciti alla nostra community!">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Sito Server - Mobile</title>
-    <link rel="preload" href="img/pannello1.png" as="image">
-    <link rel="preload" href="img/pannello2.png" as="image">
-    <link rel="preload" href="img/pannello3.png" as="image">
-    <link rel="stylesheet" href="mobile.min.css">
+    <style>
+    /* CSS critico per il rendering iniziale */
+    :root{--dark:#0a0a0a;--light:#fff;--glass-bg:rgba(255,255,255,.05);--glass-border:rgba(255,255,255,.15);--highlight:#fff;--text-on-dark:#fff;--text-on-light:#0a0a0a;--sans-serif-font:'Poppins','Serif',sans-serif;--serif-font:'Serif','Times New Roman',serif}html{scroll-behavior:smooth}*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans-serif-font);background-color:var(--dark);color:var(--light);line-height:1.6;overflow-x:hidden}.main-header{position:fixed;top:0;left:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:15px;z-index:1000}.header-item{background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:15px;padding:0;box-shadow:0 4px 15px rgba(0,0,0,.2);width:50px;height:50px;display:flex;justify-content:center;align-items:center;text-decoration:none}.logo{width:35px;height:35px}
+    </style>
+    <link rel="preload" href="img/pannello1.webp" as="image">
+    <link rel="preload" href="img/pannello2.webp" as="image">
+    <link rel="preload" href="img/pannello3.webp" as="image">
+    <link rel="stylesheet" href="mobile.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="mobile.min.css"></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://media.forgecdn.net" crossorigin>
+    <link rel="preconnect" href="https://dent-comte-e60.notion.site" crossorigin>
+    <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="img/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
 </head>
 <body id="top">
 
     <header class="main-header">
         <a href="#top" aria-label="Torna in cima" class="header-item">
-            <img src="img/favicon.png" alt="Logo" class="logo">
+            <img src="img/favicon.png" alt="Logo" class="logo" width="35" height="35">
         </a>
         <div class="header-item">
             <div class="hamburger-menu">
@@ -32,7 +46,7 @@
         <h3 class="nav-title">Menu di Navigazione</h3>
         <ul>
             <li><a href="#top">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" loading="lazy"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 <span>Stato</span>
             </a></li>
             <li><a href="#informazioni">
@@ -108,7 +122,11 @@
         <section id="informazioni">
             <div class="section-content premium-card">
                 <h2>Benvenuto a Manfredonia</h2>
-                <img src="https://media.forgecdn.net/attachments/1108/547/bbqax1n-jpeg.jpeg" alt="BetterMinecraft landscape" class="section-image rounded-image" loading="lazy" width="800" height="450">
+                <picture>
+                    <source media="(max-width: 600px)" srcset="https://media.forgecdn.net/attachments/1108/547/bbqax1n-jpeg.jpeg?width=400" type="image/jpeg">
+                    <source media="(max-width: 1024px)" srcset="https://media.forgecdn.net/attachments/1108/547/bbqax1n-jpeg.jpeg?width=800" type="image/jpeg">
+                    <img src="https://media.forgecdn.net/attachments/1108/547/bbqax1n-jpeg.jpeg" alt="BetterMinecraft landscape" class="section-image rounded-image" loading="lazy" width="800" height="450" fetchpriority="low">
+                </picture>
                 <p>
                     Il server è basato sul modpack <b>BetterMinecraft</b>, che combina le migliori mod di avventura, tecnologia e magia.
                 </p>
@@ -154,16 +172,16 @@
             <div class="section-content premium-card">
                 <h2>Richiedi accesso</h2>
                 <p>Compila il modulo seguente per richiedere l'accesso al server.</p>
-                <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg" alt="Minecraft community" class="section-image rounded-image" loading="lazy" style="margin-top: 15px;" width="800" height="450">
+                <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg" alt="Minecraft community" class="section-image rounded-image" loading="lazy" style="margin-top: 15px;" width="800" height="450" fetchpriority="low">
                 
                 <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST" style="margin-top: 20px;">
                     <div class="form-group">
                         <label for="name">Nome e Cognome</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Es. Max Emilian Verstappen" required>
+                        <input type="text" name="name" id="name" class="form-control" placeholder="Es. Max Emilian Verstappen" required autocomplete="name">
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" name="email" id="email" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required autocomplete="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Inserisci un indirizzo email valido">
                     </div>
                     <div class="form-group">
                         <label for="minecraft">Nome Account Minecraft</label>
@@ -192,7 +210,7 @@
                  <p>Segui qui tutte le patch notes e le novità del server.</p>
                  <button id="show-news-btn" class="btn-learn-more" style="margin-bottom:20px;">Mostra aggiornamenti</button>
                  <div class="iframe-container" id="news-iframe-container" style="display:none;">
-                     <iframe id="news-iframe" src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2" loading="lazy"></iframe>
+                     <iframe id="news-iframe" src="about:blank" data-src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2" loading="lazy"></iframe>
                  </div>
             </div>
         </section>
@@ -212,20 +230,117 @@
     <script src="js/mobile-scripts.min.js" defer></script>
     <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
+      navigator.serviceWorker.register('service-worker.js').catch(error => {
+        console.error('Service Worker registration failed:', error);
+      });
     }
+    </script>
+    <script>
+    // Implementazione di Intersection Observer per lazy loading personalizzato
+    document.addEventListener('DOMContentLoaded', function() {
+      const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+      
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver(function(entries, observer) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+              img.src = img.dataset.src || img.src;
+              imageObserver.unobserve(img);
+            }
+          });
+        }, { rootMargin: '100px' });
+        
+        lazyImages.forEach(function(img) {
+          imageObserver.observe(img);
+        });
+      }
+    });
     </script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
       var btn = document.getElementById('show-news-btn');
       var container = document.getElementById('news-iframe-container');
-      if(btn && container) {
+      var iframe = document.getElementById('news-iframe');
+      if(btn && container && iframe) {
         btn.addEventListener('click', function() {
+          iframe.src = iframe.getAttribute('data-src');
           container.style.display = 'block';
           btn.style.display = 'none';
         });
       }
     });
     </script>
+</body>
+</html>
+
+<script>
+// Ottimizzazione delle animazioni
+document.addEventListener('DOMContentLoaded', function() {
+  // Rileva se il dispositivo preferisce animazioni ridotte
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (prefersReducedMotion) {
+    // Disabilita le animazioni ken-burns
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ken-burns {
+        0%, 100% { transform: scale(1); }
+      }
+      .hero-section .background-image-container {
+        animation: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // Usa requestAnimationFrame per animazioni fluide
+  const animateElements = document.querySelectorAll('.hero-card, .countdown-card, .section-content');
+  
+  if ('IntersectionObserver' in window && !prefersReducedMotion) {
+    const animationObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          requestAnimationFrame(function() {
+            entry.target.classList.add('is-visible');
+          });
+          animationObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    animateElements.forEach(function(el) {
+      animationObserver.observe(el);
+    });
+  } else {
+    // Fallback per browser che non supportano IntersectionObserver
+    animateElements.forEach(function(el) {
+      el.classList.add('is-visible');
+    });
+  }
+});
+</script>
+</body>
+</html>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('accessForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      const emailInput = document.getElementById('email');
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      
+      if (!emailPattern.test(emailInput.value)) {
+        e.preventDefault();
+        emailInput.setCustomValidity('Inserisci un indirizzo email valido');
+        emailInput.reportValidity();
+      } else {
+        emailInput.setCustomValidity('');
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
