@@ -48,11 +48,11 @@
     {
       "id": "banner1",
       "enabled": true,
-      "title": "🚨AGGIORNAMENTO DEL MODPACK🚨",
+      "title": "🚨AGGIORNAMENTO DEL SITO🚨",
       "subtitle": "",
-      "message": "Scarica la nuova versione per poter giocare",
+      "message": "Il sito è stato rifatto da capo ed è stata aggiunta anche la versione mobile!",
       "icon": "notification",
-      "style": "banner-red"
+      "style": "banner-blue"
     },
     {
       "id": "banner2",
