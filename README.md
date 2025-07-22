@@ -1,4 +1,4 @@
-![Screenshot 2025-06-13 163833](https://github.com/user-attachments/assets/8cebb0af-2ba7-42b1-a53f-a041ecbc1d47)
+<img width="2692" height="1538" alt="Screenshot 2025-07-22 130703 (1)" src="https://github.com/user-attachments/assets/6fb36d3b-cfe2-48e7-a40d-440b9fc2e74c" />
 
 # 🎮 Server Manfredonia
 
