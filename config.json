@@ -6,7 +6,7 @@
   },
   "// Configurazione del box novità importanti": "",
   "updateNotice": {
-    "enabled": false,
+    "enabled": true,
     "Disattivare quando scade il timer": "comment",
     "title": "Novità importanti!",
     "subtitle": "",
@@ -21,7 +21,7 @@
   "// Configurazione del countdown": "",
   "countdown": {
     "enabled": true,
-    "date": "July 22, 2025 13:37:30",
+    "date": "July 29, 2025 16:00:30",
     "title": "Aggiornamento in arrivo",
     "expiredMessage": "Il server è ora disponibile!"
   },
