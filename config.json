@@ -6,7 +6,7 @@
   },
   "// Configurazione del box novità importanti": "",
   "updateNotice": {
-    "enabled": true,
+    "enabled": false,
     "Disattivare quando scade il timer": "comment",
     "title": "Novità importanti!",
     "subtitle": "",
