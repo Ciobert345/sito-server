@@ -48,11 +48,11 @@
     {
       "id": "banner1",
       "enabled": true,
-      "title": "🚨SITO AGGIORNATO🚨",
+      "title": "🚨AGGIORNARE FABRIC🚨",
       "subtitle": "",
-      "message": "Il sito è stato rifatto da capo ed è stata aggiunta anche la versione mobile!",
+      "message": "Prima di scaricare l'aggiornamento dovete aggiornare la versione di fabric alla versione 0.16.14",
       "icon": "notification",
-      "style": "banner-blue"
+      "style": "banner-red"
     },
     {
       "id": "banner2",
