@@ -50,7 +50,7 @@
       "enabled": true,
       "title": "🚨AGGIORNARE IL MODPACK🚨",
       "subtitle": "",
-      "message": "Sostituita la mod Alternate current con la mod carpet, eliminatela e sostituitela",
+      "message": "Eliminare la mod Alternate Current",
       "icon": "notification",
       "style": "banner-red"
     },
