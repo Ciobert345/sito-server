@@ -48,9 +48,9 @@
     {
       "id": "banner1",
       "enabled": true,
-      "title": "🚨AGGIORNARE FABRIC🚨",
+      "title": "🚨AGGIORNARE IL MODPACK🚨",
       "subtitle": "",
-      "message": "Prima di scaricare l'aggiornamento dovete aggiornare la versione di fabric alla versione 0.16.14",
+      "message": "Sostituita la mod Alternate current con la mod carpet, eliminatela e sostituitela",
       "icon": "notification",
       "style": "banner-red"
     },
