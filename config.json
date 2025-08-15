@@ -47,7 +47,7 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": true,
+      "enabled": false,
       "title": "🚨AGGIORNARE IL MODPACK🚨",
       "subtitle": "",
       "message": "Eliminare la mod Alternate Current",
