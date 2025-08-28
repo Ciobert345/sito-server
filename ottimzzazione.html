@@ -106,23 +106,29 @@
                                 </p>
                                 <div
                                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0;">
-                                    <a href="https://www.nvidia.com/Download/index.aspx" target="_blank"
-                                        style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; padding: 12px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);">
+                                    <a href="https://www.nvidia.com/Download/index.aspx" target="_blank" style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; padding: 12px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);
+                                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);"
+                                        onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.2)'; this.style.background='rgba(118, 185, 0, 0.15)'; this.style.borderColor='#76b900'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 5px rgba(0,0,0,0.1)'; this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.1)'">
                                         <img src="img/nvidia.png" alt="NVIDIA"
                                             style="width: 20px; height: 20px; margin-right: 10px; object-fit: contain;">
                                         NVIDIA GeForce
                                     </a>
-                                    <a href="https://www.amd.com/en/support" target="_blank"
-                                        style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; padding: 12px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);">
+                                    <a href="https://www.amd.com/en/support" target="_blank" style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; padding: 12px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);
+                                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);"
+                                        onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.2)'; this.style.background='rgba(237, 28, 36, 0.15)'; this.style.borderColor='#ED1C24'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 5px rgba(0,0,0,0.1)'; this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.1)'">
                                         <img src="img/amd.png" alt="AMD"
                                             style="width: 20px; height: 20px; margin-right: 10px; object-fit: contain;">
                                         AMD Radeon
                                     </a>
                                     <a href="https://www.intel.com/content/www/us/en/support/detect.html"
-                                        target="_blank"
-                                        style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; padding: 12px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);">
+                                        target="_blank" style="display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); color: #fff; padding: 12px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.1);
+                                        box-shadow: 0 2px 5px rgba(0,0,0,0.1);"
+                                        onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.2)'; this.style.background='rgba(0, 113, 197, 0.15)'; this.style.borderColor='#0071C5'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 5px rgba(0,0,0,0.1)'; this.style.background='rgba(255,255,255,0.05)'; this.style.borderColor='rgba(255,255,255,0.1)'">
                                         <img src="img/intel.png" alt="Intel"
-                                            style="width: 20pxpx; height: 20px; margin-right: 10px; object-fit: contain;">
+                                            style="width: 20px; height: 20px; margin-right: 10px; object-fit: contain;">
                                         Intel HD/UHD
                                     </a>
                                 </div>
@@ -383,7 +389,6 @@
                                         <div class="gpu-logo">
                                             <img src="img/nvidia.png" alt="NVIDIA" />
                                         </div>
-                                        <div class="gpu-name">NVIDIA</div>
                                         <div class="gpu-subtext">Scarica i driver</div>
                                     </a>
 
@@ -392,7 +397,6 @@
                                         <div class="gpu-logo">
                                             <img src="img/amd.png" alt="AMD" />
                                         </div>
-                                        <div class="gpu-name">AMD</div>
                                         <div class="gpu-subtext">Scarica i driver</div>
                                     </a>
 
@@ -401,7 +405,6 @@
                                         <div class="gpu-logo">
                                             <img src="img/intel.png" alt="Intel" />
                                         </div>
-                                        <div class="gpu-name">Intel</div>
                                         <div class="gpu-subtext">Scarica i driver</div>
                                     </a>
                                 </div>
