@@ -143,14 +143,7 @@ p {
   z-index: 2;
 }
 
-.glass-card:hover {
-  background: var(--glass-highlight);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  border-color: var(--glass-border);
-  transform: translateY(-3px) scale(1.02);
-  transition: background 0.3s, box-shadow 0.3s, border-color 0.3s, transform 0.3s;
-}
+
 
 footer {
   background: rgba(10, 10, 10, 0.9);
@@ -503,12 +496,6 @@ section {
   z-index: 2;
 }
 
-.hero .glass-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
-}
 
 .hero .glass-card::before {
   content: '';
