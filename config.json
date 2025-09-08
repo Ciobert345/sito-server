@@ -47,10 +47,10 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
+      "enabled": true,
       "title": "🚨AGGIORNARE IL MODPACK🚨",
       "subtitle": "",
-      "message": "Eliminare la mod Alternate Current",
+      "message": "L’aggiornamento "Arcane Engineering" ⚙️🔮 è uscito!,
       "icon": "notification",
       "style": "banner-red"
     },
