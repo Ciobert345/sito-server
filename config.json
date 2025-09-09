@@ -28,19 +28,19 @@
   "// Configurazione dei link di download": "",
   "downloadLinks": {
     "curseforge": {
-      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.0.0/ModManfredonia-3.0.0.zip",
+      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.1.0/ModManfredonia-3.1.0.zip",
       "launcher": "https://www.curseforge.com/download/app"
     },
     "modrinth": {
-      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.0.0/ModManfredonia-3.0.0.mrpack",
+      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.1.0/ModManfredonia-3.1.0.mrpack",
       "launcher": "https://modrinth.com/app"
     },
     "sklauncher": {
-      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.0.0/ModManfredonia-3.0.0.zip",
+      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.1.0/ModManfredonia-3.1.0.zip",
       "launcher": "https://skmedix.pl/"
     },
     "update": {
-      "latest": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.0.0/ModManfredonia-3.0.0.zip"
+      "latest": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.1.0/ModManfredonia-3.1.0.zip"
     }
   },
   "// Banner informativi (attivabili singolarmente)": "",
