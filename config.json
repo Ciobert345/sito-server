@@ -21,7 +21,7 @@
   "// Configurazione del countdown": "",
   "countdown": {
     "enabled": true,
-    "date": "Septeber 8, 2025 17:30:00",
+    "date": "Septeber 13, 2025 20:00:00",
     "title": "Aggiornamento in arrivo",
     "expiredMessage": "Il server è ora disponibile!"
   },
@@ -47,7 +47,7 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": true,
+      "enabled": false,
       "title": "🚨AGGIORNARE IL MODPACK🚨",
       "subtitle": "",
       "message": "L’aggiornamento Arcane Engineering ⚙️🔮 è uscito!",
@@ -56,12 +56,12 @@
     },
     {
       "id": "banner2",
-      "enabled": false,
-      "title": "Informazione",
+      "enabled": true,
+      "title": "⚠️AGGIORNARE FABRIC⚠️",
       "subtitle": "",
-      "message": "La sezione di aggiornamento del modpack (il download) è ora disponibile",
+      "message": "Il server e il modpack sono in aggiornamento per risolvere alcuni problemi; è necessario scaricare la nuova versione e aggiornare Fabric alla 0.17.2.",
       "icon": "notification",
-      "style": "banner-green"
+      "style": "banner-red"
     }
   ],
   "// Abilita/disabilita il controllo server iframe": "",
