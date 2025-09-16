@@ -9,6 +9,268 @@
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="shortcut icon" href="img/favicon.png" type="image/png">
+    <script src="js/config-manager.js"></script>
+    <!-- Aggiungi questo stile nella sezione <style> del documento -->
+    <style>
+        /* Stili per il selettore a pillola */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .tab-selector {
+            display: flex;
+            background: var(--glass);
+            border-radius: 50px;
+            padding: 5px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            color: var(--light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Stili per il form di feedback */
+        .feedback-form {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            display: inline-block;
+            padding: 18px 140px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            color: var(--dark);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            min-width: 220px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Stili per la roadmap */
+        .roadmap-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .roadmap-column {
+            flex: 1;
+            min-width: 280px;
+            background: var(--glass);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .column-header {
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .roadmap-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .roadmap-card {
+            background: rgba(20, 20, 25, 0.8);
+            border-radius: 15px;
+            padding: 15px;
+            border-left: 4px solid #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .roadmap-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--light);
+        }
+
+        .card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .badge-type {
+            background: rgba(0, 123, 255, 0.2);
+            color: #90caf9;
+        }
+
+        .badge-priority {
+            background: rgba(220, 53, 69, 0.2);
+            color: #f48fb1;
+        }
+
+        .badge-comments {
+            background: rgba(40, 167, 69, 0.2);
+            color: #a5d6a7;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-comments::before {
+            content: '💬';
+            font-size: 0.9rem;
+        }
+
+        /* Stili per il messaggio di successo */
+        .success-message {
+            display: none;
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            color: #a5d6a7;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Scrollbar personalizzata per la roadmap */
+        .roadmap-cards::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .roadmap-cards::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .roadmap-cards::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .roadmap-cards::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Animazione per il fade in */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive per dispositivi più piccoli */
+        @media (max-width: 992px) {
+            .roadmap-container {
+                flex-direction: column;
+                overflow-x: visible;
+            }
+
+            .roadmap-column {
+                min-width: 100%;
+            }
+
+            .roadmap-cards {
+                max-height: 300px;
+            }
+        }
+    </style>
 </head>
 
 <body class="fade-transition">
@@ -34,83 +296,399 @@
     <main class="container">
         <div class="container">
             <div class="glass-card pop-card" style="margin-top: 100px;">
-                <h2>Richiesta di Accesso</h2>
-                <p>Compila il modulo seguente per richiedere l'accesso al server. Tutti i campi sono obbligatori.</p>
-                <div class="grid-2-col">
-                    <div>
-                        <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST">
-                            <div class="form-group">
-                                <label for="name">Nome e Cognome</label>
-                                <input type="text" name="name" id="name" class="form-control"
-                                    placeholder="Es. Max Emilian Verstappen" required>
+                <!-- Selettore a pillola -->
+                <div class="tab-container">
+                    <div class="tab-selector">
+                        <button class="tab-btn active" data-tab="access">Richiedi Accesso</button>
+                        <button class="tab-btn" data-tab="feedback">Segnala un problema</button>
+                        <button class="tab-btn" data-tab="roadmap">&nbsp;&nbsp;Roadmap&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                    </div>
+                </div>
+
+                <!-- Sezione Richiedi Accesso -->
+                <div id="access" class="tab-content active">
+                    <h2>Richiesta di Accesso</h2>
+                    <p>Compila il modulo seguente per richiedere l'accesso al server. Tutti i campi sono obbligatori.
+                    </p>
+                    <div class="grid-2-col">
+                        <div>
+                            <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST">
+                                <div class="form-group">
+                                    <label for="name">Nome e Cognome</label>
+                                    <input type="text" name="name" id="name" class="form-control"
+                                        placeholder="Es. Max Emilian Verstappen" required>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" name="email" id="email" class="form-control"
+                                        placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="minecraft">Nome Account Minecraft</label>
+                                    <input type="text" name="minecraft" id="minecraft" class="form-control"
+                                        placeholder="Es. FranzHermann" required>
+                                </div>
+                                <br>
+                                <div class="form-group">
+                                    <label for="discord">Nome Utente Discord</label>
+                                    <input type="text" name="discord" id="discord" class="form-control"
+                                        placeholder="Es. FranzHermann#33" required>
+                                </div>
+                                <br>
+                                <input type="hidden" name="_subject"
+                                    value="Nuova richiesta di accesso al server Minecraft">
+                                <input type="hidden" name="_next" value="#request">
+                                <input type="hidden" name="_replyto" value="%email%">
+                                <input type="hidden" name="_autoresponse"
+                                    value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
+                                <br>
+                                <button type="submit" class="btn" style="width: 100%;">Invia Richiesta</button>
+                            </form>
+                            <div id="accessSuccessMessage" class="success-message" style="display: none;">
+                                <p><strong></strong> La tua richiesta è stata inviata con successo! Ti contatteremo
+                                    presto.
+                                </p>
                             </div>
-                            <br>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <input type="email" name="email" id="email" class="form-control"
-                                    placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                        </div>
+                        <div>
+                            <div class="image-container">
+                                <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg"
+                                    alt="Minecraft community" class="screenshot" loading="lazy">
                             </div>
-                            <br>
-                            <div class="form-group">
-                                <label for="minecraft">Nome Account Minecraft</label>
-                                <input type="text" name="minecraft" id="minecraft" class="form-control"
-                                    placeholder="Es. FranzHermann" required>
-                            </div>
-                            <br>
-                            <div class="form-group">
-                                <label for="discord">Nome Utente Discord</label>
-                                <input type="text" name="discord" id="discord" class="form-control"
-                                    placeholder="Es. FranzHermann#33" required>
-                            </div>
-                            <br>
-                            <input type="hidden" name="_subject" value="Nuova richiesta di accesso al server Minecraft">
-                            <input type="hidden" name="_next" value="#request">
-                            <input type="hidden" name="_replyto" value="%email%">
-                            <input type="hidden" name="_autoresponse"
-                                value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
-                            <br>
-                            <button type="submit" class="btn" style="width: 100%;">Invia Richiesta</button>
-                        </form>
-                        <div id="successMessage" class="success-message" style="display: none;">
-                            <p><strong></strong> La tua richiesta è stata inviata con successo! Ti contatteremo presto.
-                            </p>
                         </div>
                     </div>
-                    <div>
-                        <div class="image-container">
-                            <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg"
-                                alt="Minecraft community" class="screenshot" loading="lazy">
+                </div>
+
+                <!-- Sezione Segnala problema -->
+                <div id="feedback" class="tab-content">
+                    <h2 id="feedback-title">Segnala un problema del Modpack</h2>
+                    <p id="feedback-subtitle">Aiutami a migliorare il modpack segnalando eventuali problemi</p>
+
+                    <div id="feedback-form-container" class="feedback-form">
+                        <form id="problem-form" action="" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="_next" value="#feedback">
+                            <input type="hidden" name="_captcha" value="false">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="problem-name">Nome <span class="required">*</span></label>
+                                    <input type="text" id="problem-name" name="name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="problem-email">Email <span class="required">*</span></label>
+                                    <input type="email" id="problem-email" name="email" class="form-control" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="version">Versione del Modpack <span class="required">*</span></label>
+                                <input type="text" id="version" name="version" class="form-control" required>
+                                <div class="form-hint">Esempio: 1.0.0 (Lo vedi nel nome del file che hai scaricato per aggiornare il modpack)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Descrizione del problema <span
+                                        class="required">*</span></label>
+                                <textarea id="description" name="description" class="form-control" rows="5"
+                                    required></textarea>
+                                <div class="form-hint">Includi i passaggi per riprodurre il problema, se possibile</div>
+                            </div>
+
+                            <input type="hidden" name="_subject" value="Nuova segnalazione problema Modpack">
+                            <input type="hidden" name="_language" value="it">
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Invia segnalazione</button>
+                                <div class="form-hint">I campi contrassegnati con <span class="required">*</span> sono
+                                    obbligatori</div>
+                            </div>
+                        </form>
+
+                        <div id="feedbackSuccessMessage" class="success-message" style="display: none;">
+                            <h3>Grazie per la tua segnalazione!</h3>
+                            <p>Il team esaminerà il problema al più presto.</p>
+                            <button id="newReportBtn" class="submit-btn" style="margin-top: 20px; background: rgba(255, 255, 255, 0.8); color: #333;">Invia un'altra segnalazione</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Roadmap -->
+                <div id="roadmap" class="tab-content">
+                    <h2 id="roadmap-title">Roadmap del Modpack</h2>
+                    <p id="roadmap-subtitle">Scopri cosa sto sviluppando e le prossime novità</p>
+
+                    <div id="roadmap-container" class="roadmap-container">
+                        <!-- Le colonne della roadmap verranno generate dinamicamente dal JavaScript -->
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
     <script>
         // Mostra il messaggio di successo dopo l'invio del form (Formspree)
         document.addEventListener('DOMContentLoaded', function () {
-            var form = document.getElementById('accessForm');
-            if (form) {
-                form.addEventListener('submit', function (e) {
+            // Inizializza il ConfigManager
+            const configManager = new ConfigManager();
+            configManager.init().then(() => {
+                // Applica le configurazioni specifiche per questa pagina
+                applyFeedbackRoadmapConfig();
+            });
+
+            // Gestione delle tab
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+
+                    // Rimuovi la classe active da tutti i pulsanti e contenuti
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Aggiungi la classe active al pulsante e contenuto corrente
+                    btn.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Gestione del form di accesso
+            var accessForm = document.getElementById('accessForm');
+            if (accessForm) {
+                accessForm.addEventListener('submit', function (e) {
                     setTimeout(function () {
-                        document.getElementById('successMessage').style.display = 'block';
-                        document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+                        document.getElementById('accessSuccessMessage').style.display = 'block';
+                        document.getElementById('accessSuccessMessage').scrollIntoView({ behavior: 'smooth' });
                         setTimeout(function () {
-                            document.getElementById('successMessage').style.display = 'none';
+                            document.getElementById('accessSuccessMessage').style.display = 'none';
                         }, 8000);
                     }, 1000);
                 });
+            }
+
+            // Gestione del form di segnalazione problemi
+            const problemForm = document.getElementById('problem-form');
+            const feedbackSuccessMessage = document.getElementById('feedbackSuccessMessage');
+            const newReportBtn = document.getElementById('newReportBtn');
+
+            // Gestione del pulsante per nuova segnalazione
+            if (newReportBtn) {
+                newReportBtn.addEventListener('click', function() {
+                    problemForm.style.display = 'block';
+                    feedbackSuccessMessage.style.display = 'none';
+                    problemForm.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Gestione del caricamento immagini
+            const fileInput = document.getElementById('problem-images');
+            const filePreview = document.getElementById('file-preview');
+            const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function () {
+                    filePreview.innerHTML = ''; // Pulisci l'anteprima
+
+                    if (this.files.length > 0) {
+                        for (let i = 0; i < this.files.length; i++) {
+                            const file = this.files[i];
+
+                            // Verifica il tipo di file
+                            if (!file.type.match('image.*')) {
+                                alert('Per favore, carica solo immagini (JPG, PNG, GIF).');
+                                this.value = '';
+                                return;
+                            }
+
+                            // Verifica la dimensione del file
+                            if (file.size > maxFileSize) {
+                                alert(`Il file ${file.name} è troppo grande. La dimensione massima è 10MB.`);
+                                this.value = '';
+                                return;
+                            }
+
+                            // Crea l'anteprima
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const previewItem = document.createElement('div');
+                                previewItem.className = 'preview-item';
+                                previewItem.innerHTML = `
+                                    <img src="${e.target.result}" alt="Anteprima">
+                                    <div class="remove-file" data-index="${i}">×</div>
+                                `;
+                                filePreview.appendChild(previewItem);
+
+                                // Aggiungi l'evento per rimuovere il file
+                                previewItem.querySelector('.remove-file').addEventListener('click', function () {
+                                    previewItem.remove();
+                                    // Nota: non possiamo rimuovere direttamente dal FileList, quindi reimposteremo l'input
+                                    // se tutti i file sono stati rimossi
+                                    if (filePreview.children.length === 0) {
+                                        fileInput.value = '';
+                                    }
+                                });
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }
+                });
+            }
+
+            // Modifica la gestione dell'invio del form per includere i file
+            if (problemForm) {
+                problemForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Ottieni l'URL di Formspree dalla configurazione
+                    const formspreeUrl = configManager.config.feedbackRoadmap.sections.feedback.formspreeUrl;
+                    problemForm.action = formspreeUrl;
+
+                    // Crea un FormData object per inviare il form con i file
+                    const formData = new FormData(problemForm);
+
+                    // Invia il form tramite fetch API
+                    fetch(formspreeUrl, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                            // Rimuovi qualsiasi header Content-Type qui
+                            // Il browser lo imposterà automaticamente con il boundary corretto
+                        }
+                    })
+                        .then(async response => {
+                            const data = await response.json();
+                            if (response.ok) {
+                                // Mostra il messaggio di successo
+                                problemForm.style.display = 'none';
+                                feedbackSuccessMessage.style.display = 'block';
+                                // Resetta il form
+                                problemForm.reset();
+                                // Pulisci l'anteprima dei file se esiste
+                                if (filePreview) {
+                                    filePreview.innerHTML = '';
+                                }
+                            } else {
+                                // Mostra l'errore di validazione specifico
+                                let errorMessage = 'Si è verificato un errore durante l\'invio del form.';
+                                if (data.errors && data.errors.length > 0) {
+                                    errorMessage = data.errors.map(err => err.message).join(' ');
+                                } else if (data.message) {
+                                    errorMessage = data.message;
+                                }
+                                throw new Error(errorMessage);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Errore:', error);
+                            alert('Si è verificato un errore durante l\'invio del form: ' + error.message);
+                        });
+                });
+            }
+
+            // Funzione per applicare le configurazioni dalla config.json
+            function applyFeedbackRoadmapConfig() {
+                const config = configManager.config;
+
+                // Verifica se la sezione è abilitata
+                if (!config.feedbackRoadmap || !config.feedbackRoadmap.enabled) {
+                    // Nascondi i pulsanti delle tab per feedback e roadmap
+                    document.querySelector('[data-tab="feedback"]').style.display = 'none';
+                    document.querySelector('[data-tab="roadmap"]').style.display = 'none';
+                    return;
+                }
+
+                const feedbackConfig = config.feedbackRoadmap.sections.feedback;
+                const roadmapConfig = config.feedbackRoadmap.sections.roadmap;
+
+                // Configura la sezione feedback
+                if (feedbackConfig && feedbackConfig.enabled) {
+                    document.getElementById('feedback-title').textContent = feedbackConfig.title;
+                    document.getElementById('feedback-subtitle').textContent = feedbackConfig.subtitle;
+                    document.getElementById('feedbackSuccessMessage').querySelector('p').textContent = feedbackConfig.successMessage;
+                    document.getElementById('problem-form').action = feedbackConfig.formspreeUrl;
+                } else {
+                    // Nascondi il pulsante della tab per feedback
+                    document.querySelector('[data-tab="feedback"]').style.display = 'none';
+                }
+
+                // Configura la sezione roadmap
+                if (roadmapConfig && roadmapConfig.enabled) {
+                    document.getElementById('roadmap-title').textContent = roadmapConfig.title;
+                    document.getElementById('roadmap-subtitle').textContent = roadmapConfig.subtitle;
+
+                    // Genera le colonne della roadmap
+                    const roadmapContainer = document.getElementById('roadmap-container');
+                    roadmapContainer.innerHTML = '';
+
+                    roadmapConfig.columns.forEach(column => {
+                        const columnEl = document.createElement('div');
+                        columnEl.className = 'roadmap-column';
+                        columnEl.id = `column-${column.id}`;
+
+                        const headerEl = document.createElement('div');
+                        headerEl.className = 'column-header';
+                        headerEl.textContent = column.title;
+                        headerEl.style.backgroundColor = column.color;
+
+                        const cardsEl = document.createElement('div');
+                        cardsEl.className = 'roadmap-cards';
+
+                        // Filtra gli elementi per questa colonna
+                        const columnItems = roadmapConfig.items.filter(item => item.column === column.id);
+
+                        // Crea le card per questa colonna
+                        columnItems.forEach(item => {
+                            const cardEl = document.createElement('div');
+                            cardEl.className = 'roadmap-card';
+                            cardEl.style.borderLeftColor = column.color;
+
+                            const titleEl = document.createElement('div');
+                            titleEl.className = 'card-title';
+                            titleEl.textContent = item.title;
+
+                            const badgesEl = document.createElement('div');
+                            badgesEl.className = 'card-badges';
+
+                            // Badge per il tipo
+                            const typeBadge = document.createElement('span');
+                            typeBadge.className = 'badge badge-type';
+                            typeBadge.textContent = item.type;
+
+                            // Badge per la priorità
+                            const priorityBadge = document.createElement('span');
+                            priorityBadge.className = 'badge badge-priority';
+                            priorityBadge.textContent = item.priority;
+
+                            badgesEl.appendChild(typeBadge);
+                            badgesEl.appendChild(priorityBadge);
+
+                            cardEl.appendChild(titleEl);
+                            cardEl.appendChild(badgesEl);
+
+                            cardsEl.appendChild(cardEl);
+                        });
+
+                        columnEl.appendChild(headerEl);
+                        columnEl.appendChild(cardsEl);
+
+                        roadmapContainer.appendChild(columnEl);
+                    });
+                } else {
+                    // Nascondi il pulsante della tab per roadmap
+                    document.querySelector('[data-tab="roadmap"]').style.display = 'none';
+                }
             }
         });
     </script>
     <script src="js/transition.js"></script>
     <!-- Footer -->
     <footer>
-
         <div class="credits">© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato di
             Mojang AB.</div>
     </footer>
-
 </body>
 
 </html>
