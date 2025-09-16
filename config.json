@@ -65,5 +65,90 @@
     }
   ],
   "// Abilita/disabilita il controllo server iframe": "",
-  "checkIframeServer": false
+  "checkIframeServer": false,
+  
+  "// Configurazione della pagina Feedback e Roadmap": "",
+  "feedbackRoadmap": {
+    "enabled": true,
+    "sections": {
+      "feedback": {
+        "enabled": true,
+        "title": "Segnala un problema del Modpack",
+        "subtitle": "Aiutaci a migliorare il modpack segnalando eventuali problemi",
+        "formspreeUrl": "https://formspree.io/f/xblavdda",
+        "successMessage": "Grazie per la tua segnalazione! Il team esaminerà il problema al più presto."
+      },
+      "roadmap": {
+        "enabled": true,
+        "title": "Roadmap del Modpack",
+        "subtitle": "Scopri cosa stiamo sviluppando e le prossime novità",
+        "columns": [
+          {
+            "id": "backlog",
+            "title": "Backlog",
+            "color": "#6c757d"
+          },
+          {
+            "id": "nextup",
+            "title": "Next Up",
+            "color": "#007bff"
+          },
+          {
+            "id": "inprogress",
+            "title": "In Progress",
+            "color": "#ffc107"
+          },
+          {
+            "id": "done",
+            "title": "Done",
+            "color": "#28a745"
+          }
+        ],
+        "items": [
+          {
+            "id": "1",
+            "title": "Ottimizzazione performance",
+            "type": "Miglioramento",
+            "priority": "Alta",
+            "column": "inprogress"
+          },
+          {
+            "id": "3",
+            "title": "Fix crash con Etherology",
+            "type": "Bugfix",
+            "priority": "Alta",
+            "column": "done"
+          },
+          {
+            "id": "4",
+            "title": "Nuove quest",
+            "type": "Feature",
+            "priority": "Bassa",
+            "column": "backlog"
+          },
+          {
+            "id": "6",
+            "title": "Miglioramento UI",
+            "type": "Miglioramento",
+            "priority": "Media",
+            "column": "backlog"
+          },
+          {
+            "id": "8",
+            "title": "Correzione bug Incudine di Thallium",
+            "type": "Bugfix",
+            "priority": "Alta",
+            "column": "nextup"
+          },
+          {
+            "id": "8",
+            "title": "Aggiunta di altre quest",
+            "type": "Bugfix",
+            "priority": "Alta",
+            "column": "nextup"
+          }
+        ]
+      }
+    }
+  }
 }
