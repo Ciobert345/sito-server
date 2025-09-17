@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Server Minecraft moddato con tecnologia, magia e avventura. Unisciti alla nostra community!">
     <meta name="theme-color" content="#0a0a0a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Sito Server - Mobile</title>
     <style>
@@ -23,6 +23,8 @@
     <link rel="preconnect" href="https://dent-comte-e60.notion.site" crossorigin>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="img/favicon.png">
+    <script src="js/config-manager.js"></script>
+    <script src="js/mobile-scripts.min.js"></script>
     <noscript>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
@@ -59,7 +61,7 @@
             </a></li>
             <li><a href="#richiedi-accesso">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
-                <span>Accesso</span>
+                <span>uilità</span>
             </a></li>
             <li><a href="#aggiornamenti">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
@@ -164,42 +166,98 @@
                     <button class="carousel-next">&#10095;</button>
                     <div class="carousel-indicators"></div>
                 </div>
-                <a href="https://server-manfredonia.ddns.net:25560/" target="_blank" class="btn-learn-more" style="margin-top: 25px; display: block; text-align: center;">Vai alla dashboard</a>
+                <a href="https://server-manfredonia.ddns.net:25560/" target="_blank" class="btn-learn-more dashboard-link">Vai alla dashboard</a>
             </div>
         </section>
 
         <section id="richiedi-accesso">
             <div class="section-content premium-card">
-                <h2>Richiedi accesso</h2>
-                <p>Compila il modulo seguente per richiedere l'accesso al server.</p>
-                <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg" alt="Minecraft community" class="section-image rounded-image" loading="lazy" style="margin-top: 15px;" width="800" height="450" fetchpriority="low">
+                <h2>Utilità</h2>
                 
-                <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST" style="margin-top: 20px;">
-                    <div class="form-group">
-                        <label for="name">Nome e Cognome</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="Es. Max Emilian Verstappen" required autocomplete="name">
+                <div class="tab-container">
+                    <div class="pill-tab-selector">
+                        <button class="pill-tab-btn active" data-tab="tab-access">Accesso</button>
+                        <button class="pill-tab-btn" data-tab="tab-feedback">Segnala</button>
+                        <button class="pill-tab-btn" data-tab="tab-roadmap">Roadmap</button>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" name="email" id="email" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required autocomplete="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Inserisci un indirizzo email valido">
+                    
+                    <div id="tab-access" class="tab-content active">
+                        <p>Compila il modulo seguente per richiedere l'accesso al server.</p>
+                        <img src="https://media.forgecdn.net/attachments/1108/426/swamp-jpg.jpg" alt="Minecraft community" class="section-image rounded-image section-image-margin-top" loading="lazy" width="800" height="450" fetchpriority="low">
+                        
+                        <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST" class="margin-top-20">
+                            <div class="form-group">
+                                <label for="name">Nome e Cognome</label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="Es. Max Emilian Verstappen" required autocomplete="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" name="email" id="email" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required autocomplete="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Inserisci un indirizzo email valido">
+                            </div>
+                            <div class="form-group">
+                                <label for="minecraft">Nome Account Minecraft</label>
+                                <input type="text" name="minecraft" id="minecraft" class="form-control" placeholder="Es. FranzHermann" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="discord">Nome Utente Discord</label>
+                                <input type="text" name="discord" id="discord" class="form-control" placeholder="Es. FranzHermann#33" required>
+                            </div>
+                            <input type="hidden" name="_subject" value="Nuova richiesta di accesso al server Minecraft">
+                            <input type="hidden" name="_next" value="#richiedi-accesso">
+                            <input type="hidden" name="_replyto" value="%email%">
+                            <input type="hidden" name="_autoresponse" value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
+                            <button type="submit" class="btn-learn-more btn-full-width" style="margin-top: 10px;">Invia richiesta</button>
+                        </form>
+                        <div id="accessSuccessMessage" class="success-message" style="display: none;">
+                            <p>Grazie per la tua richiesta di accesso! Abbiamo ricevuto i tuoi dati e ti contatteremo presto.</p>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="minecraft">Nome Account Minecraft</label>
-                        <input type="text" name="minecraft" id="minecraft" class="form-control" placeholder="Es. FranzHermann" required>
+                    
+                    <div id="tab-feedback" class="tab-content">
+                        <p>Hai riscontrato un problema con il server? Segnalacelo compilando il modulo qui sotto.</p>
+                        
+                        <form id="problem-form" action="https://formspree.io/f/xblavdda" method="POST" class="margin-top-20">
+                            <div class="form-group">
+                                <label for="problem-name">Nome e Cognome</label>
+                                <input type="text" name="name" id="problem-name" class="form-control" placeholder="Es. Max Emilian Verstappen" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="problem-email">Email</label>
+                                <input type="email" name="email" id="problem-email" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="modpack-version">Versione Modpack</label>
+                                <input type="text" name="modpack-version" id="modpack-version" class="form-control" placeholder="Es. 1.2.3" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="problem-description">Descrizione del problema</label>
+                                <textarea name="description" id="problem-description" class="form-control" rows="5" placeholder="Descrivi dettagliatamente il problema riscontrato..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="swisstransfer">Link SwissTransfer (opzionale)</label>
+                                <div class="swisstransfer-container">
+                                    <input type="url" name="swisstransfer" id="swisstransfer" class="form-control swisstransfer-input" placeholder="Es. https://www.swisstransfer.com/d-XXXXX">
+                                    <a href="https://www.swisstransfer.com/it-it" target="_blank" class="btn-swisstransfer">Vai</a>
+                                </div>
+                            </div>
+                            <input type="hidden" name="_subject" value="Nuova segnalazione problema server Minecraft">
+                            <input type="hidden" name="_next" value="#richiedi-accesso">
+                            
+                            <button type="submit" class="btn-learn-more btn-full-width" style="margin-top: 10px;">Invia segnalazione</button>
+                        </form>
+                        
+                        <div id="feedbackSuccessMessage" class="success-message" style="display: none;">
+                            <p>Grazie per la tua segnalazione! Abbiamo ricevuto i dettagli del problema e lo analizzeremo al più presto.</p>
+                            <button id="newReportBtn" class="btn-learn-more new-report-btn">Invia un'altra segnalazione</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="discord">Nome Utente Discord</label>
-                        <input type="text" name="discord" id="discord" class="form-control" placeholder="Es. FranzHermann#33" required>
+                    
+                    <div id="tab-roadmap" class="tab-content">
+                        <p>Ecco la roadmap dei prossimi aggiornamenti e funzionalità previste per il server.</p>
+                        <div id="roadmap-container" class="roadmap-container improved-roadmap">
+                            <!-- Contenuto generato dinamicamente da JavaScript -->
+                        </div>
                     </div>
-                    <input type="hidden" name="_subject" value="Nuova richiesta di accesso al server Minecraft">
-                    <input type="hidden" name="_next" value="#richiedi-accesso">
-                    <input type="hidden" name="_replyto" value="%email%">
-                    <input type="hidden" name="_autoresponse" value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
-                    <button type="submit" class="btn-learn-more" style="width: 100%;">Invia Richiesta</button>
-                </form>
-
-                <div id="successMessage" class="success-message" style="display: none;">
-                    <p><strong>Richiesta inviata con successo!</strong><br>Ti contatteremo presto via email o Discord.</p>
                 </div>
             </div>
         </section>
@@ -220,127 +278,390 @@
         <p>© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato di Mojang AB.</p>
     </footer>
 
-    <div id="image-zoom-overlay" style="display:none;">
+    <div id="image-zoom-overlay">
         <span class="zoom-close">&times;</span>
-        <button class="zoom-reset" style="position:absolute;bottom:30px;right:30px;z-index:10002;display:none;padding:8px 16px;font-size:1.1em;border-radius:8px;background:rgba(0,0,0,0.7);color:#fff;border:none;">Reset</button>
-        <img src="" alt="Zoom" class="zoomed-img">
+        <img class="zoomed-img" src="" alt="Immagine ingrandita">
     </div>
 
-    <script src="js/config-manager.js" defer></script>
-    <script src="js/mobile-scripts.min.js" defer></script>
     <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js').catch(error => {
-        console.error('Service Worker registration failed:', error);
-      });
-    }
-    </script>
-    <script>
-    // Implementazione di Intersection Observer per lazy loading personalizzato
-    document.addEventListener('DOMContentLoaded', function() {
-      const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-      
-      if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver(function(entries, observer) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              const img = entry.target;
-              img.src = img.dataset.src || img.src;
-              imageObserver.unobserve(img);
-            }
-          });
-        }, { rootMargin: '100px' });
-        
-        lazyImages.forEach(function(img) {
-          imageObserver.observe(img);
-        });
-      }
-    });
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var btn = document.getElementById('show-news-btn');
-      var container = document.getElementById('news-iframe-container');
-      var iframe = document.getElementById('news-iframe');
-      if(btn && container && iframe) {
-        btn.addEventListener('click', function() {
-          iframe.src = iframe.getAttribute('data-src');
-          container.style.display = 'block';
-          btn.style.display = 'none';
-        });
-      }
-    });
-    </script>
-</body>
-</html>
-
-<script>
-// Ottimizzazione delle animazioni
-document.addEventListener('DOMContentLoaded', function() {
-  // Rileva se il dispositivo preferisce animazioni ridotte
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  
-  if (prefersReducedMotion) {
-    // Disabilita le animazioni ken-burns
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes ken-burns {
-        0%, 100% { transform: scale(1); }
-      }
-      .hero-section .background-image-container {
-        animation: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-  
-  // Usa requestAnimationFrame per animazioni fluide
-  const animateElements = document.querySelectorAll('.hero-card, .countdown-card, .section-content');
-  
-  if ('IntersectionObserver' in window && !prefersReducedMotion) {
-    const animationObserver = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          requestAnimationFrame(function() {
-            entry.target.classList.add('is-visible');
-          });
-          animationObserver.unobserve(entry.target);
+        // Registrazione del service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch(err => {
+                    console.log('Service Worker registration failed: ', err);
+                });
+            });
         }
-      });
-    }, { threshold: 0.1 });
-    
-    animateElements.forEach(function(el) {
-      animationObserver.observe(el);
-    });
-  } else {
-    // Fallback per browser che non supportano IntersectionObserver
-    animateElements.forEach(function(el) {
-      el.classList.add('is-visible');
-    });
-  }
-});
-</script>
-</body>
-</html>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('accessForm');
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      const emailInput = document.getElementById('email');
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      
-      if (!emailPattern.test(emailInput.value)) {
-        e.preventDefault();
-        emailInput.setCustomValidity('Inserisci un indirizzo email valido');
-        emailInput.reportValidity();
-      } else {
-        emailInput.setCustomValidity('');
-      }
-    });
-  }
-});
-</script>
+        // Implementazione lazy loading
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestione menu mobile
+            const hamburgerMenu = document.querySelector('.hamburger-menu');
+            const mobileNav = document.querySelector('.mobile-nav');
+            
+            hamburgerMenu.addEventListener('click', function() {
+                this.classList.toggle('active');
+                mobileNav.classList.toggle('active');
+            });
+            
+            // Chiusura menu al click su un link
+            document.querySelectorAll('.mobile-nav a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('active');
+                    mobileNav.classList.remove('active');
+                });
+            });
+
+            // Gestione tab
+            const tabBtns = document.querySelectorAll('.pill-tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+                    
+                    // Rimuovi la classe active da tutti i pulsanti e contenuti
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // Aggiungi la classe active al pulsante e contenuto corrente
+                    btn.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Gestione form di accesso
+            const accessForm = document.getElementById('accessForm');
+            const accessSuccessMessage = document.getElementById('accessSuccessMessage');
+            
+            if (accessForm) {
+                accessForm.addEventListener('submit', function(e) {
+                    const emailInput = document.getElementById('email');
+                    const emailPattern = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+                    
+                    if (!emailPattern.test(emailInput.value)) {
+                        e.preventDefault();
+                        alert('Per favore, inserisci un indirizzo email valido.');
+                        return false;
+                    }
+                    
+                    // Nascondi il form e mostra il messaggio di successo
+                    setTimeout(() => {
+                        accessForm.style.display = 'none';
+                        accessSuccessMessage.style.display = 'block';
+                    }, 1000);
+                });
+            }
+
+            // Gestione form di segnalazione problemi
+            const problemForm = document.getElementById('problem-form');
+            const feedbackSuccessMessage = document.getElementById('feedbackSuccessMessage');
+            const newReportBtn = document.getElementById('newReportBtn');
+            
+            if (problemForm) {
+                problemForm.addEventListener('submit', function(e) {
+                    // Nascondi il form e mostra il messaggio di successo
+                    setTimeout(() => {
+                        problemForm.style.display = 'none';
+                        feedbackSuccessMessage.style.display = 'block';
+                    }, 1000);
+                });
+            }
+            
+            if (newReportBtn) {
+                newReportBtn.addEventListener('click', function() {
+                    problemForm.reset();
+                    feedbackSuccessMessage.style.display = 'none';
+                    problemForm.style.display = 'block';
+                });
+            }
+
+            // Generazione dinamica della roadmap
+            function generateRoadmap() {
+                const roadmapContainer = document.getElementById('roadmap-container');
+                roadmapContainer.innerHTML = '';
+                
+                // Definizione dei gruppi e degli elementi della roadmap
+                const roadmapGroups = [
+                    {
+                        title: "2023",
+                        items: [
+                            {
+                                title: 'Ottimizzazione',
+                                description: 'Performance e riduzione lag',
+                                status: 'completed',
+                                date: '15/03/2023'
+                            },
+                            {
+                                title: 'Nuovo Modpack',
+                                description: 'Nuovi mod e contenuti',
+                                status: 'in-progress',
+                                date: '04/2023'
+                            },
+                            {
+                                title: 'Economia',
+                                description: 'Sistema negozi e valuta',
+                                status: 'planned',
+                                date: '05/2023'
+                            }
+                        ]
+                    },
+                    {
+                        title: "2024",
+                        items: [
+                            {
+                                title: 'Nuovi Biomi',
+                                description: 'Espansione mappa',
+                                status: 'planned',
+                                date: '01/2024'
+                            },
+                            {
+                                title: 'Eventi Stagionali',
+                                description: 'Eventi speciali periodici',
+                                status: 'planned',
+                                date: '03/2024'
+                            }
+                        ]
+                    }
+                ];
+                
+                // Creazione dei gruppi e degli elementi
+                roadmapGroups.forEach(group => {
+                    // Creazione del gruppo
+                    const groupElement = document.createElement('div');
+                    groupElement.className = 'roadmap-group';
+                    
+                    // Intestazione del gruppo
+                    const groupHeader = document.createElement('div');
+                    groupHeader.className = 'roadmap-group-header';
+                    groupHeader.textContent = group.title;
+                    groupElement.appendChild(groupHeader);
+                    
+                    // Contenitore degli elementi del gruppo
+                    const itemsContainer = document.createElement('div');
+                    itemsContainer.className = 'roadmap-items-container';
+                    
+                    // Creazione degli elementi del gruppo
+                    group.items.forEach(item => {
+                        const itemElement = document.createElement('div');
+                        itemElement.className = `roadmap-item ${item.status}`;
+                        
+                        // Indicatore di stato
+                        const statusDot = document.createElement('div');
+                        statusDot.className = 'status-dot';
+                        
+                        // Contenuto dell'elemento
+                        const itemContent = document.createElement('div');
+                        itemContent.className = 'roadmap-item-content';
+                        
+                        // Titolo e data
+                        const titleRow = document.createElement('div');
+                        titleRow.className = 'roadmap-title-row';
+                        
+                        const title = document.createElement('div');
+                        title.className = 'roadmap-title';
+                        title.textContent = item.title;
+                        
+                        const date = document.createElement('div');
+                        date.className = 'roadmap-date';
+                        date.textContent = item.date;
+                        
+                        titleRow.appendChild(title);
+                        titleRow.appendChild(date);
+                        
+                        // Descrizione
+                        const description = document.createElement('div');
+                        description.className = 'roadmap-description';
+                        description.textContent = item.description;
+                        
+                        // Assemblaggio dell'elemento
+                        itemContent.appendChild(titleRow);
+                        itemContent.appendChild(description);
+                        
+                        itemElement.appendChild(statusDot);
+                        itemElement.appendChild(itemContent);
+                        
+                        itemsContainer.appendChild(itemElement);
+                    });
+                    
+                    groupElement.appendChild(itemsContainer);
+                    roadmapContainer.appendChild(groupElement);
+                });
+            }
+            
+            // Chiamata alla funzione per generare la roadmap
+            generateRoadmap();
+            const roadmapContainer = document.getElementById('roadmap-container');
+            
+            if (roadmapContainer) {
+                // Inizializza il ConfigManager se non è già stato fatto
+                if (!window.configManager) {
+                    window.configManager = new ConfigManager();
+                    window.configManager.init().then(() => {
+                        generateRoadmap();
+                    });
+                } else {
+                    generateRoadmap();
+                }
+                
+                function generateRoadmap() {
+                    // Svuota il container prima di aggiungere nuovi elementi
+                    roadmapContainer.innerHTML = '';
+                    
+                    // Mappa gli stati delle colonne ai nomi di classe CSS
+                    const columnToStatus = {
+                        'backlog': 'planned',
+                        'nextup': 'planned',
+                        'inprogress': 'in-progress',
+                        'done': 'completed'
+                    };
+                    
+                    // Mappa gli stati delle colonne ai testi da visualizzare
+                    const statusText = {
+                        'planned': 'Pianificato',
+                        'in-progress': 'In Corso',
+                        'completed': 'Completato'
+                    };
+                    
+                    // Verifica se la configurazione della roadmap esiste
+                    if (window.configManager.config && 
+                        window.configManager.config.feedbackRoadmap && 
+                        window.configManager.config.feedbackRoadmap.sections && 
+                        window.configManager.config.feedbackRoadmap.sections.roadmap && 
+                        window.configManager.config.feedbackRoadmap.sections.roadmap.items) {
+                        
+                        const roadmapItems = window.configManager.config.feedbackRoadmap.sections.roadmap.items;
+                        
+                        roadmapItems.forEach(item => {
+                            const status = columnToStatus[item.column] || 'planned';
+                            
+                            const roadmapItem = document.createElement('div');
+                            roadmapItem.className = `roadmap-item ${status}`;
+                            roadmapItem.innerHTML = `
+                                <span class="status">${statusText[status]}</span>
+                                <h3>${item.title}</h3>
+                                <p>Tipo: ${item.type} - Priorità: ${item.priority}</p>
+                            `;
+                            
+                            roadmapContainer.appendChild(roadmapItem);
+                        });
+                    } else {
+                        // Fallback se la configurazione non è disponibile
+                        roadmapContainer.innerHTML = '<p>Informazioni sulla roadmap non disponibili al momento.</p>';
+                    }
+                }
+            }
+
+            // Gestione caricamento iframe news
+            const showNewsBtn = document.getElementById('show-news-btn');
+            const newsIframeContainer = document.getElementById('news-iframe-container');
+            const newsIframe = document.getElementById('news-iframe');
+            
+            if (showNewsBtn && newsIframeContainer && newsIframe) {
+                showNewsBtn.addEventListener('click', function() {
+                    if (newsIframeContainer.style.display === 'none') {
+                        newsIframeContainer.style.display = 'block';
+                        newsIframe.src = newsIframe.getAttribute('data-src');
+                        showNewsBtn.textContent = 'Nascondi aggiornamenti';
+                    } else {
+                        newsIframeContainer.style.display = 'none';
+                        showNewsBtn.textContent = 'Mostra aggiornamenti';
+                    }
+                });
+            }
+
+            // Gestione carousel
+            const carouselSlides = document.querySelector('.carousel-slides');
+            const carouselPrev = document.querySelector('.carousel-prev');
+            const carouselNext = document.querySelector('.carousel-next');
+            const carouselIndicators = document.querySelector('.carousel-indicators');
+            
+            if (carouselSlides && carouselPrev && carouselNext && carouselIndicators) {
+                const slides = carouselSlides.querySelectorAll('picture');
+                let currentSlide = 0;
+                
+                // Crea indicatori
+                slides.forEach((_, index) => {
+                    const indicator = document.createElement('span');
+                    indicator.addEventListener('click', () => goToSlide(index));
+                    carouselIndicators.appendChild(indicator);
+                });
+                
+                const indicators = carouselIndicators.querySelectorAll('span');
+                
+                // Funzione per andare a una slide specifica
+                function goToSlide(n) {
+                    currentSlide = n;
+                    carouselSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    
+                    // Aggiorna indicatori
+                    indicators.forEach((indicator, index) => {
+                        indicator.classList.toggle('active', index === currentSlide);
+                    });
+                }
+                
+                // Inizializza prima slide e indicatori
+                goToSlide(0);
+                
+                // Event listeners per i pulsanti prev/next
+                carouselPrev.addEventListener('click', () => {
+                    goToSlide((currentSlide - 1 + slides.length) % slides.length);
+                });
+                
+                carouselNext.addEventListener('click', () => {
+                    goToSlide((currentSlide + 1) % slides.length);
+                });
+                
+                // Zoom immagini
+                const zoomOverlay = document.getElementById('image-zoom-overlay');
+                const zoomedImg = document.querySelector('.zoomed-img');
+                const zoomClose = document.querySelector('.zoom-close');
+                
+                slides.forEach(slide => {
+                    const img = slide.querySelector('img');
+                    img.addEventListener('click', () => {
+                        zoomedImg.src = img.src;
+                        zoomOverlay.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                    });
+                });
+                
+                zoomClose.addEventListener('click', () => {
+                    zoomOverlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+                
+                zoomOverlay.addEventListener('click', (e) => {
+                    if (e.target === zoomOverlay) {
+                        zoomOverlay.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        });
+
+        // Ottimizzazione animazioni
+        document.addEventListener('DOMContentLoaded', function() {
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.section-content, .hero-card, .countdown-card, #countdown-complete-card').forEach(el => {
+                    observer.observe(el);
+                });
+            } else {
+                // Fallback per browser che non supportano IntersectionObserver
+                document.querySelectorAll('.section-content, .hero-card, .countdown-card, #countdown-complete-card').forEach(el => {
+                    el.classList.add('is-visible');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
