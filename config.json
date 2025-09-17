@@ -113,6 +113,20 @@
             "column": "inprogress"
           },
           {
+            "id": "10",
+            "title": "Crash quando si esce da un server",
+            "type": "Bugfix",
+            "priority": "Alta",
+            "column": "inprogress"
+          },
+          {
+            "id": "11",
+            "title": "Crash quando un goblin trader finisce di mangiare",
+            "type": "Bugfix",
+            "priority": "Alta",
+            "column": "inprogress"
+          },
+          {
             "id": "3",
             "title": "Fix crash con Etherology",
             "type": "Bugfix",
@@ -141,8 +155,15 @@
             "column": "nextup"
           },
           {
-            "id": "8",
+            "id": "9",
             "title": "Aggiunta di altre quest",
+            "type": "Miglioramento",
+            "priority": "Media",
+            "column": "nextup"
+          }
+          {
+            "id": "12",
+            "title": "Crash quando si de-zoomma la mappa",
             "type": "Bugfix",
             "priority": "Alta",
             "column": "nextup"
