@@ -158,7 +158,7 @@
             "id": "9",
             "title": "Aggiunta di altre quest",
             "type": "Miglioramento",
-            "priority": "Media",
+            "priority": "Bassa",
             "column": "nextup"
           }
           {
