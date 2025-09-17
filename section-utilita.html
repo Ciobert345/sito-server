@@ -904,7 +904,16 @@
                         }
                     })
                         .then(async response => {
-                            const data = await response.json();
+                            // Verifica il content-type della risposta
+                            const contentType = response.headers.get('content-type');
+                            let data;
+                            
+                            if (contentType && contentType.includes('application/json')) {
+                                data = await response.json();
+                            } else {
+                                // Se non è JSON, tratta come successo ma senza dati JSON
+                                data = { ok: response.ok };
+                            }
                             if (response.ok) {
                                 // Mostra il messaggio di successo
                                 problemForm.style.display = 'none';
