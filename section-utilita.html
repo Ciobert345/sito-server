@@ -60,34 +60,244 @@
         .feedback-form {
             max-width: 800px;
             margin: 0 auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
             margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+            outline: none;
         }
 
         .form-actions {
-            margin-top: 20px;
+            margin-top: 30px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            min-width: 200px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(135deg, #607D8B, #455A64);
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(96, 125, 139, 0.3);
+        }
+        
+        .secondary-btn:hover {
+            box-shadow: 0 6px 20px rgba(96, 125, 139, 0.4);
+        }
+        
+        .secondary-btn:active {
+            box-shadow: 0 2px 10px rgba(96, 125, 139, 0.3);
+        }
+        
+        .success-message {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(8px);
+        }
+        
+        .success-message h3 {
+            color: #4CAF50;
+            margin-bottom: 15px;
         }
 
         .form-hint {
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.5);
-            margin-top: 5px;
+            margin-top: 8px;
             font-style: italic;
         }
 
         .required {
             color: #ff6b6b;
+            margin-left: 4px;
+        }
+
+        .optional {
+            color: #90caf9;
+            font-size: 0.85rem;
+            font-weight: normal;
+            margin-left: 4px;
         }
 
         textarea.form-control {
             min-height: 150px;
             resize: vertical;
+            line-height: 1.5;
+        }
+
+        /* Stili per il caricamento file */
+        .file-input {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-input:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .file-input::-webkit-file-upload-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 8px 16px;
+            margin-right: 15px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .file-input::-webkit-file-upload-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            min-height: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .preview-item {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .file-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 0.75rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            backdrop-filter: blur(4px);
+        }
+
+        .remove-file {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .remove-file:hover {
+            background: rgba(255, 0, 0, 1);
+            transform: scale(1.1);
         }
 
         .submit-btn {
@@ -298,10 +508,10 @@
             <div class="glass-card pop-card" style="margin-top: 100px;">
                 <!-- Selettore a pillola -->
                 <div class="tab-container">
-                    <div class="tab-selector">
-                        <button class="tab-btn active" data-tab="access">Richiedi Accesso</button>
-                        <button class="tab-btn" data-tab="feedback">Segnala un problema</button>
-                        <button class="tab-btn" data-tab="roadmap">&nbsp;&nbsp;Roadmap&nbsp;&nbsp;&nbsp;&nbsp;</button>
+                    <div class="tab-selector" style="background: rgba(0, 0, 0, 0.2); border-radius: 50px; padding: 5px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); margin-bottom: 30px;">
+                        <button class="tab-btn active" data-tab="access" style="border-radius: 50px; padding: 12px 20px; transition: all 0.3s ease;">Richiedi Accesso</button>
+                        <button class="tab-btn" data-tab="feedback" style="border-radius: 50px; padding: 12px 20px; transition: all 0.3s ease;">Segnala un problema</button>
+                        <button class="tab-btn" data-tab="roadmap" style="border-radius: 50px; padding: 12px 20px; transition: all 0.3s ease;">&nbsp;&nbsp;Roadmap&nbsp;&nbsp;&nbsp;&nbsp;</button>
                     </div>
                 </div>
 
@@ -312,7 +522,8 @@
                     </p>
                     <div class="grid-2-col">
                         <div>
-                            <form id="accessForm" action="https://formspree.io/f/mqabzreg" method="POST">
+                            <form id="accessForm" name="access" method="POST" data-netlify="true">
+                                <input type="hidden" name="form-name" value="access">
                                 <div class="form-group">
                                     <label for="name">Nome e Cognome</label>
                                     <input type="text" name="name" id="name" class="form-control"
@@ -337,19 +548,14 @@
                                         placeholder="Es. FranzHermann#33" required>
                                 </div>
                                 <br>
-                                <input type="hidden" name="_subject"
-                                    value="Nuova richiesta di accesso al server Minecraft">
-                                <input type="hidden" name="_next" value="#request">
-                                <input type="hidden" name="_replyto" value="%email%">
-                                <input type="hidden" name="_autoresponse"
-                                    value="Grazie per la tua richiesta di accesso al server Minecraft. Abbiamo ricevuto i tuoi dati e ti contatteremo presto.">
+                                <input type="hidden" name="subject" value="Nuova richiesta di accesso al server Minecraft">
                                 <br>
-                                <button type="submit" class="btn" style="width: 100%;">Invia Richiesta</button>
+                                <button type="submit" class="submit-btn" style="width: 100%; margin-top: 10px;">Invia Richiesta</button>
                             </form>
                             <div id="accessSuccessMessage" class="success-message" style="display: none;">
-                                <p><strong></strong> La tua richiesta è stata inviata con successo! Ti contatteremo
-                                    presto.
-                                </p>
+                                <h3>Richiesta inviata!</h3>
+                                <p>La tua richiesta è stata inviata con successo! Ti contatteremo presto.</p>
+                                <button id="newAccessBtn" class="submit-btn secondary-btn">Invia un'altra richiesta</button>
                             </div>
                         </div>
                         <div>
@@ -366,8 +572,9 @@
                     <h2 id="feedback-title">Segnala un problema del Modpack</h2>
                     <p id="feedback-subtitle">Aiutami a migliorare il modpack segnalando eventuali problemi</p>
 
-                    <div id="feedback-form-container" class="feedback-form">
-                        <form id="problem-form" action="" method="POST" enctype="multipart/form-data">
+                    
+                        <form id="problem-form" name="problem-report" action="" method="POST" enctype="multipart/form-data" data-netlify="true">
+                            <input type="hidden" name="form-name" value="problem-report">
                             <input type="hidden" name="_next" value="#feedback">
                             <input type="hidden" name="_captcha" value="false">
                             <div class="form-grid">
@@ -396,6 +603,13 @@
                                 <div class="form-hint">Includi i passaggi per riprodurre il problema, se possibile</div>
                             </div>
 
+                            <div class="form-group">
+                <input type="file" id="problem-files" name="attachment" class="form-control file-input" multiple accept="image/*,.log,.txt">
+                <div class="form-hint">Puoi allegare immagini, file .log o .txt (max 10MB per file)</div>
+                <div id="file-preview" class="file-preview"></div>
+                <button type="button" id="reset-files" class="submit-btn secondary-btn" style="margin-top: 10px; font-size: 0.9rem; width: auto; padding: 8px 15px; display: none;">Cancella tutti i file</button>
+            </div>
+
                             <input type="hidden" name="_subject" value="Nuova segnalazione problema Modpack">
                             <input type="hidden" name="_language" value="it">
                             <div class="form-actions">
@@ -408,9 +622,8 @@
                         <div id="feedbackSuccessMessage" class="success-message" style="display: none;">
                             <h3>Grazie per la tua segnalazione!</h3>
                             <p>Il team esaminerà il problema al più presto.</p>
-                            <button id="newReportBtn" class="submit-btn" style="margin-top: 20px; background: rgba(255, 255, 255, 0.8); color: #333;">Invia un'altra segnalazione</button>
+                            <button id="newReportBtn" class="submit-btn secondary-btn">Invia un'altra segnalazione</button>
                         </div>
-                    </div>
                 </div>
 
                 <!-- Sezione Roadmap -->
@@ -453,11 +666,20 @@
                     document.getElementById(tabId).classList.add('active');
                 });
             });
+            
+            // Gestione del pulsante per inviare un'altra richiesta di accesso
+            document.getElementById('newAccessBtn').addEventListener('click', function() {
+                document.getElementById('accessSuccessMessage').style.display = 'none';
+                document.getElementById('accessForm').reset();
+                document.getElementById('accessForm').style.display = 'block';
+            });
 
             // Gestione del form di accesso
             var accessForm = document.getElementById('accessForm');
             if (accessForm) {
                 accessForm.addEventListener('submit', function (e) {
+                    // Non preveniamo l'invio del form per permettere a Netlify di gestirlo
+                    // Mostriamo solo il messaggio di successo dopo un breve ritardo
                     setTimeout(function () {
                         document.getElementById('accessSuccessMessage').style.display = 'block';
                         document.getElementById('accessSuccessMessage').scrollIntoView({ behavior: 'smooth' });
@@ -482,55 +704,170 @@
                 });
             }
 
-            // Gestione del caricamento immagini
-            const fileInput = document.getElementById('problem-images');
+            // Gestione dell'invio del form di segnalazione problemi
+            if (problemForm) {
+                problemForm.addEventListener('submit', function (e) {
+                    // Non preveniamo l'invio del form per permettere a Netlify di gestirlo
+                    // Mostriamo solo il messaggio di successo dopo un breve ritardo
+                    setTimeout(function () {
+                        problemForm.style.display = 'none';
+                        feedbackSuccessMessage.style.display = 'block';
+                        problemForm.reset();
+                    }, 1000);
+                });
+            }
+
+            // Caricamento file e immagini
+            const fileInput = document.getElementById('problem-files');
             const filePreview = document.getElementById('file-preview');
+            const resetFilesBtn = document.getElementById('reset-files');
             const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
 
+            // Array per tenere traccia dei file selezionati
+            let selectedFiles = [];
+            
+            // Gestione pulsante reset files
+            if (resetFilesBtn) {
+                resetFilesBtn.addEventListener('click', function() {
+                            // Pulisci l'anteprima
+                            if (filePreview) {
+                                filePreview.innerHTML = '';
+                            }
+                            // Resetta l'input file
+                            if (fileInput) {
+                                fileInput.value = '';
+                                // Nascondi il pulsante di reset quando non ci sono file
+                                resetFilesBtn.style.display = 'none';
+                            }
+                            // Svuota l'array dei file selezionati
+                            selectedFiles = [];
+                        });
+            }
+            
             if (fileInput) {
                 fileInput.addEventListener('change', function () {
-                    filePreview.innerHTML = ''; // Pulisci l'anteprima
-
+                    // Non pulire l'anteprima per mantenere i file già caricati
+                    
                     if (this.files.length > 0) {
+                        // Mostra il pulsante di reset se ci sono file selezionati
+                        if (resetFilesBtn) {
+                            resetFilesBtn.style.display = 'inline-block';
+                        }
+                        // Aggiungi i nuovi file all'array dei file selezionati
+                        for (let i = 0; i < this.files.length; i++) {
+                            selectedFiles.push(this.files[i]);
+                        }
+                        // Verifica e mostra i nuovi file aggiunti
+                        const newFilesStartIndex = selectedFiles.length - this.files.length;
+                        
                         for (let i = 0; i < this.files.length; i++) {
                             const file = this.files[i];
+                            const fileIndex = newFilesStartIndex + i;
+                            const fileExtension = file.name.split('.').pop().toLowerCase();
+                            const isImage = file.type.match('image.*');
+                            const isLogOrTxt = fileExtension === 'log' || fileExtension === 'txt';
 
                             // Verifica il tipo di file
-                            if (!file.type.match('image.*')) {
-                                alert('Per favore, carica solo immagini (JPG, PNG, GIF).');
-                                this.value = '';
-                                return;
+                            if (!isImage && !isLogOrTxt) {
+                                alert('Per favore, carica solo immagini, file .log o .txt.');
+                                // Rimuovi questo file dall'array
+                                selectedFiles.splice(fileIndex, 1);
+                                continue;
                             }
 
                             // Verifica la dimensione del file
                             if (file.size > maxFileSize) {
                                 alert(`Il file ${file.name} è troppo grande. La dimensione massima è 10MB.`);
-                                this.value = '';
-                                return;
+                                // Rimuovi questo file dall'array
+                                selectedFiles.splice(fileIndex, 1);
+                                continue;
                             }
 
                             // Crea l'anteprima
-                            const reader = new FileReader();
-                            reader.onload = function (e) {
-                                const previewItem = document.createElement('div');
-                                previewItem.className = 'preview-item';
+                            const previewItem = document.createElement('div');
+                            previewItem.className = 'preview-item';
+                            previewItem.dataset.fileIndex = fileIndex;
+
+                            if (isImage) {
+                                // Anteprima per immagini
+                                const reader = new FileReader();
+                                reader.onload = function (e) {
+                                    previewItem.innerHTML = `
+                                        <img src="${e.target.result}" alt="Anteprima">
+                                        <div class="file-name">${file.name}</div>
+                                        <div class="remove-file" data-index="${fileIndex}">×</div>
+                                    `;
+                                    filePreview.appendChild(previewItem);
+
+                                    // Aggiungi l'evento per rimuovere il file
+                                    previewItem.querySelector('.remove-file').addEventListener('click', function () {
+                                        const index = parseInt(this.getAttribute('data-index'));
+                                        // Rimuovi il file dall'array
+                                        selectedFiles.splice(index, 1);
+                                        // Aggiorna gli indici dei file rimanenti
+                                        const remainingItems = filePreview.querySelectorAll('.preview-item');
+                                        remainingItems.forEach(item => {
+                                            const itemIndex = parseInt(item.querySelector('.remove-file').getAttribute('data-index'));
+                                            if (itemIndex > index) {
+                                                item.querySelector('.remove-file').setAttribute('data-index', itemIndex - 1);
+                                                item.dataset.fileIndex = itemIndex - 1;
+                                            }
+                                        });
+                                        // Rimuovi l'elemento dall'anteprima
+                                        previewItem.remove();
+                                        
+                                        // Se non ci sono più file, resetta l'input e nascondi il pulsante di reset
+                                        if (selectedFiles.length === 0) {
+                                            fileInput.value = '';
+                                            if (resetFilesBtn) {
+                                                resetFilesBtn.style.display = 'none';
+                                            }
+                                        }
+                                    });
+                                };
+                                reader.readAsDataURL(file);
+                            } else {
+                                // Anteprima per file .log o .txt
+                                let fileIcon = '';
+                                if (fileExtension === 'log') {
+                                    fileIcon = '📋'; // Icona per file log
+                                } else if (fileExtension === 'txt') {
+                                    fileIcon = '📄'; // Icona per file txt
+                                }
+
                                 previewItem.innerHTML = `
-                                    <img src="${e.target.result}" alt="Anteprima">
-                                    <div class="remove-file" data-index="${i}">×</div>
+                                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.2); font-size: 2rem;">${fileIcon}</div>
+                                    <div class="file-name">${file.name}</div>
+                                    <div class="remove-file" data-index="${fileIndex}">×</div>
                                 `;
                                 filePreview.appendChild(previewItem);
 
                                 // Aggiungi l'evento per rimuovere il file
                                 previewItem.querySelector('.remove-file').addEventListener('click', function () {
+                                    const index = parseInt(this.getAttribute('data-index'));
+                                    // Rimuovi il file dall'array
+                                    selectedFiles.splice(index, 1);
+                                    // Aggiorna gli indici dei file rimanenti
+                                    const remainingItems = filePreview.querySelectorAll('.preview-item');
+                                    remainingItems.forEach(item => {
+                                        const itemIndex = parseInt(item.querySelector('.remove-file').getAttribute('data-index'));
+                                        if (itemIndex > index) {
+                                            item.querySelector('.remove-file').setAttribute('data-index', itemIndex - 1);
+                                            item.dataset.fileIndex = itemIndex - 1;
+                                        }
+                                    });
+                                    // Rimuovi l'elemento dall'anteprima
                                     previewItem.remove();
-                                    // Nota: non possiamo rimuovere direttamente dal FileList, quindi reimposteremo l'input
-                                    // se tutti i file sono stati rimossi
-                                    if (filePreview.children.length === 0) {
+                                    
+                                    // Se non ci sono più file, resetta l'input e nascondi il pulsante di reset
+                                    if (selectedFiles.length === 0) {
                                         fileInput.value = '';
+                                        if (resetFilesBtn) {
+                                            resetFilesBtn.style.display = 'none';
+                                        }
                                     }
                                 });
-                            };
-                            reader.readAsDataURL(file);
+                            }
                         }
                     }
                 });
@@ -547,6 +884,14 @@
 
                     // Crea un FormData object per inviare il form con i file
                     const formData = new FormData(problemForm);
+                    
+                    // Rimuovi eventuali file già presenti nel FormData
+                    formData.delete('attachment');
+                    
+                    // Aggiungi i file selezionati dall'array invece di fileInput.files
+                    for (let i = 0; i < selectedFiles.length; i++) {
+                        formData.append('attachment', selectedFiles[i]);
+                    }
 
                     // Invia il form tramite fetch API
                     fetch(formspreeUrl, {
@@ -563,13 +908,15 @@
                             if (response.ok) {
                                 // Mostra il messaggio di successo
                                 problemForm.style.display = 'none';
-                                feedbackSuccessMessage.style.display = 'block';
+                                problemSuccessMessage.style.display = 'block';
                                 // Resetta il form
                                 problemForm.reset();
                                 // Pulisci l'anteprima dei file se esiste
                                 if (filePreview) {
                                     filePreview.innerHTML = '';
                                 }
+                                // Resetta l'array dei file selezionati
+                                selectedFiles = [];
                             } else {
                                 // Mostra l'errore di validazione specifico
                                 let errorMessage = 'Si è verificato un errore durante l\'invio del form.';
@@ -692,4 +1039,3 @@
 </body>
 
 </html>
-
