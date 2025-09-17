@@ -604,10 +604,11 @@
                             </div>
 
                             <div class="form-group">
-                <input type="file" id="problem-files" name="attachment" class="form-control file-input" multiple accept="image/*,.log,.txt">
-                <div class="form-hint">Puoi allegare immagini, file .log o .txt (max 10MB per file)</div>
+                <label for="problem-files">Allega un file <span class="optional">(opzionale)</span></label>
+                <input type="file" id="problem-files" name="file" class="form-control file-input" accept="image/*,.log,.txt">
+                <div class="form-hint">Puoi allegare un'immagine, file .log o .txt (max 8MB)</div>
                 <div id="file-preview" class="file-preview"></div>
-                <button type="button" id="reset-files" class="submit-btn secondary-btn" style="margin-top: 10px; font-size: 0.9rem; width: auto; padding: 8px 15px; display: none;">Cancella tutti i file</button>
+                <button type="button" id="reset-files" class="submit-btn secondary-btn" style="margin-top: 10px; font-size: 0.9rem; width: auto; padding: 8px 15px; display: none;">Cancella file</button>
             </div>
 
                             <input type="hidden" name="_subject" value="Nuova segnalazione problema Modpack">
