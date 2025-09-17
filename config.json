@@ -74,9 +74,9 @@
       "feedback": {
         "enabled": true,
         "title": "Segnala un problema del Modpack",
-        "subtitle": "Aiutami a migliorare il modpack segnalando eventuali problemi",
-        "successMessage": "Grazie per la tua segnalazione! Il team esaminerà il problema al più presto.",
-        "formspreeUrl": ""
+        "subtitle": "Aiutaci a migliorare il modpack segnalando eventuali problemi",
+        "formspreeUrl": "https://formspree.io/f/xblavdda",
+        "successMessage": "Grazie per la tua segnalazione! Il team esaminerà il problema al più presto."
       },
       "roadmap": {
         "enabled": true,
