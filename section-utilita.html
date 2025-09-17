@@ -722,153 +722,115 @@
             const fileInput = document.getElementById('problem-files');
             const filePreview = document.getElementById('file-preview');
             const resetFilesBtn = document.getElementById('reset-files');
-            const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+            const maxFileSize = 8 * 1024 * 1024; // 8MB in bytes (limite di Netlify)
 
-            // Array per tenere traccia dei file selezionati
-            let selectedFiles = [];
+            // Variabile per tenere traccia del file selezionato
+            let selectedFile = null;
             
-            // Gestione pulsante reset files
+            // Gestione pulsante reset file
             if (resetFilesBtn) {
                 resetFilesBtn.addEventListener('click', function() {
-                            // Pulisci l'anteprima
-                            if (filePreview) {
-                                filePreview.innerHTML = '';
-                            }
-                            // Resetta l'input file
-                            if (fileInput) {
-                                fileInput.value = '';
-                                // Nascondi il pulsante di reset quando non ci sono file
-                                resetFilesBtn.style.display = 'none';
-                            }
-                            // Svuota l'array dei file selezionati
-                            selectedFiles = [];
-                        });
+                    // Pulisci l'anteprima
+                    if (filePreview) {
+                        filePreview.innerHTML = '';
+                    }
+                    // Resetta l'input file
+                    if (fileInput) {
+                        fileInput.value = '';
+                        // Nascondi il pulsante di reset quando non ci sono file
+                        resetFilesBtn.style.display = 'none';
+                    }
+                    // Resetta la variabile del file selezionato
+                    selectedFile = null;
+                });
             }
             
             if (fileInput) {
                 fileInput.addEventListener('change', function () {
-                    // Non pulire l'anteprima per mantenere i file già caricati
+                    // Pulisci l'anteprima quando viene selezionato un nuovo file
+                    if (filePreview) {
+                        filePreview.innerHTML = '';
+                    }
                     
                     if (this.files.length > 0) {
-                        // Mostra il pulsante di reset se ci sono file selezionati
+                        const file = this.files[0]; // Prendi solo il primo file
+                        const fileExtension = file.name.split('.').pop().toLowerCase();
+                        const isImage = file.type.match('image.*');
+                        const isLogOrTxt = fileExtension === 'log' || fileExtension === 'txt';
+                        
+                        // Verifica il tipo di file
+                        if (!isImage && !isLogOrTxt) {
+                            alert('Per favore, carica solo immagini, file .log o .txt.');
+                            fileInput.value = '';
+                            return;
+                        }
+                        
+                        // Verifica la dimensione del file
+                        if (file.size > maxFileSize) {
+                            alert(`Il file ${file.name} è troppo grande. La dimensione massima è 8MB.`);
+                            fileInput.value = '';
+                            return;
+                        }
+                        
+                        // Salva il file selezionato
+                        selectedFile = file;
+                        
+                        // Mostra il pulsante di reset
                         if (resetFilesBtn) {
                             resetFilesBtn.style.display = 'inline-block';
                         }
-                        // Aggiungi i nuovi file all'array dei file selezionati
-                        for (let i = 0; i < this.files.length; i++) {
-                            selectedFiles.push(this.files[i]);
-                        }
-                        // Verifica e mostra i nuovi file aggiunti
-                        const newFilesStartIndex = selectedFiles.length - this.files.length;
                         
-                        for (let i = 0; i < this.files.length; i++) {
-                            const file = this.files[i];
-                            const fileIndex = newFilesStartIndex + i;
-                            const fileExtension = file.name.split('.').pop().toLowerCase();
-                            const isImage = file.type.match('image.*');
-                            const isLogOrTxt = fileExtension === 'log' || fileExtension === 'txt';
-
-                            // Verifica il tipo di file
-                            if (!isImage && !isLogOrTxt) {
-                                alert('Per favore, carica solo immagini, file .log o .txt.');
-                                // Rimuovi questo file dall'array
-                                selectedFiles.splice(fileIndex, 1);
-                                continue;
-                            }
-
-                            // Verifica la dimensione del file
-                            if (file.size > maxFileSize) {
-                                alert(`Il file ${file.name} è troppo grande. La dimensione massima è 10MB.`);
-                                // Rimuovi questo file dall'array
-                                selectedFiles.splice(fileIndex, 1);
-                                continue;
-                            }
-
-                            // Crea l'anteprima
-                            const previewItem = document.createElement('div');
-                            previewItem.className = 'preview-item';
-                            previewItem.dataset.fileIndex = fileIndex;
-
-                            if (isImage) {
-                                // Anteprima per immagini
-                                const reader = new FileReader();
-                                reader.onload = function (e) {
-                                    previewItem.innerHTML = `
-                                        <img src="${e.target.result}" alt="Anteprima">
-                                        <div class="file-name">${file.name}</div>
-                                        <div class="remove-file" data-index="${fileIndex}">×</div>
-                                    `;
-                                    filePreview.appendChild(previewItem);
-
-                                    // Aggiungi l'evento per rimuovere il file
-                                    previewItem.querySelector('.remove-file').addEventListener('click', function () {
-                                        const index = parseInt(this.getAttribute('data-index'));
-                                        // Rimuovi il file dall'array
-                                        selectedFiles.splice(index, 1);
-                                        // Aggiorna gli indici dei file rimanenti
-                                        const remainingItems = filePreview.querySelectorAll('.preview-item');
-                                        remainingItems.forEach(item => {
-                                            const itemIndex = parseInt(item.querySelector('.remove-file').getAttribute('data-index'));
-                                            if (itemIndex > index) {
-                                                item.querySelector('.remove-file').setAttribute('data-index', itemIndex - 1);
-                                                item.dataset.fileIndex = itemIndex - 1;
-                                            }
-                                        });
-                                        // Rimuovi l'elemento dall'anteprima
-                                        previewItem.remove();
-                                        
-                                        // Se non ci sono più file, resetta l'input e nascondi il pulsante di reset
-                                        if (selectedFiles.length === 0) {
-                                            fileInput.value = '';
-                                            if (resetFilesBtn) {
-                                                resetFilesBtn.style.display = 'none';
-                                            }
-                                        }
-                                    });
-                                };
-                                reader.readAsDataURL(file);
-                            } else {
-                                // Anteprima per file .log o .txt
-                                let fileIcon = '';
-                                if (fileExtension === 'log') {
-                                    fileIcon = '📋'; // Icona per file log
-                                } else if (fileExtension === 'txt') {
-                                    fileIcon = '📄'; // Icona per file txt
-                                }
-
+                        // Crea l'anteprima
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        
+                        if (isImage) {
+                            // Anteprima per immagini
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
                                 previewItem.innerHTML = `
-                                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.2); font-size: 2rem;">${fileIcon}</div>
+                                    <img src="${e.target.result}" alt="Anteprima">
                                     <div class="file-name">${file.name}</div>
-                                    <div class="remove-file" data-index="${fileIndex}">×</div>
+                                    <div class="remove-file">×</div>
                                 `;
                                 filePreview.appendChild(previewItem);
-
+                                
                                 // Aggiungi l'evento per rimuovere il file
                                 previewItem.querySelector('.remove-file').addEventListener('click', function () {
-                                    const index = parseInt(this.getAttribute('data-index'));
-                                    // Rimuovi il file dall'array
-                                    selectedFiles.splice(index, 1);
-                                    // Aggiorna gli indici dei file rimanenti
-                                    const remainingItems = filePreview.querySelectorAll('.preview-item');
-                                    remainingItems.forEach(item => {
-                                        const itemIndex = parseInt(item.querySelector('.remove-file').getAttribute('data-index'));
-                                        if (itemIndex > index) {
-                                            item.querySelector('.remove-file').setAttribute('data-index', itemIndex - 1);
-                                            item.dataset.fileIndex = itemIndex - 1;
-                                        }
-                                    });
-                                    // Rimuovi l'elemento dall'anteprima
-                                    previewItem.remove();
-                                    
-                                    // Se non ci sono più file, resetta l'input e nascondi il pulsante di reset
-                                    if (selectedFiles.length === 0) {
-                                        fileInput.value = '';
-                                        if (resetFilesBtn) {
-                                            resetFilesBtn.style.display = 'none';
-                                        }
+                                    filePreview.innerHTML = '';
+                                    fileInput.value = '';
+                                    selectedFile = null;
+                                    if (resetFilesBtn) {
+                                        resetFilesBtn.style.display = 'none';
                                     }
                                 });
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            // Anteprima per file .log o .txt
+                            let fileIcon = '';
+                            if (fileExtension === 'log') {
+                                fileIcon = '📋'; // Icona per file log
+                            } else if (fileExtension === 'txt') {
+                                fileIcon = '📄'; // Icona per file txt
                             }
+                            
+                            previewItem.innerHTML = `
+                                <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: rgba(0,0,0,0.2); font-size: 2rem;">${fileIcon}</div>
+                                <div class="file-name">${file.name}</div>
+                                <div class="remove-file">×</div>
+                            `;
+                            filePreview.appendChild(previewItem);
+                            
+                            // Aggiungi l'evento per rimuovere il file
+                            previewItem.querySelector('.remove-file').addEventListener('click', function () {
+                                filePreview.innerHTML = '';
+                                fileInput.value = '';
+                                selectedFile = null;
+                                if (resetFilesBtn) {
+                                    resetFilesBtn.style.display = 'none';
+                                }
+                            });
                         }
                     }
                 });
@@ -889,9 +851,9 @@
                     // Rimuovi eventuali file già presenti nel FormData
                     formData.delete('attachment');
                     
-                    // Aggiungi i file selezionati dall'array invece di fileInput.files
-                    for (let i = 0; i < selectedFiles.length; i++) {
-                        formData.append('attachment', selectedFiles[i]);
+                    // Aggiungi il file selezionato se presente
+                    if (selectedFile) {
+                        formData.append('attachment', selectedFile);
                     }
 
                     // Invia il form tramite fetch API
@@ -925,8 +887,8 @@
                                 if (filePreview) {
                                     filePreview.innerHTML = '';
                                 }
-                                // Resetta l'array dei file selezionati
-                                selectedFiles = [];
+                                // Resetta la variabile del file selezionato
+                                selectedFile = null;
                             } else {
                                 // Mostra l'errore di validazione specifico
                                 let errorMessage = 'Si è verificato un errore durante l\'invio del form.';
