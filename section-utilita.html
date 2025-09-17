@@ -366,11 +366,13 @@
                     <h2 id="feedback-title">Segnala un problema del Modpack</h2>
                     <p id="feedback-subtitle">Aiutami a migliorare il modpack segnalando eventuali problemi</p>
 
-                    <div id="feedback-form-container" class="feedback-form">
+                    <div id="feedback-form-container" class="feedback-form" style="max-width: 100%;">
                         <form id="problem-form" action="" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="_next" value="#feedback">
                             <input type="hidden" name="_captcha" value="false">
-                            <div class="form-grid">
+                            
+                            <!-- Sezione informazioni personali e versione -->
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
                                     <label for="problem-name">Nome <span class="required">*</span></label>
                                     <input type="text" id="problem-name" name="name" class="form-control" required>
@@ -379,29 +381,42 @@
                                     <label for="problem-email">Email <span class="required">*</span></label>
                                     <input type="email" id="problem-email" name="email" class="form-control" required>
                                 </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="version">Versione del Modpack <span class="required">*</span></label>
-                                <input type="text" id="version" name="version" class="form-control" required>
-                                <div class="form-hint">Esempio: 1.0.0 (Lo vedi nel nome del file che hai scaricato per aggiornare il modpack)
+                                <div class="form-group">
+                                    <label for="version">Versione del Modpack <span class="required">*</span></label>
+                                    <input type="text" id="version" name="version" class="form-control" required>
+                                    <div class="form-hint">Esempio: 1.0.0</div>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label for="description">Descrizione del problema <span
-                                        class="required">*</span></label>
-                                <textarea id="description" name="description" class="form-control" rows="5"
-                                    required></textarea>
+                            
+                            <!-- Sezione descrizione problema -->
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label for="description">Descrizione del problema <span class="required">*</span></label>
+                                <textarea id="description" name="description" class="form-control" rows="5" required></textarea>
                                 <div class="form-hint">Includi i passaggi per riprodurre il problema, se possibile</div>
+                            </div>
+
+                            <!-- Sezione SwissTransfer -->
+                            <div class="form-group" style="margin-top: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 15px; padding: 20px;">
+                                <div>
+                                    <label for="swisstransfer">Link SwissTransfer</label>
+                                    <input type="url" id="swisstransfer" name="swisstransfer" class="form-control" placeholder="Incolla qui il link di SwissTransfer...">
+                                    <div class="form-hint">Carica i tuoi file su SwissTransfer e condividi il link qui. Utile per file di log o screenshot.</div>
+                                </div>
+                                
+                                <div style="display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 30px;">
+                                    <a href="https://www.swisstransfer.com/it-it" target="_blank" class="btn" style="text-align: center; margin-top: 10px;">
+                                        Vai a SwissTransfer
+                                    </a>
+                                </div>
                             </div>
 
                             <input type="hidden" name="_subject" value="Nuova segnalazione problema Modpack">
                             <input type="hidden" name="_language" value="it">
+                            
+                            <!-- Pulsante invio -->
                             <div class="form-actions">
                                 <button type="submit" class="submit-btn">Invia segnalazione</button>
-                                <div class="form-hint">I campi contrassegnati con <span class="required">*</span> sono
-                                    obbligatori</div>
+                                <div class="form-hint">I campi contrassegnati con <span class="required">*</span> sono obbligatori</div>
                             </div>
                         </form>
 
