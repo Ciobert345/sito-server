@@ -160,7 +160,7 @@
             "type": "Miglioramento",
             "priority": "Bassa",
             "column": "nextup"
-          }
+          },
           {
             "id": "12",
             "title": "Crash quando si de-zoomma la mappa",
