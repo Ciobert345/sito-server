@@ -114,17 +114,17 @@
           },
           {
             "id": "10",
-            "title": "Crash quando si esce da un server",
+            "title": "Crash quando si esce da un server -Causato da Fabric, attendo versione correttiva",
             "type": "Bugfix",
             "priority": "Alta",
-            "column": "inprogress"
+            "column": "done"
           },
           {
             "id": "11",
             "title": "Crash quando un goblin trader finisce di mangiare",
             "type": "Bugfix",
             "priority": "Alta",
-            "column": "inprogress"
+            "column": "done"
           },
           {
             "id": "3",
