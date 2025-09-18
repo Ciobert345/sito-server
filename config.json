@@ -131,7 +131,7 @@
             "title": "Fix crash con Etherology",
             "type": "Bugfix",
             "priority": "Alta",
-            "column": "done"
+            "column": "backlog"
           },
           {
             "id": "4",
