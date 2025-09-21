@@ -124,7 +124,7 @@
             "title": "Crash quando un goblin trader finisce di mangiare",
             "type": "Bugfix",
             "priority": "Alta",
-            "column": "done"
+            "column": "backlog"
           },
           {
             "id": "3",
