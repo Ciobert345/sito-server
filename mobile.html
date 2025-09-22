@@ -11,6 +11,24 @@
     <style>
     /* CSS critico per il rendering iniziale */
     :root{--dark:#0a0a0a;--light:#fff;--glass-bg:rgba(255,255,255,.05);--glass-border:rgba(255,255,255,.15);--highlight:#fff;--text-on-dark:#fff;--text-on-light:#0a0a0a;--sans-serif-font:'Poppins','Serif',sans-serif;--serif-font:'Serif','Times New Roman',serif}html{scroll-behavior:smooth}*{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans-serif-font);background-color:var(--dark);color:var(--light);line-height:1.6;overflow-x:hidden}.main-header{position:fixed;top:0;left:0;width:100%;display:flex;justify-content:space-between;align-items:center;padding:15px;z-index:1000}.header-item{background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-radius:15px;padding:0;box-shadow:0 4px 15px rgba(0,0,0,.2);width:50px;height:50px;display:flex;justify-content:center;align-items:center;text-decoration:none}.logo{width:35px;height:35px}
+
+    /* Overrides layout Utilità */
+    .tab-container{margin-top:8px}
+    .pill-tab-selector{display:flex;gap:8px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:999px;padding:6px;overflow-x:auto}
+    .pill-tab-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:0;background:transparent;color:#fff;border-radius:999px;white-space:nowrap}
+    .pill-tab-btn .icon{width:18px;height:18px;display:inline-flex}
+    .pill-tab-btn .label{font-weight:600;font-size:.95rem}
+    .pill-tab-btn.active{background:rgba(255,255,255,.14);color:#fff}
+    .pill-tab-btn:not(.active){padding:8px;width:42px;justify-content:center}
+    .pill-tab-btn:not(.active) .label{display:none}
+
+    /* Section content wider feeling */
+    #richiedi-accesso .section-content{padding-left:14px;padding-right:14px}
+    #tab-suggestions .form-group{margin-top:14px}
+    #tab-suggestions .form-control{width:100%}
+    #tab-suggestions .links-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+    #tab-suggestions #links-list-mobile{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+    #tab-suggestions .btn-learn-more{padding:.65rem 1rem}
     </style>
     <link rel="preload" href="img/pannello1.webp" as="image">
     <link rel="preload" href="img/pannello2.webp" as="image">
@@ -176,9 +194,30 @@
                 
                 <div class="tab-container">
                     <div class="pill-tab-selector">
-                        <button class="pill-tab-btn active" data-tab="tab-access">Accesso</button>
-                        <button class="pill-tab-btn" data-tab="tab-feedback">Segnala</button>
-                        <button class="pill-tab-btn" data-tab="tab-roadmap">Roadmap</button>
+                        <button class="pill-tab-btn active" data-tab="tab-access">
+                            <span class="icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                            </span>
+                            <span class="label">Accesso</span>
+                        </button>
+                        <button class="pill-tab-btn" data-tab="tab-feedback">
+                            <span class="icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                            </span>
+                            <span class="label">Segnala</span>
+                        </button>
+                        <button class="pill-tab-btn" data-tab="tab-suggestions">
+                            <span class="icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M2 12C2 7.58 5.58 4 10 4h4c4.42 0 8 3.58 8 8 0 2.97-1.64 5.55-4.06 6.92-.6.34-.94.99-.94 1.68V21H7v-.4c0-.69-.34-1.34-.94-1.68C3.64 17.55 2 14.97 2 12z"/></svg>
+                            </span>
+                            <span class="label">Suggerimenti</span>
+                        </button>
+                        <button class="pill-tab-btn" data-tab="tab-roadmap">
+                            <span class="icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-12"/><path d="M9 18l-6-3V3l6 3 6-3 6 3v12l-6-3z"/></svg>
+                            </span>
+                            <span class="label">Roadmap</span>
+                        </button>
                     </div>
                     
                     <div id="tab-access" class="tab-content active">
@@ -252,6 +291,64 @@
                         </div>
                     </div>
                     
+                    <div id="tab-suggestions" class="tab-content">
+                        <p>Hai un'idea o un miglioramento? Inviaci i tuoi suggerimenti qui sotto.</p>
+
+                        <form id="suggestion-form-mobile" action="" method="POST" class="margin-top-20">
+                            <div class="form-group">
+                                <label for="suggestion-name-mobile">Nome e Cognome</label>
+                                <input type="text" name="name" id="suggestion-name-mobile" class="form-control" placeholder="Es. Max Emilian Verstappen" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="suggestion-email-mobile">Email</label>
+                                <input type="email" name="email" id="suggestion-email-mobile" class="form-control" placeholder="Es. max-emilian.verstappen@gmail.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="suggestion-type-mobile">Tipo di Suggerimento</label>
+                                <select id="suggestion-type-mobile" name="suggestion-type" class="form-control" required aria-describedby="suggestion-type-mobile-hint">
+                                    <option value="" disabled selected hidden>Seleziona il tipo...</option>
+                                    <optgroup label="Generale">
+                                        <option value="gameplay">Gameplay</option>
+                                        <option value="interface">Interfaccia</option>
+                                        <option value="performance">Prestazioni</option>
+                                    </optgroup>
+                                    <optgroup label="Mod">
+                                        <option value="mod">Nuova Mod</option>
+                                    </optgroup>
+                                    <optgroup label="Altro">
+                                        <option value="altro">Altro</option>
+                                    </optgroup>
+                                </select>
+                                <div id="suggestion-type-mobile-hint" style="font-size:0.85rem; opacity:0.8; margin-top:4px;">Scegli la categoria più adatta al tuo suggerimento.</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="suggestion-description-mobile">Descrizione del Suggerimento</label>
+                                <textarea name="description" id="suggestion-description-mobile" class="form-control" rows="5" placeholder="Descrivi il tuo suggerimento..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="suggestion-link-input-mobile">Link utili (Modrinth/CurseForge/Altro)</label>
+                                <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;">
+                                    <input type="url" id="suggestion-link-input-mobile" class="form-control" placeholder="https://modrinth.com/mod/...">
+                                    <button type="button" id="add-link-btn-mobile" class="btn-learn-more">Aggiungi</button>
+                                </div>
+                                <div style="font-size:0.9rem;opacity:0.8;margin-top:6px;">Aggiungi uno o più link. Puoi rimuoverli dall'elenco.</div>
+                                <div id="links-list-mobile" style="margin-top:10px;display:grid;grid-template-columns:1fr;gap:12px;width:100%;"></div>
+                                <!-- Hidden inputs name="links[]" saranno aggiunti via JS -->
+                            </div>
+
+                            <input type="hidden" name="_subject" value="Nuovo suggerimento Modpack - Mobile">
+                            <input type="hidden" name="_next" value="#richiedi-accesso">
+
+                            <button type="submit" class="btn-learn-more btn-full-width" style="margin-top: 10px;">Invia suggerimento</button>
+                        </form>
+
+                        <div id="suggestionsSuccessMessageMobile" class="success-message" style="display: none;">
+                            <p>Grazie per il tuo suggerimento! Lo valuteremo al più presto.</p>
+                            <button id="newSuggestionBtnMobile" class="btn-learn-more new-report-btn">Invia un altro suggerimento</button>
+                        </div>
+                    </div>
+
                     <div id="tab-roadmap" class="tab-content">
                         <p>Ecco la roadmap dei prossimi aggiornamenti e funzionalità previste per il server.</p>
                         <div id="roadmap-container" class="roadmap-container improved-roadmap">
@@ -373,6 +470,130 @@
                     problemForm.reset();
                     feedbackSuccessMessage.style.display = 'none';
                     problemForm.style.display = 'block';
+                });
+            }
+
+            // Gestione form Suggerimenti (mobile)
+            const suggestionFormMobile = document.getElementById('suggestion-form-mobile');
+            const suggestionsSuccessMessageMobile = document.getElementById('suggestionsSuccessMessageMobile');
+            const newSuggestionBtnMobile = document.getElementById('newSuggestionBtnMobile');
+            const linkInputMobile = document.getElementById('suggestion-link-input-mobile');
+            const addLinkBtnMobile = document.getElementById('add-link-btn-mobile');
+            const linksListMobile = document.getElementById('links-list-mobile');
+
+            function createMobileLinkChip(url) {
+                const chip = document.createElement('div');
+                chip.style.display = 'inline-flex';
+                chip.style.alignItems = 'center';
+                chip.style.gap = '10px';
+                chip.style.padding = '10px 16px';
+                chip.style.background = 'rgba(255,255,255,0.08)';
+                chip.style.border = '1px solid rgba(255,255,255,0.18)';
+                chip.style.borderRadius = '999px';
+                chip.style.fontSize = '1.06rem';
+                chip.style.fontWeight = '500';
+                chip.style.width = '100%';
+                chip.style.justifyContent = 'space-between';
+
+                const text = document.createElement('span');
+                text.textContent = url;
+                text.style.wordBreak = 'break-all';
+                text.style.flex = '1 1 auto';
+                text.style.minWidth = 0;
+                chip.appendChild(text);
+
+                // Hidden input per invio
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'links[]';
+                hidden.value = url;
+                suggestionFormMobile.appendChild(hidden);
+                chip._hiddenInput = hidden;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.textContent = '×';
+                removeBtn.style.background = 'transparent';
+                removeBtn.style.border = 'none';
+                removeBtn.style.color = '#fff';
+                removeBtn.style.fontSize = '1.3rem';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.setAttribute('aria-label', 'Rimuovi link');
+                removeBtn.addEventListener('click', () => {
+                    if (chip._hiddenInput && chip._hiddenInput.parentNode) {
+                        chip._hiddenInput.parentNode.removeChild(chip._hiddenInput);
+                    }
+                    chip.remove();
+                });
+                chip.appendChild(removeBtn);
+
+                return chip;
+            }
+
+            function isValidUrl(u) { try { new URL(u); return true; } catch(_) { return false; } }
+            function addMobileLink() {
+                const v = (linkInputMobile?.value || '').trim();
+                if (!v) return;
+                if (!isValidUrl(v)) { alert('Inserisci un URL valido.'); return; }
+                const chip = createMobileLinkChip(v);
+                linksListMobile.appendChild(chip);
+                linkInputMobile.value = '';
+                linkInputMobile.focus();
+            }
+
+            if (addLinkBtnMobile && linkInputMobile && linksListMobile && suggestionFormMobile) {
+                addLinkBtnMobile.addEventListener('click', addMobileLink);
+                linkInputMobile.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); addMobileLink(); }
+                });
+            }
+
+            if (suggestionFormMobile) {
+                suggestionFormMobile.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // Recupera URL Formspree da ConfigManager se presente
+                    let formspreeUrl = 'https://formspree.io/f/xblavdda';
+                    try {
+                        if (window.configManager && window.configManager.config &&
+                            window.configManager.config.feedbackRoadmap &&
+                            window.configManager.config.feedbackRoadmap.sections &&
+                            window.configManager.config.feedbackRoadmap.sections.suggestions &&
+                            window.configManager.config.feedbackRoadmap.sections.suggestions.formspreeUrl) {
+                            formspreeUrl = window.configManager.config.feedbackRoadmap.sections.suggestions.formspreeUrl;
+                        }
+                    } catch(_) {}
+
+                    suggestionFormMobile.action = formspreeUrl;
+                    const formData = new FormData(suggestionFormMobile);
+
+                    fetch(formspreeUrl, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' } })
+                        .then(async (response) => {
+                            const data = await response.json().catch(() => ({}));
+                            if (response.ok) {
+                                suggestionFormMobile.style.display = 'none';
+                                suggestionsSuccessMessageMobile.style.display = 'block';
+                                suggestionFormMobile.reset();
+                                // Pulisci link dinamici
+                                suggestionFormMobile.querySelectorAll('input[name="links[]"]').forEach(el => el.remove());
+                                if (linksListMobile) linksListMobile.innerHTML = '';
+                            } else {
+                                let msg = 'Errore durante l\'invio del form.';
+                                if (data && data.errors && data.errors.length) { msg = data.errors.map(e => e.message).join(' '); }
+                                else if (data && data.message) { msg = data.message; }
+                                throw new Error(msg);
+                            }
+                        })
+                        .catch((err) => {
+                            alert('Si è verificato un errore: ' + err.message);
+                        });
+                });
+            }
+
+            if (newSuggestionBtnMobile) {
+                newSuggestionBtnMobile.addEventListener('click', function() {
+                    suggestionsSuccessMessageMobile.style.display = 'none';
+                    suggestionFormMobile.style.display = 'block';
+                    suggestionFormMobile.scrollIntoView({ behavior: 'smooth' });
                 });
             }
 
@@ -510,7 +731,7 @@
                     
                     // Mappa gli stati delle colonne ai nomi di classe CSS
                     const columnToStatus = {
-                        'backlog': 'planned',
+                        'backlog': 'backlog',
                         'nextup': 'planned',
                         'inprogress': 'in-progress',
                         'done': 'completed'
@@ -518,6 +739,7 @@
                     
                     // Mappa gli stati delle colonne ai testi da visualizzare
                     const statusText = {
+                        'backlog': 'Backlog',
                         'planned': 'Pianificato',
                         'in-progress': 'In Corso',
                         'completed': 'Completato'
