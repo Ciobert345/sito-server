@@ -301,6 +301,7 @@
                     <div class="tab-selector">
                         <button class="tab-btn active" data-tab="access">Richiedi Accesso</button>
                         <button class="tab-btn" data-tab="feedback">Segnala un problema</button>
+                        <button class="tab-btn" data-tab="suggestions">Suggerimenti</button>
                         <button class="tab-btn" data-tab="roadmap">&nbsp;&nbsp;Roadmap&nbsp;&nbsp;&nbsp;&nbsp;</button>
                     </div>
                 </div>
@@ -370,7 +371,7 @@
                         <form id="problem-form" action="" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="_next" value="#feedback">
                             <input type="hidden" name="_captcha" value="false">
-                            
+
                             <!-- Sezione informazioni personali e versione -->
                             <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
                                 <div class="form-group">
@@ -387,24 +388,31 @@
                                     <div class="form-hint">Esempio: 1.0.0</div>
                                 </div>
                             </div>
-                            
+
                             <!-- Sezione descrizione problema -->
                             <div class="form-group" style="margin-top: 20px;">
-                                <label for="description">Descrizione del problema <span class="required">*</span></label>
-                                <textarea id="description" name="description" class="form-control" rows="5" required></textarea>
+                                <label for="description">Descrizione del problema <span
+                                        class="required">*</span></label>
+                                <textarea id="description" name="description" class="form-control" rows="5"
+                                    required></textarea>
                                 <div class="form-hint">Includi i passaggi per riprodurre il problema, se possibile</div>
                             </div>
 
                             <!-- Sezione SwissTransfer -->
-                            <div class="form-group" style="margin-top: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 15px; padding: 20px;">
+                            <div class="form-group"
+                                style="margin-top: 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 15px; padding: 20px;">
                                 <div>
                                     <label for="swisstransfer">Link SwissTransfer</label>
-                                    <input type="url" id="swisstransfer" name="swisstransfer" class="form-control" placeholder="Incolla qui il link di SwissTransfer...">
-                                    <div class="form-hint">Carica i tuoi file su SwissTransfer e condividi il link qui. Utile per file di log o screenshot.</div>
+                                    <input type="url" id="swisstransfer" name="swisstransfer" class="form-control"
+                                        placeholder="Incolla qui il link di SwissTransfer...">
+                                    <div class="form-hint">Carica i tuoi file su SwissTransfer e condividi il link qui.
+                                        Utile per file di log o screenshot.</div>
                                 </div>
-                                
-                                <div style="display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 30px;">
-                                    <a href="https://www.swisstransfer.com/it-it" target="_blank" class="btn" style="text-align: center; margin-top: 10px;">
+
+                                <div
+                                    style="display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 30px;">
+                                    <a href="https://www.swisstransfer.com/it-it" target="_blank" class="btn"
+                                        style="text-align: center; margin-top: 10px;">
                                         Vai a SwissTransfer
                                     </a>
                                 </div>
@@ -412,18 +420,105 @@
 
                             <input type="hidden" name="_subject" value="Nuova segnalazione problema Modpack">
                             <input type="hidden" name="_language" value="it">
-                            
+
                             <!-- Pulsante invio -->
                             <div class="form-actions">
                                 <button type="submit" class="submit-btn">Invia segnalazione</button>
-                                <div class="form-hint">I campi contrassegnati con <span class="required">*</span> sono obbligatori</div>
+                                <div class="form-hint">I campi contrassegnati con <span class="required">*</span> sono
+                                    obbligatori</div>
                             </div>
                         </form>
 
                         <div id="feedbackSuccessMessage" class="success-message" style="display: none;">
                             <h3>Grazie per la tua segnalazione!</h3>
                             <p>Il team esaminerà il problema al più presto.</p>
-                            <button id="newReportBtn" class="submit-btn" style="margin-top: 20px; background: rgba(255, 255, 255, 0.8); color: #333;">Invia un'altra segnalazione</button>
+                            <button id="newReportBtn" class="submit-btn"
+                                style="margin-top: 20px; background: rgba(255, 255, 255, 0.8); color: #333;">Invia
+                                un'altra segnalazione</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Suggerimenti -->
+                <div id="suggestions" class="tab-content">
+                    <h2 id="suggestions-title">Suggerimenti per il Modpack</h2>
+                    <p id="suggestions-subtitle">Aiutami a migliorare il modpack con i tuoi suggerimenti</p>
+
+                    <div id="suggestions-form-container" class="feedback-form" style="max-width: 100%;">
+                        <form id="suggestion-form" action="" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="_next" value="#suggestions">
+                            <input type="hidden" name="_captcha" value="false">
+
+                            <!-- Sezione informazioni personali -->
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label for="suggestion-name">Nome <span class="required">*</span></label>
+                                    <input type="text" id="suggestion-name" name="name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="suggestion-email">Email <span class="required">*</span></label>
+                                    <input type="email" id="suggestion-email" name="email" class="form-control"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="suggestion-type">Tipo di Suggerimento <span
+                                            class="required">*</span></label>
+                                    <select id="suggestion-type" name="suggestion-type" class="form-control" required>
+                                        <option value="">Seleziona...</option>
+                                        <option value="gameplay">Gameplay</option>
+                                        <option value="mod">Nuova Mod</option>
+                                        <option value="interface">Interfaccia</option>
+                                        <option value="performance">Prestazioni</option>
+                                        <option value="altro">Altro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Sezione descrizione suggerimento -->
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label for="suggestion-description">Descrizione del Suggerimento <span
+                                        class="required">*</span></label>
+                                <textarea id="suggestion-description" name="description" class="form-control" rows="5"
+                                    required></textarea>
+                                <div class="form-hint">Descrivi dettagliatamente il tuo suggerimento e come potrebbe
+                                    migliorare l'esperienza di gioco</div>
+                            </div>
+
+                            <!-- Sezione link utili (mod o altro) -->
+                            <div class="form-group" style="margin-top: 20px;">
+                                <label for="suggestion-link-input">Link utili (Modrinth/CurseForge/Altro)</label>
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px;">
+                                    <input type="url" id="suggestion-link-input" class="form-control"
+                                        placeholder="https://modrinth.com/mod/...">
+                                    <button type="button" id="add-link-btn" class="btn"
+                                        style="min-width: 150px;">Aggiungi link</button>
+                                </div>
+                                <div class="form-hint">Aggiungi uno o più link. Puoi rimuoverli dall'elenco sottostante.
+                                </div>
+                                <div id="links-list"
+                                    style="margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                                <!-- Hidden inputs for links[] verranno inseriti dinamicamente via JS -->
+                            </div>
+
+
+
+                            <input type="hidden" name="_subject" value="Nuovo suggerimento per il Modpack">
+                            <input type="hidden" name="_language" value="it">
+
+                            <!-- Pulsante invio -->
+                            <div class="form-actions">
+                                <button type="submit" class="submit-btn">Invia Suggerimento</button>
+                                <div class="form-hint">I campi contrassegnati con <span class="required">*</span> sono
+                                    obbligatori</div>
+                            </div>
+                        </form>
+
+                        <div id="suggestionsSuccessMessage" class="success-message" style="display: none;">
+                            <h3>Grazie per il tuo suggerimento!</h3>
+                            <p>Il team valuterà la tua proposta al più presto.</p>
+                            <button id="newSuggestionBtn" class="submit-btn"
+                                style="margin-top: 20px; background: rgba(255, 255, 255, 0.8); color: #333;">Invia un
+                                altro suggerimento</button>
                         </div>
                     </div>
                 </div>
@@ -483,6 +578,8 @@
                 });
             }
 
+
+
             // Gestione del form di segnalazione problemi
             const problemForm = document.getElementById('problem-form');
             const feedbackSuccessMessage = document.getElementById('feedbackSuccessMessage');
@@ -490,10 +587,100 @@
 
             // Gestione del pulsante per nuova segnalazione
             if (newReportBtn) {
-                newReportBtn.addEventListener('click', function() {
+                newReportBtn.addEventListener('click', function () {
                     problemForm.style.display = 'block';
                     feedbackSuccessMessage.style.display = 'none';
                     problemForm.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Gestione del form di suggerimenti
+            const suggestionForm = document.getElementById('suggestion-form');
+            const suggestionsSuccessMessage = document.getElementById('suggestionsSuccessMessage');
+            const newSuggestionBtn = document.getElementById('newSuggestionBtn');
+
+            // Gestione del pulsante per nuovo suggerimento
+            if (newSuggestionBtn) {
+                newSuggestionBtn.addEventListener('click', function () {
+                    suggestionForm.style.display = 'block';
+                    suggestionsSuccessMessage.style.display = 'none';
+                    suggestionForm.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Gestione link dinamici nel form suggerimenti
+            const linksList = document.getElementById('links-list');
+            const linkInput = document.getElementById('suggestion-link-input');
+            const addLinkBtn = document.getElementById('add-link-btn');
+
+            function createLinkChip(url) {
+                const chip = document.createElement('div');
+                chip.style.display = 'inline-flex';
+                chip.style.alignItems = 'center';
+                chip.style.gap = '8px';
+                chip.style.padding = '8px 12px';
+                chip.style.background = 'rgba(255,255,255,0.08)';
+                chip.style.border = '1px solid rgba(255,255,255,0.15)';
+                chip.style.borderRadius = '999px';
+                chip.style.fontSize = '0.95rem';
+
+                const text = document.createElement('span');
+                text.textContent = url;
+                text.style.wordBreak = 'break-all';
+                chip.appendChild(text);
+
+                // Hidden input to submit
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'link vari';
+                hidden.value = url;
+                suggestionForm.appendChild(hidden);
+                chip._hiddenInput = hidden;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.textContent = '×';
+                removeBtn.style.background = 'transparent';
+                removeBtn.style.border = 'none';
+                removeBtn.style.color = '#fff';
+                removeBtn.style.fontSize = '1.1rem';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.setAttribute('aria-label', 'Rimuovi link');
+                removeBtn.addEventListener('click', () => {
+                    if (chip._hiddenInput && chip._hiddenInput.parentNode) {
+                        chip._hiddenInput.parentNode.removeChild(chip._hiddenInput);
+                    }
+                    chip.remove();
+                });
+                chip.appendChild(removeBtn);
+
+                return chip;
+            }
+
+            function isValidUrl(value) {
+                try { new URL(value); return true; } catch (_) { return false; }
+            }
+
+            function addLinkFromInput() {
+                const value = (linkInput?.value || '').trim();
+                if (!value) return;
+                if (!isValidUrl(value)) {
+                    alert('Inserisci un URL valido.');
+                    return;
+                }
+                const chip = createLinkChip(value);
+                linksList.appendChild(chip);
+                linkInput.value = '';
+                linkInput.focus();
+            }
+
+            if (addLinkBtn && linkInput && linksList && suggestionForm) {
+                addLinkBtn.addEventListener('click', addLinkFromInput);
+                linkInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addLinkFromInput();
+                    }
                 });
             }
 
@@ -551,6 +738,8 @@
                 });
             }
 
+
+
             // Modifica la gestione dell'invio del form per includere i file
             if (problemForm) {
                 problemForm.addEventListener('submit', function (e) {
@@ -603,19 +792,72 @@
                 });
             }
 
+            // Gestione dell'invio del form di suggerimenti
+            if (suggestionForm) {
+                suggestionForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Ottieni l'URL di Formspree dalla configurazione
+                    const formspreeUrl = configManager.config.feedbackRoadmap.sections.suggestions.formspreeUrl;
+                    suggestionForm.action = formspreeUrl;
+
+                    // Crea un FormData object per inviare il form
+                    const formData = new FormData(suggestionForm);
+
+                    // Invia il form tramite fetch API
+                    fetch(formspreeUrl, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    })
+                        .then(async response => {
+                            const data = await response.json();
+                            if (response.ok) {
+                                // Mostra il messaggio di successo
+                                suggestionForm.style.display = 'none';
+                                suggestionsSuccessMessage.style.display = 'block';
+                                // Resetta il form
+                                suggestionForm.reset();
+                                // Pulisci i link dinamici
+                                const linkHiddenInputs = suggestionForm.querySelectorAll('input[name="links[]"]');
+                                linkHiddenInputs.forEach((el) => el.parentNode && el.parentNode.removeChild(el));
+                                const linksListEl = document.getElementById('links-list');
+                                if (linksListEl) linksListEl.innerHTML = '';
+                            } else {
+                                // Mostra l'errore di validazione specifico
+                                let errorMessage = 'Si è verificato un errore durante l\'invio del form.';
+                                if (data.errors && data.errors.length > 0) {
+                                    errorMessage = data.errors.map(err => err.message).join(' ');
+                                } else if (data.message) {
+                                    errorMessage = data.message;
+                                }
+                                throw new Error(errorMessage);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Errore:', error);
+                            alert('Si è verificato un errore durante l\'invio del form: ' + error.message);
+                        });
+                });
+            }
+
             // Funzione per applicare le configurazioni dalla config.json
             function applyFeedbackRoadmapConfig() {
                 const config = configManager.config;
 
                 // Verifica se la sezione è abilitata
                 if (!config.feedbackRoadmap || !config.feedbackRoadmap.enabled) {
-                    // Nascondi i pulsanti delle tab per feedback e roadmap
+                    // Nascondi i pulsanti delle tab per feedback, suggestions e roadmap
                     document.querySelector('[data-tab="feedback"]').style.display = 'none';
+                    document.querySelector('[data-tab="suggestions"]').style.display = 'none';
                     document.querySelector('[data-tab="roadmap"]').style.display = 'none';
                     return;
                 }
 
                 const feedbackConfig = config.feedbackRoadmap.sections.feedback;
+                const suggestionsConfig = config.feedbackRoadmap.sections.suggestions;
                 const roadmapConfig = config.feedbackRoadmap.sections.roadmap;
 
                 // Configura la sezione feedback
