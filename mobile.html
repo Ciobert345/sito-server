@@ -351,6 +351,40 @@
 
                     <div id="tab-roadmap" class="tab-content">
                         <p>Ecco la roadmap dei prossimi aggiornamenti e funzionalità previste per il server.</p>
+                        <div id="roadmap-filters" class="roadmap-filters" style="margin-bottom:10px;">
+                            <div class="pill-tab-selector">
+                                <button class="pill-tab-btn active" data-status="all">
+                                    <span class="icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/></svg>
+                                    </span>
+                                    <span class="label">Tutti</span>
+                                </button>
+                                <button class="pill-tab-btn" data-status="backlog">
+                                    <span class="icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#8e44ad"><circle cx="12" cy="12" r="9"/></svg>
+                                    </span>
+                                    <span class="label">Backlog</span>
+                                </button>
+                                <button class="pill-tab-btn" data-status="planned">
+                                    <span class="icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#3498db"><circle cx="12" cy="12" r="9"/></svg>
+                                    </span>
+                                    <span class="label">Pianificato</span>
+                                </button>
+                                <button class="pill-tab-btn" data-status="in-progress">
+                                    <span class="icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#f39c12"><circle cx="12" cy="12" r="9"/></svg>
+                                    </span>
+                                    <span class="label">In Corso</span>
+                                </button>
+                                <button class="pill-tab-btn" data-status="completed">
+                                    <span class="icon" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#2ecc71"><circle cx="12" cy="12" r="9"/></svg>
+                                    </span>
+                                    <span class="label">Completato</span>
+                                </button>
+                            </div>
+                        </div>
                         <div id="roadmap-container" class="roadmap-container improved-roadmap">
                             <!-- Contenuto generato dinamicamente da JavaScript -->
                         </div>
@@ -410,12 +444,15 @@
             });
 
             // Gestione tab
-            const tabBtns = document.querySelectorAll('.pill-tab-btn');
+            const tabBtns = document.querySelectorAll('.pill-tab-btn[data-tab]');
             const tabContents = document.querySelectorAll('.tab-content');
             
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tabId = btn.getAttribute('data-tab');
+                    if (!tabId) return;
+                    const contentEl = document.getElementById(tabId);
+                    if (!contentEl) return;
                     
                     // Rimuovi la classe active da tutti i pulsanti e contenuti
                     tabBtns.forEach(b => b.classList.remove('active'));
@@ -423,7 +460,7 @@
                     
                     // Aggiungi la classe active al pulsante e contenuto corrente
                     btn.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
+                    contentEl.classList.add('active');
                 });
             });
 
@@ -713,7 +750,8 @@
             // Chiamata alla funzione per generare la roadmap
             generateRoadmap();
             const roadmapContainer = document.getElementById('roadmap-container');
-            
+            const roadmapFilters = document.getElementById('roadmap-filters');
+                    
             if (roadmapContainer) {
                 // Inizializza il ConfigManager se non è già stato fatto
                 if (!window.configManager) {
@@ -752,8 +790,26 @@
                         window.configManager.config.feedbackRoadmap.sections.roadmap && 
                         window.configManager.config.feedbackRoadmap.sections.roadmap.items) {
                         
-                        const roadmapItems = window.configManager.config.feedbackRoadmap.sections.roadmap.items;
-                        
+                        const roadmapItems = window.configManager.config.feedbackRoadmap.sections.roadmap.items.slice();
+
+                        // Ordinamento: colonna -> priorità -> titolo
+                        const columnOrder = { backlog: 0, nextup: 1, inprogress: 2, done: 3 };
+                        const priorityOrder = { 'Alta': 0, 'Media': 1, 'Bassa': 2, 'alta': 0, 'media': 1, 'bassa': 2 };
+
+                        roadmapItems.sort((a, b) => {
+                            const ca = columnOrder[a.column] ?? 99;
+                            const cb = columnOrder[b.column] ?? 99;
+                            if (ca !== cb) return ca - cb;
+
+                            const pa = priorityOrder[a.priority] ?? 99;
+                            const pb = priorityOrder[b.priority] ?? 99;
+                            if (pa !== pb) return pa - pb;
+
+                            const ta = (a.title || '').toLowerCase();
+                            const tb = (b.title || '').toLowerCase();
+                            return ta.localeCompare(tb);
+                        });
+
                         roadmapItems.forEach(item => {
                             const status = columnToStatus[item.column] || 'planned';
                             
@@ -767,6 +823,41 @@
                             
                             roadmapContainer.appendChild(roadmapItem);
                         });
+
+                        // Aggiorna conteggi e abilita filtri
+                        function updateFilterCounts() {
+                            const allItems = roadmapContainer.querySelectorAll('.roadmap-item');
+                            const statuses = ['backlog','planned','in-progress','completed'];
+                            const counts = { all: allItems.length };
+                            statuses.forEach(s => counts[s] = roadmapContainer.querySelectorAll(`.roadmap-item.${s}`).length);
+                            roadmapFilters?.querySelectorAll('.roadmap-filter').forEach(btn => {
+                                const key = btn.getAttribute('data-status');
+                                const countEl = btn.querySelector('.count');
+                                if (countEl && key && counts[key] !== undefined) countEl.textContent = `(${counts[key]})`;
+                                if (countEl && key === 'all') countEl.textContent = `(${counts.all})`;
+                            });
+                        }
+
+                        function applyFilter(status) {
+                            const allItems = roadmapContainer.querySelectorAll('.roadmap-item');
+                            allItems.forEach(el => {
+                                el.style.display = (status === 'all' || el.classList.contains(status)) ? '' : 'none';
+                            });
+                        }
+
+                        // Filtro con pill-tab (stile Utilità)
+                        if (roadmapFilters) {
+                            // Applica filtro di default
+                            applyFilter('all');
+                            roadmapFilters.addEventListener('click', (e) => {
+                                const btn = e.target.closest('.pill-tab-btn');
+                                if (!btn) return;
+                                roadmapFilters.querySelectorAll('.pill-tab-btn').forEach(b => b.classList.remove('active'));
+                                btn.classList.add('active');
+                                const status = btn.getAttribute('data-status') || 'all';
+                                applyFilter(status);
+                            });
+                        }
                     } else {
                         // Fallback se la configurazione non è disponibile
                         roadmapContainer.innerHTML = '<p>Informazioni sulla roadmap non disponibili al momento.</p>';
