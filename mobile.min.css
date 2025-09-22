@@ -1,3 +1,5 @@
+.improved-roadmap .roadmap-item.backlog{border-left-color:#8e44ad}
+/* Readable dropdown options in mobile suggestions */
 #tab-suggestions select.form-control option{background:#111111;color:#ffffff}
 #tab-suggestions select.form-control optgroup{background:#111111;color:#cfd3da}
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001s!important;animation-iteration-count:1!important;transition-duration:0.001s!important;}}
