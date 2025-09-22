@@ -461,16 +461,16 @@
                                         required>
                                 </div>
                                 <div class="form-group">
-                                    <label for="suggestion-type">Tipo di Suggerimento <span
-                                            class="required">*</span></label>
-                                    <select id="suggestion-type" name="suggestion-type" class="form-control" required>
-                                        <option value="">Seleziona...</option>
+                                    <label for="suggestion-type">Tipo di Suggerimento <span class="required">*</span></label>
+                                    <select id="suggestion-type" name="suggestion-type" class="form-control" required aria-describedby="suggestion-type-hint">
+                                        <option value="" disabled selected hidden>Seleziona il tipo...</option>
                                         <option value="gameplay">Gameplay</option>
-                                        <option value="mod">Nuova Mod</option>
                                         <option value="interface">Interfaccia</option>
                                         <option value="performance">Prestazioni</option>
+                                        <option value="mod">Nuova Mod</option>
                                         <option value="altro">Altro</option>
                                     </select>
+                                    <div class="form-hint" id="suggestion-type-hint">Scegli la categoria più adatta al tuo suggerimento.</div>
                                 </div>
                             </div>
 
