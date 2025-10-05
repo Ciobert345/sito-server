@@ -121,7 +121,7 @@
           },
           {
             "id": "10",
-            "title": "Crash quando si esce da un server -Causato da Fabric, attendo versione correttiva",
+            "title": "Crash quando si esce da un server -Causato da Hexalia, attendo versione correttiva",
             "type": "Bugfix",
             "priority": "Alta",
             "column": "done"
