@@ -173,7 +173,7 @@
             "title": "Crash quando si de-zoomma la mappa",
             "type": "Bugfix",
             "priority": "Alta",
-            "column": "nextup"
+            "column": "backlog"
           }
         ]
       }
