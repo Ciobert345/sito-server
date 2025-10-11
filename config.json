@@ -47,19 +47,19 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
-      "title": "🚨AGGIORNARE IL MODPACK🚨",
+      "enabled": true,
+      "title": "⚠️AGGIORNARE ORITECH⚠️",
       "subtitle": "",
-      "message": "L’aggiornamento Arcane Engineering ⚙️🔮 è uscito!",
+      "message": "Per giocare è necessario aggiornare la mod Oritech all'ultima versione: https://modrinth.com/mod/oritech/version/vLhB1VYE",
       "icon": "notification",
       "style": "banner-red"
     },
     {
       "id": "banner2",
       "enabled": true,
-      "title": "⚠️AGGIORNARE FABRIC⚠️",
+      "title": "⚠️AGGIORNARE HEXALIA⚠️",
       "subtitle": "",
-      "message": "Il server e il modpack sono in aggiornamento per risolvere alcuni problemi; è necessario scaricare la nuova versione e aggiornare Fabric alla 0.17.2.",
+      "message": "Per giocare è necessario aggiornare la mod Hexalia all'ultima versione: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
       "icon": "notification",
       "style": "banner-red"
     }
