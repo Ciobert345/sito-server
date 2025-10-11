@@ -56,7 +56,7 @@
     },
     {
       "id": "banner2",
-      "enabled": false,
+      "enabled": true,
       "title": "⚠️AGGIORNARE HEXALIA⚠️",
       "subtitle": "",
       "message": "Per giocare è necessario aggiornare la mod Hexalia all'ultima versione: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
