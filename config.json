@@ -48,15 +48,15 @@
     {
       "id": "banner1",
       "enabled": true,
-      "title": "⚠️AGGIORNARE ORITECH⚠️",
+      "title": "⚠️AGGIORNARE IL MODPACK⚠️",
       "subtitle": "",
-      "message": "Per giocare è necessario aggiornare la mod Oritech all'ultima versione:  https://modrinth.com/mod/oritech/version/vLhB1VYE",
+      "message": "Per giocare è necessario aggiornare il modpack",
       "icon": "notification",
       "style": "banner-red"
     },
     {
       "id": "banner2",
-      "enabled": true,
+      "enabled": false,
       "title": "⚠️AGGIORNARE HEXALIA⚠️",
       "subtitle": "",
       "message": "Per giocare è necessario aggiornare la mod Hexalia all'ultima versione: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
