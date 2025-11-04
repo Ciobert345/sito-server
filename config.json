@@ -145,14 +145,14 @@
             "title": "Correzione bug Incudine di Thallium",
             "type": "Bugfix",
             "priority": "Alta",
-            "column": "done"
+            "column": "backlog"
           },
           {
             "id": "9",
             "title": "Aggiunta di altre quest",
             "type": "Miglioramento",
             "priority": "Bassa",
-            "column": "done"
+            "column": "backlog"
           }
         ]
       }
