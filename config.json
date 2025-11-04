@@ -120,6 +120,13 @@
             "column": "inprogress"
           },
           {
+            "id": "13",
+            "title": "Update di Dicembre",
+            "type": "nextup",
+            "priority": "Alta",
+            "column": "inprogress"
+          },
+          {
             "id": "10",
             "title": "Crash quando si esce da un server -Causato da Hexalia, attendo versione correttiva",
             "type": "Bugfix",
