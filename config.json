@@ -113,13 +113,6 @@
         ],
         "items": [
           {
-            "id": "1",
-            "title": "Ottimizzazione performance",
-            "type": "Miglioramento",
-            "priority": "Alta",
-            "column": "inprogress"
-          },
-          {
             "id": "13",
             "title": "Update di Dicembre",
             "type": "nextup",
