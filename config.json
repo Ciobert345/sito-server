@@ -134,13 +134,6 @@
             "column": "backlog"
           },
           {
-            "id": "3",
-            "title": "Fix crash con Etherology",
-            "type": "Bugfix",
-            "priority": "Alta",
-            "column": "backlog"
-          },
-          {
             "id": "8",
             "title": "Correzione bug Incudine di Thallium",
             "type": "Bugfix",
