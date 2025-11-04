@@ -148,20 +148,6 @@
             "column": "backlog"
           },
           {
-            "id": "4",
-            "title": "Nuove quest",
-            "type": "Feature",
-            "priority": "Bassa",
-            "column": "backlog"
-          },
-          {
-            "id": "6",
-            "title": "Miglioramento UI",
-            "type": "Miglioramento",
-            "priority": "Media",
-            "column": "backlog"
-          },
-          {
             "id": "8",
             "title": "Correzione bug Incudine di Thallium",
             "type": "Bugfix",
@@ -174,13 +160,6 @@
             "type": "Miglioramento",
             "priority": "Bassa",
             "column": "done"
-          },
-          {
-            "id": "12",
-            "title": "Crash quando si de-zoomma la mappa",
-            "type": "Bugfix",
-            "priority": "Alta",
-            "column": "backlog"
           }
         ]
       }
