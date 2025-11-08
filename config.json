@@ -25,23 +25,10 @@
     "title": "Aggiornamento in arrivo",
     "expiredMessage": "Il server è ora disponibile!"
   },
-  "// Configurazione dei link di download": "",
-  "downloadLinks": {
-    "curseforge": {
-      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.6.5/ModManfredonia-3.6.5.zip",
-      "launcher": "https://www.curseforge.com/download/app"
-    },
-    "modrinth": {
-      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.6.5/ModManfredonia-3.6.5.mrpack",
-      "launcher": "https://modrinth.com/app"
-    },
-    "sklauncher": {
-      "modpack": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.6.5/ModManfredonia-3.6.5.zip",
-      "launcher": "https://skmedix.pl/"
-    },
-    "update": {
-      "latest": "https://github.com/Ciobert345/Mod-server-Manfredonia/releases/download/v3.6.5/ModManfredonia-3.6.5.zip"
-    }
+  "// Configurazione del repository GitHub per le releases": "",
+  "github": {
+    "// TODO: inserisci qui nome repo (formato: NOMEUTENTE/NOMEREPO)": "",
+    "repository": "Ciobert345/Mod-server-Manfredonia"
   },
   "// Banner informativi (attivabili singolarmente)": "",
   "infoBanners": [
