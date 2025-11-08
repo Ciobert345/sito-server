@@ -72,8 +72,21 @@ class ConfigManager {
         // Applica la configurazione del box Novità importanti
         this.applyUpdateNotice();
 
-        // Applica i link di download
-        this.applyDownloadLinks();
+        // Se GitHub è configurato, salta applyDownloadLinks e carica direttamente da GitHub
+        const hasGitHub = this.config.github && 
+                         this.config.github.repository && 
+                         this.config.github.repository !== 'NOMEUTENTE/NOMEREPO';
+
+        if (hasGitHub) {
+            // PRIMA abilita i link con fallback dal config (così non rimangono bloccati)
+            // POI carica da GitHub e aggiorna con gli URL più recenti
+            this.enableDownloadLinksFromConfig();
+            // Carica e applica i dati dalla release GitHub (questo aggiornerà anche i link)
+            this.loadGitHubRelease();
+        } else {
+            // Applica i link di download dal config solo se GitHub non è configurato
+            this.applyDownloadLinks();
+        }
 
         // Applica i testi del sito
         this.applyTexts();
@@ -608,20 +621,401 @@ class ConfigManager {
         updateCountdown(); // Chiamata iniziale per impostare subito i valori
     }
 
-    applyDownloadLinks() {
-        if (!this.config.downloadLinks) return;
+    /**
+     * Carica l'ultima release da GitHub e popola la sezione
+     */
+    async loadGitHubRelease() {
+        if (!this.config.github || !this.config.github.repository) {
+            console.warn('[ConfigManager] Repository GitHub non configurato');
+            this.showGitHubError();
+            return;
+        }
 
-        // Aggiorna i link per CurseForge
-        if (this.config.downloadLinks.curseforge) {
-            // Link del modpack
-            const curseforgeBtns = document.querySelectorAll('.download-option:nth-child(1) .btn');
-            curseforgeBtns.forEach(btn => {
-                if (this.config.downloadLinks.curseforge.modpack) {
-                    btn.href = this.config.downloadLinks.curseforge.modpack;
+        // TODO: inserisci qui nome repo (formato: NOMEUTENTE/NOMEREPO)
+        const repo = this.config.github.repository;
+        
+        // Verifica che il repository non sia il placeholder
+        if (repo === 'NOMEUTENTE/NOMEREPO') {
+            console.warn('[ConfigManager] Repository GitHub non configurato correttamente');
+            this.showGitHubError();
+            return;
+        }
+
+        const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`;
+
+        try {
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.warn('[ConfigManager] Nessuna release trovata');
+                    this.showGitHubError();
+                } else {
+                    throw new Error(`Errore HTTP: ${response.status}`);
+                }
+                // Non fare return, continua per abilitare i link con fallback
+                return;
+            }
+
+            const release = await response.json();
+
+            // Verifica che ci siano i dati necessari
+            if (!release.tag_name || !release.assets || release.assets.length === 0) {
+                console.warn('[ConfigManager] Release senza dati completi');
+                this.showGitHubError();
+                // Non fare return, continua per abilitare i link con fallback
+                return;
+            }
+
+            // Trova gli asset .zip e .mrpack
+            let zipUrl = null;
+            let mrpackUrl = null;
+            
+            release.assets.forEach(asset => {
+                const name = asset.name.toLowerCase();
+                if (name.endsWith('.zip') && !zipUrl) {
+                    zipUrl = asset.browser_download_url;
+                } else if (name.endsWith('.mrpack') && !mrpackUrl) {
+                    mrpackUrl = asset.browser_download_url;
                 }
             });
 
-            // Link del launcher
+            // Se non troviamo .zip, usa il primo asset disponibile come fallback
+            if (!zipUrl && release.assets.length > 0) {
+                zipUrl = release.assets[0].browser_download_url;
+            }
+
+            if (!zipUrl) {
+                console.warn('[ConfigManager] Nessun asset disponibile per il download');
+                this.showGitHubError();
+                return; // showGitHubError già abilita i link con fallback
+            }
+
+            // Popola la sezione con i dati della release (usa .zip per il pulsante principale)
+            this.populateGitHubRelease({
+                version: release.tag_name,
+                changelog: release.body || 'Nessun changelog disponibile',
+                downloadUrl: zipUrl
+            });
+
+            // Aggiorna i link di download esistenti con i formati corretti
+            // Chiama immediatamente (la funzione ha già un sistema di retry interno)
+            this.updateDownloadLinksFromGitHub(zipUrl, mrpackUrl);
+
+        } catch (error) {
+            console.error('[ConfigManager] Errore nel caricamento della release GitHub:', error);
+            this.showGitHubError();
+        }
+    }
+
+    /**
+     * Popola la sezione HTML con i dati della release
+     */
+    populateGitHubRelease(data) {
+        const loadingEl = document.getElementById('github-loading');
+        const errorEl = document.getElementById('github-error');
+        const infoEl = document.getElementById('github-release-info');
+        const versionEl = document.getElementById('version-tag');
+        const changelogEl = document.getElementById('changelog-content');
+        const downloadBtn = document.getElementById('github-download-btn');
+
+        // Nascondi loading ed error
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
+
+        // Mostra le informazioni
+        if (infoEl) {
+            infoEl.style.display = 'block';
+            
+            // Versione
+            if (versionEl) {
+                versionEl.textContent = data.version;
+            }
+
+            // Changelog - converti markdown base in HTML semplice
+            if (changelogEl) {
+                let changelogText = data.changelog;
+                // Rimuovi markdown base e converti in testo formattato
+                changelogText = changelogText
+                    .replace(/###\s+(.+)/g, '<strong>$1</strong>')
+                    .replace(/##\s+(.+)/g, '<strong>$1</strong>')
+                    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                    .replace(/`(.+?)`/g, '<code style="background: rgba(255, 255, 255, 0.15); padding: 2px 6px; border-radius: 4px;">$1</code>');
+                
+                changelogEl.innerHTML = changelogText;
+            }
+
+            // Link download
+            if (downloadBtn) {
+                downloadBtn.href = data.downloadUrl;
+            }
+        }
+    }
+
+    /**
+     * Mostra il messaggio di errore
+     */
+    showGitHubError() {
+        const loadingEl = document.getElementById('github-loading');
+        const errorEl = document.getElementById('github-error');
+        const infoEl = document.getElementById('github-release-info');
+
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (infoEl) infoEl.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'block';
+        
+        // Anche in caso di errore, abilita i link usando i valori dal config come fallback
+        this.enableDownloadLinksFromConfig();
+    }
+    
+    /**
+     * Abilita i link di download usando i valori dal config come fallback
+     */
+    enableDownloadLinksFromConfig() {
+        if (!this.config.downloadLinks) {
+            console.warn('[ConfigManager] Nessun downloadLinks nel config, non posso abilitare i link');
+            return;
+        }
+        
+        // Funzione helper con retry
+        const enableLinks = (retryCount = 0) => {
+            const maxRetries = 5;
+            const downloadBtns = document.querySelectorAll('.download-modpack-btn');
+            console.log('[ConfigManager] Abilitazione link da config (fallback):', downloadBtns.length, 'pulsanti trovati (tentativo', retryCount + 1, ')');
+            
+            // Se non trova i link e non abbiamo raggiunto il limite di retry, riprova
+            if (downloadBtns.length === 0 && retryCount < maxRetries) {
+                console.log('[ConfigManager] Link non trovati per fallback, riprovo tra 100ms...');
+                setTimeout(() => enableLinks(retryCount + 1), 100);
+                return;
+            }
+            
+            if (downloadBtns.length === 0) {
+                console.warn('[ConfigManager] Link non trovati dopo', maxRetries, 'tentativi per fallback');
+                return;
+            }
+        
+            downloadBtns.forEach((btn, index) => {
+                const format = btn.getAttribute('data-format');
+                let fallbackUrl = null;
+                
+                // Cerca l'URL di fallback nel config
+                if (format === 'mrpack' && this.config.downloadLinks.modrinth && this.config.downloadLinks.modrinth.modpack) {
+                    fallbackUrl = this.config.downloadLinks.modrinth.modpack;
+                } else if (format === 'zip') {
+                    // Per zip, prova prima CurseForge, poi SKLauncher
+                    if (this.config.downloadLinks.curseforge && this.config.downloadLinks.curseforge.modpack) {
+                        fallbackUrl = this.config.downloadLinks.curseforge.modpack;
+                    } else if (this.config.downloadLinks.sklauncher && this.config.downloadLinks.sklauncher.modpack) {
+                        fallbackUrl = this.config.downloadLinks.sklauncher.modpack;
+                    } else if (this.config.downloadLinks.update && this.config.downloadLinks.update.latest) {
+                        fallbackUrl = this.config.downloadLinks.update.latest;
+                    }
+                }
+                
+                if (fallbackUrl) {
+                    btn.href = fallbackUrl;
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                    btn.onclick = function(e) { return true; };
+                    btn.removeAttribute('onclick');
+                    console.log(`[ConfigManager] Link ${index + 1} abilitato con fallback:`, fallbackUrl);
+                } else {
+                    console.warn(`[ConfigManager] Nessun fallback disponibile per pulsante ${index + 1} (format: ${format})`);
+                    // Anche senza fallback, abilita il link (potrebbe essere aggiornato dopo)
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                    btn.onclick = function(e) { return true; };
+                    btn.removeAttribute('onclick');
+                }
+            });
+        };
+        
+        // Avvia l'abilitazione con retry
+        enableLinks();
+    }
+
+    /**
+     * Aggiorna i link di download esistenti con gli URL da GitHub
+     * @param {string} zipUrl - URL del file .zip
+     * @param {string} mrpackUrl - URL del file .mrpack (opzionale)
+     */
+    updateDownloadLinksFromGitHub(zipUrl, mrpackUrl = null) {
+        console.log('[ConfigManager] Aggiornamento link download da GitHub:', { zipUrl, mrpackUrl });
+        
+        // Funzione helper per aggiornare i link con retry
+        const updateLinks = (retryCount = 0) => {
+            const maxRetries = 5;
+            const downloadBtns = document.querySelectorAll('.download-modpack-btn');
+            console.log('[ConfigManager] Trovati', downloadBtns.length, 'pulsanti download-modpack-btn (tentativo', retryCount + 1, ')');
+            
+            // Se non trova i link e non abbiamo raggiunto il limite di retry, riprova
+            if (downloadBtns.length === 0 && retryCount < maxRetries) {
+                console.log('[ConfigManager] Link non trovati, riprovo tra 100ms...');
+                setTimeout(() => updateLinks(retryCount + 1), 100);
+                return;
+            }
+            
+            // Se dopo tutti i retry non trova i link, usa il fallback
+            if (downloadBtns.length === 0) {
+                console.warn('[ConfigManager] Link non trovati dopo', maxRetries, 'tentativi, uso fallback');
+                this.enableDownloadLinksFromConfig();
+                return;
+            }
+            
+            downloadBtns.forEach((btn, index) => {
+                const format = btn.getAttribute('data-format');
+                console.log(`[ConfigManager] Pulsante ${index + 1}: format=${format}, href attuale=${btn.href}`);
+                
+                if (format === 'mrpack' && mrpackUrl) {
+                    btn.href = mrpackUrl;
+                    // Abilita il link e rimuovi lo stile disabilitato
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                    // Sostituisci l'onclick con una funzione che permette il download
+                    btn.onclick = function(e) {
+                        // Permetti il comportamento normale del link
+                        return true;
+                    };
+                    // Rimuovi anche l'attributo onclick inline
+                    btn.removeAttribute('onclick');
+                    console.log('[ConfigManager] Link .mrpack aggiornato e abilitato:', mrpackUrl, 'href finale:', btn.href);
+                } else if (format === 'zip' && zipUrl) {
+                    btn.href = zipUrl;
+                    // Abilita il link e rimuovi lo stile disabilitato
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                    // Sostituisci l'onclick con una funzione che permette il download
+                    btn.onclick = function(e) {
+                        // Permetti il comportamento normale del link
+                        return true;
+                    };
+                    // Rimuovi anche l'attributo onclick inline
+                    btn.removeAttribute('onclick');
+                    console.log('[ConfigManager] Link .zip aggiornato e abilitato:', zipUrl, 'href finale:', btn.href);
+                } else {
+                    console.warn(`[ConfigManager] Pulsante ${index + 1} non aggiornato: format=${format}, zipUrl=${!!zipUrl}, mrpackUrl=${!!mrpackUrl}`);
+                }
+            });
+        };
+        
+        // Avvia l'aggiornamento con retry
+        updateLinks();
+        
+        // Aggiorna anche TUTTI i link che puntano a GitHub releases (per retrocompatibilità)
+        const allGitHubLinks = document.querySelectorAll('a[href*="github.com"]');
+        console.log('[ConfigManager] Trovati', allGitHubLinks.length, 'link GitHub nella pagina');
+        
+        let updatedCount = 0;
+        allGitHubLinks.forEach(link => {
+            // Salta i link già aggiornati sopra
+            if (link.classList.contains('download-modpack-btn')) {
+                return;
+            }
+            
+            const currentHref = link.href.toLowerCase();
+            
+            // Controlla se il link punta a una release GitHub
+            if (currentHref.includes('/releases/download/')) {
+                const oldHref = link.href;
+                
+                // Se il link punta a un file .mrpack e abbiamo un .mrpack, aggiornalo
+                if (currentHref.includes('.mrpack') && mrpackUrl) {
+                    link.href = mrpackUrl;
+                    updatedCount++;
+                    console.log('[ConfigManager] Link .mrpack aggiornato:', oldHref, '->', mrpackUrl);
+                }
+                // Se il link punta a un file .zip o non ha estensione specifica, aggiornalo con .zip
+                else if (currentHref.includes('.zip') || (!currentHref.includes('.mrpack') && zipUrl)) {
+                    link.href = zipUrl;
+                    updatedCount++;
+                    console.log('[ConfigManager] Link .zip aggiornato:', oldHref, '->', zipUrl);
+                }
+            }
+        });
+        
+        console.log('[ConfigManager] Totale link aggiornati:', updatedCount + downloadBtns.length);
+        
+        // POI: Aggiorna i link specifici per ogni launcher (per sicurezza)
+        this.updateSpecificLauncherLinks(zipUrl, mrpackUrl);
+    }
+    
+    /**
+     * Aggiorna i link specifici per ogni launcher
+     */
+    updateSpecificLauncherLinks(zipUrl, mrpackUrl = null) {
+        const curseforgeContainer = document.querySelector('.download-options > .download-option:nth-child(1)');
+        if (curseforgeContainer) {
+            const curseforgeBtn = curseforgeContainer.querySelector('.btn');
+            if (curseforgeBtn && zipUrl) {
+                curseforgeBtn.href = zipUrl;
+                console.log('[ConfigManager] Link CurseForge confermato:', zipUrl);
+            }
+        }
+
+        // Aggiorna Modrinth (seconda opzione) con .mrpack se disponibile, altrimenti .zip
+        const modrinthContainer = document.querySelector('.download-options > .download-option:nth-child(2)');
+        if (modrinthContainer) {
+            const modrinthBtn = modrinthContainer.querySelector('.btn');
+            if (modrinthBtn) {
+                if (mrpackUrl) {
+                    modrinthBtn.href = mrpackUrl;
+                    console.log('[ConfigManager] Link Modrinth confermato con .mrpack:', mrpackUrl);
+                } else if (zipUrl) {
+                    // Fallback a .zip se .mrpack non è disponibile
+                    modrinthBtn.href = zipUrl;
+                    console.warn('[ConfigManager] File .mrpack non trovato, uso .zip per Modrinth');
+                }
+            }
+        }
+
+        // Aggiorna SKLauncher (terza opzione) con .zip
+        const sklauncherContainer = document.querySelector('.download-options > .download-option:nth-child(3)');
+        if (sklauncherContainer) {
+            const sklauncherBtn = sklauncherContainer.querySelector('.btn');
+            if (sklauncherBtn && zipUrl) {
+                sklauncherBtn.href = zipUrl;
+                console.log('[ConfigManager] Link SKLauncher confermato:', zipUrl);
+            }
+        }
+
+        // Aggiorna il pulsante di aggiornamento con .zip
+        const updateBtn = document.getElementById('update-download-btn');
+        if (updateBtn && zipUrl) {
+            updateBtn.href = zipUrl;
+        }
+
+        // Aggiorna anche i pulsanti con il testo "SCARICA AGGIORNAMENTO"
+        document.querySelectorAll('a').forEach(link => {
+            if (link.textContent.trim() === 'SCARICA AGGIORNAMENTO' && zipUrl) {
+                link.href = zipUrl;
+            }
+        });
+    }
+
+    applyDownloadLinks() {
+        if (!this.config.downloadLinks) return;
+
+        // Se GitHub è configurato, salta l'aggiornamento dei link modpack
+        // (verranno aggiornati da loadGitHubRelease)
+        const skipModpackLinks = this.config.github && 
+                                  this.config.github.repository && 
+                                  this.config.github.repository !== 'NOMEUTENTE/NOMEREPO';
+
+        // Aggiorna i link per CurseForge
+        if (this.config.downloadLinks.curseforge) {
+            // Link del modpack - salta se GitHub è configurato
+            if (!skipModpackLinks) {
+                const curseforgeBtns = document.querySelectorAll('.download-option:nth-child(1) .btn');
+                curseforgeBtns.forEach(btn => {
+                    if (this.config.downloadLinks.curseforge.modpack) {
+                        btn.href = this.config.downloadLinks.curseforge.modpack;
+                    }
+                });
+            }
+
+            // Link del launcher (sempre aggiornato)
             const curseforgeLinks = document.querySelectorAll('.download-option:nth-child(1) a[href*="curseforge.com"]');
             curseforgeLinks.forEach(link => {
                 if (this.config.downloadLinks.curseforge.launcher) {
@@ -632,15 +1026,17 @@ class ConfigManager {
 
         // Aggiorna i link per Modrinth
         if (this.config.downloadLinks.modrinth) {
-            // Link del modpack
-            const modrinthBtns = document.querySelectorAll('.download-option:nth-child(2) .btn');
-            modrinthBtns.forEach(btn => {
-                if (this.config.downloadLinks.modrinth.modpack) {
-                    btn.href = this.config.downloadLinks.modrinth.modpack;
-                }
-            });
+            // Link del modpack - salta se GitHub è configurato
+            if (!skipModpackLinks) {
+                const modrinthBtns = document.querySelectorAll('.download-option:nth-child(2) .btn');
+                modrinthBtns.forEach(btn => {
+                    if (this.config.downloadLinks.modrinth.modpack) {
+                        btn.href = this.config.downloadLinks.modrinth.modpack;
+                    }
+                });
+            }
 
-            // Link del launcher
+            // Link del launcher (sempre aggiornato)
             const modrinthLinks = document.querySelectorAll('.download-option:nth-child(2) a[href*="modrinth.com"]');
             modrinthLinks.forEach(link => {
                 if (this.config.downloadLinks.modrinth.launcher) {
@@ -651,13 +1047,15 @@ class ConfigManager {
 
         // Aggiorna i link per SKLauncher
         if (this.config.downloadLinks.sklauncher) {
-            // Link del modpack
-            const sklauncherBtns = document.querySelectorAll('.download-option:nth-child(3) .btn');
-            sklauncherBtns.forEach(btn => {
-                if (this.config.downloadLinks.sklauncher.modpack) {
-                    btn.href = this.config.downloadLinks.sklauncher.modpack;
-                }
-            });
+            // Link del modpack - salta se GitHub è configurato
+            if (!skipModpackLinks) {
+                const sklauncherBtns = document.querySelectorAll('.download-option:nth-child(3) .btn');
+                sklauncherBtns.forEach(btn => {
+                    if (this.config.downloadLinks.sklauncher.modpack) {
+                        btn.href = this.config.downloadLinks.sklauncher.modpack;
+                    }
+                });
+            }
 
             // Link del launcher
             const sklauncherLinks = document.querySelectorAll('.download-option:nth-child(3) a[href*="skmedix.pl"]');
@@ -695,11 +1093,115 @@ class ConfigManager {
 // Inizializza il ConfigManager quando il documento è pronto
 document.addEventListener('DOMContentLoaded', () => {
     const configManager = new ConfigManager();
+    
+    // Salva l'istanza globalmente PRIMA di init per accesso successivo
+    window.ConfigManager = window.ConfigManager || {};
+    window.ConfigManager.instance = configManager;
+    
     configManager.init().then(success => {
         if (success) {
             console.log('ConfigManager inizializzato con successo');
+            
+            // Assicurati che i link vengano aggiornati anche dopo che tutto è caricato
+            // Questo risolve il problema quando si ricarica la pagina
+            setTimeout(() => {
+                const instance = window.ConfigManager.instance;
+                if (instance && instance.config) {
+                    const downloadBtns = document.querySelectorAll('.download-modpack-btn');
+                    const disabledBtns = Array.from(downloadBtns).filter(btn => {
+                        const style = window.getComputedStyle(btn);
+                        return style.pointerEvents === 'none' || btn.href === '#' || btn.href === '' || btn.href === window.location.href;
+                    });
+                    
+                    if (disabledBtns.length > 0) {
+                        console.log('[ConfigManager] Trovati', disabledBtns.length, 'link ancora disabilitati dopo caricamento, riabilito con fallback');
+                        instance.enableDownloadLinksFromConfig();
+                    } else {
+                        console.log('[ConfigManager] Tutti i link sono già abilitati');
+                    }
+                }
+            }, 1000); // Aumentato a 1 secondo per dare più tempo
         } else {
             console.error('Errore durante l\'inizializzazione del ConfigManager');
+            // Anche in caso di errore, prova ad abilitare i link con fallback
+            setTimeout(() => {
+                if (configManager.config) {
+                    configManager.enableDownloadLinksFromConfig();
+                }
+            }, 1000);
+        }
+    });
+    
+    // Listener aggiuntivo per quando la pagina è completamente caricata
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const instance = window.ConfigManager.instance;
+            if (instance && instance.config) {
+                const downloadBtns = document.querySelectorAll('.download-modpack-btn');
+                const disabledBtns = Array.from(downloadBtns).filter(btn => {
+                    const style = window.getComputedStyle(btn);
+                    return style.pointerEvents === 'none' || btn.href === '#' || btn.href === '' || btn.href === window.location.href;
+                });
+                
+                if (disabledBtns.length > 0) {
+                    console.log('[ConfigManager] Evento load: trovati', disabledBtns.length, 'link ancora disabilitati, riabilito con fallback');
+                    instance.enableDownloadLinksFromConfig();
+                }
+            }
+        }, 500);
+    });
+    
+    // Listener globale per prevenire click su link disabilitati
+    // E se il link è disabilitato, prova ad abilitarlo immediatamente e poi riprova il click
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('.download-modpack-btn');
+        if (target && (target.href === '#' || target.href === '' || target.href === window.location.href)) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('[ConfigManager] Click su link disabilitato, provo ad abilitarlo...');
+            
+            // Prova immediatamente ad abilitare il link
+            const instance = window.ConfigManager.instance;
+            if (instance && instance.config) {
+                instance.enableDownloadLinksFromConfig();
+                
+                // Riprova dopo un breve delay e se il link è stato abilitato, esegui il click
+                setTimeout(() => {
+                    if (target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
+                        console.log('[ConfigManager] Link abilitato, eseguo il download:', target.href);
+                        // Esegui il download
+                        window.open(target.href, '_blank');
+                    } else {
+                        // Se ancora non funziona, riprova
+                        instance.enableDownloadLinksFromConfig();
+                        setTimeout(() => {
+                            if (target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
+                                window.open(target.href, '_blank');
+                            }
+                        }, 200);
+                    }
+                }, 100);
+            }
+            return false;
+        }
+    }, true);
+    
+    // Aggiungi event listener per hover solo quando i link sono abilitati
+    document.addEventListener('mouseover', (e) => {
+        const target = e.target.closest('.download-modpack-btn');
+        if (target && target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
+            target.style.transform = 'translateY(-3px)';
+            target.style.boxShadow = '0 12px 25px rgba(0, 0, 0, 0.4)';
+            target.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))';
+        }
+    });
+    
+    document.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('.download-modpack-btn');
+        if (target && target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
+            target.style.transform = 'translateY(0)';
+            target.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.3)';
+            target.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
         }
     });
 });
@@ -709,3 +1211,4 @@ window.ConfigManager = ConfigManager;
 /**
  * Applica i link di download dal config.json
  */
+
