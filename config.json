@@ -28,7 +28,10 @@
   "// Configurazione del repository GitHub per le releases": "",
   "github": {
     "// TODO: inserisci qui nome repo (formato: NOMEUTENTE/NOMEREPO)": "",
-    "repository": "Ciobert345/Mod-server-Manfredonia"
+    "repository": "Ciobert345/Mod-server-Manfredonia",
+    "// Token GitHub opzionale per aumentare il rate limit (ATTENZIONE: sarà visibile nel codice frontend)": "",
+    "// Per creare un token: https://github.com/settings/tokens -> Generate new token (classic) -> Seleziona solo 'public_repo'": "",
+    "token": "" 
   },
   "// Banner informativi (attivabili singolarmente)": "",
   "infoBanners": [
