@@ -39,13 +39,37 @@
 
                     <div class="download-options-container"
                         style="margin-bottom: 40px; display: flex; flex-direction: column; align-items: center; width: 100%;">
-                        <h3 class="text-center"
-                            style="margin-bottom: 25px; font-size: 2rem; color: white; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); letter-spacing: 1px; position: relative; display: block; padding-bottom: 10px; text-align: center; width: 100%;">
-                            <span style="position: relative; z-index: 1;">Scegli il tuo Launcher</span>
-                            <span
-                                style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: white; border-radius: 3px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);"></span>
-                        </h3>
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1200px; margin-bottom: 25px; flex-wrap: wrap; gap: 10px; padding: 0 15px;">
+                            <h3 class="text-center"
+                                style="margin: 0; font-size: 2rem; color: white; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); letter-spacing: 1px; position: relative; display: block; padding-bottom: 10px; text-align: center; flex: 1;">
+                                <span style="position: relative; z-index: 1;">Scegli il tuo Launcher</span>
+                                <span
+                                    style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background: white; border-radius: 3px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);"></span>
+                            </h3>
 
+                        </div>
+
+                        <div id="refresh-download-links-container"
+                            style="display: none; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; white-space: nowrap;">Se
+                                non riesci a scaricare l'ultima versione premi questo tasto</span>
+                            <button id="refresh-download-links-btn"
+                                onclick="if(typeof refreshDownloadLinks === 'function') { refreshDownloadLinks(); } else { console.error('[Download Links] Funzione refreshDownloadLinks non trovata!'); alert('Errore: funzione non disponibile. Ricarica la pagina.'); }"
+                                style="display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.08); padding: 8px 14px; border-radius: 20px; color: rgba(255, 255, 255, 0.9); font-weight: 500; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.15); cursor: pointer; transition: all 0.3s ease; white-space: nowrap;"
+                                onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'; this.style.borderColor='rgba(255, 255, 255, 0.25)'"
+                                onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.15)'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="flex-shrink: 0;">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15">
+                                    </path>
+                                </svg>
+                                Aggiorna
+                            </button>
+                        </div>
                         <div class="download-options"
                             style="display: flex; flex-wrap: wrap; gap: 30px; margin-top: 20px; width: 100%; max-width: 1200px; justify-content: center; padding: 0 15px;">
                             <!-- Opzione CurseForge -->
@@ -693,64 +717,158 @@
                 </div>
         </section>
 
-        <!-- Script ULTRA-AGGRESSIVO per gestire i link di download -->
+        <!-- Script per aggiornamento automatico dei link di download -->
         <script>
             (function () {
                 'use strict';
+
+                const CACHE_CONFIG_KEY = 'downloadLinks_config';
+                const CACHE_GITHUB_KEY = 'downloadLinks_github';
+                const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti per config
+                const CACHE_GITHUB_DURATION = 15 * 60 * 1000; // 15 minuti per GitHub (meno frequente)
+                const RELOAD_COUNT_KEY = 'downloadLinks_reloadCount';
+                const RELOAD_THRESHOLD = 5; // Mostra il pulsante dopo 5 ricaricamenti
+                const REFRESH_USED_KEY = 'downloadLinks_refresh_used';
 
                 let configData = null;
                 let githubData = null;
                 let isInitialized = false;
 
-                // ========== CARICAMENTO CONFIG SINCRONO (XMLHttpRequest) ==========
-                function loadConfigSync() {
+                // Traccia i ricaricamenti della pagina
+                function trackPageReload() {
+                    try {
+                        const count = sessionStorage.getItem(RELOAD_COUNT_KEY);
+                        const newCount = count ? parseInt(count) + 1 : 1;
+                        sessionStorage.setItem(RELOAD_COUNT_KEY, newCount.toString());
+                        console.log('[Download Links] Ricaricamenti nella sessione:', newCount);
+                        return newCount;
+                    } catch (e) {
+                        console.error('[Download Links] Errore tracciamento ricaricamenti:', e);
+                        return 0;
+                    }
+                }
+
+                // Controlla se mostrare il pulsante refresh
+                function shouldShowRefreshButton() {
+                    try {
+                        const count = sessionStorage.getItem(RELOAD_COUNT_KEY);
+                        const reloadCount = count ? parseInt(count) : 0;
+                        const used = sessionStorage.getItem(REFRESH_USED_KEY) === '1';
+                        return !used && reloadCount >= RELOAD_THRESHOLD;
+                    } catch (e) {
+                        return false;
+                    }
+                }
+
+                // Carica il config.json con cache
+                async function loadConfig() {
                     if (configData) return configData;
 
+                    // Controlla la cache
                     try {
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('GET', 'config.json?t=' + Date.now(), false); // false = sincrono
-                        xhr.send();
-
-                        if (xhr.status === 200) {
-                            configData = JSON.parse(xhr.responseText);
-                            return configData;
+                        const cached = localStorage.getItem(CACHE_CONFIG_KEY);
+                        if (cached) {
+                            const parsed = JSON.parse(cached);
+                            const age = Date.now() - parsed.timestamp;
+                            if (age < CACHE_DURATION) {
+                                configData = parsed.data;
+                                console.log('[Download Links] Config caricato dalla cache (età:', Math.round(age / 1000), 'secondi)');
+                                return configData;
+                            }
                         }
                     } catch (e) {
-                        console.warn('[Download Links] Errore caricamento config sincrono:', e);
+                        // Cache non valida, continua
                     }
-                    return null;
+
+                    try {
+                        const response = await fetch('config.json?t=' + Date.now());
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        configData = await response.json();
+
+                        // Salva in cache
+                        try {
+                            localStorage.setItem(CACHE_CONFIG_KEY, JSON.stringify({
+                                data: configData,
+                                timestamp: Date.now()
+                            }));
+                        } catch (e) {
+                            // localStorage non disponibile, ignora
+                        }
+
+                        console.log('[Download Links] Config caricato da server');
+                        return configData;
+                    } catch (error) {
+                        console.error('[Download Links] Errore caricamento config:', error);
+                        return null;
+                    }
                 }
 
-                // ========== CARICAMENTO CONFIG ASINCRONO (fallback) ==========
-                function loadConfigAsync() {
-                    return fetch('config.json?t=' + Date.now())
-                        .then(response => {
-                            if (!response.ok) throw new Error('HTTP ' + response.status);
-                            return response.json();
-                        })
-                        .then(data => {
-                            configData = data;
-                            return data;
-                        })
-                        .catch(err => {
-                            console.warn('[Download Links] Errore caricamento config:', err);
-                            return null;
-                        });
-                }
-
-                // ========== CARICAMENTO GITHUB ==========
+                // Carica l'ultima release da GitHub con cache
                 async function loadGitHubRelease(repo) {
                     if (!repo || repo === 'NOMEUTENTE/NOMEREPO') return null;
                     if (githubData) return githubData;
 
+                    // Controlla la cache
+                    try {
+                        const cached = localStorage.getItem(CACHE_GITHUB_KEY);
+                        if (cached) {
+                            const parsed = JSON.parse(cached);
+                            const age = Date.now() - parsed.timestamp;
+                            // Verifica che sia per lo stesso repository
+                            if (parsed.repo === repo && age < CACHE_GITHUB_DURATION) {
+                                githubData = parsed.data;
+                                console.log('[Download Links] GitHub release caricata dalla cache (età:', Math.round(age / 1000), 'secondi)');
+                                return githubData;
+                            }
+                        }
+                    } catch (e) {
+                        // Cache non valida, continua
+                    }
+
                     try {
                         const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`;
-                        const response = await fetch(apiUrl);
 
-                        if (!response.ok) return null;
+                        // Prepara gli header con il token se disponibile
+                        const headers = {
+                            'Accept': 'application/vnd.github.v3+json'
+                        };
+
+                        // Se c'è un token nel config, usalo (aumenta il rate limit da 60 a 5000 richieste/ora)
+                        if (configData && configData.github && configData.github.token) {
+                            headers['Authorization'] = `token ${configData.github.token}`;
+                            console.log('[Download Links] Usando token GitHub per aumentare il rate limit');
+                        }
+
+                        const response = await fetch(apiUrl, { headers });
+
+                        if (!response.ok) {
+                            if (response.status === 403) {
+                                console.warn('[Download Links] GitHub API rate limit raggiunto (403). Uso cache se disponibile.');
+                                // Prova a usare la cache anche se vecchia
+                                try {
+                                    const cached = localStorage.getItem(CACHE_GITHUB_KEY);
+                                    if (cached) {
+                                        const parsed = JSON.parse(cached);
+                                        if (parsed.repo === repo && parsed.data) {
+                                            githubData = parsed.data;
+                                            console.log('[Download Links] Usando cache GitHub (anche se vecchia) a causa del rate limit');
+                                            return githubData;
+                                        }
+                                    }
+                                } catch (e) {
+                                    // Ignora
+                                }
+                            } else {
+                                console.warn('[Download Links] Errore GitHub API:', response.status);
+                            }
+                            return null;
+                        }
 
                         const release = await response.json();
-                        if (!release.tag_name || !release.assets || release.assets.length === 0) return null;
+                        if (!release.tag_name || !release.assets || release.assets.length === 0) {
+                            console.warn('[Download Links] Release senza dati completi');
+                            return null;
+                        }
 
                         let zipUrl = null;
                         let mrpackUrl = null;
@@ -768,7 +886,26 @@
                             zipUrl = release.assets[0].browser_download_url;
                         }
 
-                        githubData = { zipUrl, mrpackUrl, version: release.tag_name };
+                        githubData = {
+                            zipUrl,
+                            mrpackUrl,
+                            version: release.tag_name,
+                            changelog: release.body || null, // Aggiungi changelog per condividerlo con updates.html
+                            publishedAt: release.published_at
+                        };
+
+                        // Salva in cache
+                        try {
+                            localStorage.setItem(CACHE_GITHUB_KEY, JSON.stringify({
+                                data: githubData,
+                                repo: repo,
+                                timestamp: Date.now()
+                            }));
+                        } catch (e) {
+                            // localStorage non disponibile, ignora
+                        }
+
+                        console.log('[Download Links] GitHub release caricata da server');
                         return githubData;
                     } catch (error) {
                         console.error('[Download Links] Errore GitHub:', error);
@@ -776,361 +913,347 @@
                     }
                 }
 
-                // ========== FUNZIONE ULTRA-AGGRESSIVA PER ABILITARE LINK ==========
-                function enableDownloadLinks(force = false) {
-                    // Gestisci sia i link modpack che il pulsante update (anche per ID)
+                // Aggiorna i link di download
+                function updateDownloadLinks() {
                     const downloadBtns = document.querySelectorAll('.download-modpack-btn, .download-update-btn, #update-download-btn');
+
                     if (downloadBtns.length === 0) {
-                        console.warn('[Download Links] ⚠ Nessun pulsante trovato!');
+                        console.log('[Download Links] Nessun pulsante trovato');
                         return;
                     }
-                    console.log('[Download Links] 🔍 Trovati', downloadBtns.length, 'pulsanti da abilitare');
 
-                    // Carica config (prima sincrono, poi asincrono se necessario)
-                    let config = configData;
-                    if (!config) {
-                        config = loadConfigSync();
-                        if (!config) {
-                            loadConfigAsync().then(() => enableDownloadLinks(true));
-                            return;
-                        }
-                    }
+                    console.log('[Download Links] Trovati', downloadBtns.length, 'pulsanti da aggiornare');
 
                     downloadBtns.forEach((btn, index) => {
-                        // FORZA abilitazione stili
-                        btn.style.setProperty('pointer-events', 'auto', 'important');
-                        btn.style.setProperty('opacity', '1', 'important');
-                        btn.removeAttribute('disabled');
-
-                        // Determina se è update button (escludi il pulsante "COME OTTIMIZZARE")
+                        // Escludi il pulsante "COME OTTIMIZZARE"
                         const isOptimizeBtn = btn.id === 'optimize-modpack-btn' ||
                             btn.textContent.includes('OTTIMIZZARE') ||
                             btn.textContent.includes('ottimizzare');
 
-                        // Se è il pulsante ottimizza, salta
                         if (isOptimizeBtn) {
-                            console.log('[Download Links] ⏭ Saltato pulsante ottimizza');
+                            console.log('[Download Links] Saltato pulsante ottimizza');
                             return;
                         }
 
+                        // Determina se è un pulsante di aggiornamento
                         const isUpdateBtn = btn.classList.contains('download-update-btn') ||
-                            (btn.id === 'update-download-btn' && !isOptimizeBtn) ||
-                            (btn.textContent.includes('SCARICA AGGIORNAMENTO') && !isOptimizeBtn) ||
-                            (btn.textContent.includes('Scarica Aggiornamento') && !isOptimizeBtn);
+                            btn.id === 'update-download-btn' ||
+                            btn.textContent.includes('SCARICA AGGIORNAMENTO') ||
+                            btn.textContent.includes('Scarica Aggiornamento');
 
-                        // Se link è vuoto o "#", trova URL
-                        if (force || !btn.href || btn.href === '#' || btn.href === '' || btn.href === window.location.href) {
-                            const format = btn.getAttribute('data-format') || (isUpdateBtn ? 'zip' : 'zip');
-                            let url = btn.getAttribute('data-url'); // URL salvato precedentemente
+                        const format = btn.getAttribute('data-format') || (isUpdateBtn ? 'zip' : null);
 
-                            console.log('[Download Links] 🔍 Pulsante', index + 1, '- isUpdateBtn:', isUpdateBtn, 'format:', format, 'href attuale:', btn.href);
+                        // Controlla se il link è già valido
+                        // Usa getAttribute per ottenere il valore originale, non quello convertito dal browser
+                        const originalHref = btn.getAttribute('href') || '';
+                        const browserHref = btn.href || '';
 
-                            // Se non c'è URL salvato, cerca
-                            if (!url && config) {
-                                // PRIMA GitHub (sempre .zip per update button)
-                                if (githubData && githubData.zipUrl) {
-                                    // Per update button o zip format, usa sempre zipUrl
-                                    if (isUpdateBtn || format === 'zip') {
-                                        url = githubData.zipUrl;
-                                        console.log('[Download Links] 📦 URL da GitHub (zip):', url.substring(0, 50) + '...');
-                                    } else if (format === 'mrpack' && githubData.mrpackUrl) {
-                                        url = githubData.mrpackUrl;
-                                        console.log('[Download Links] 📦 URL da GitHub (mrpack):', url.substring(0, 50) + '...');
-                                    }
-                                }
+                        // Il link è valido solo se:
+                        // 1. L'attributo href originale non è # o vuoto
+                        // 2. E l'URL del browser non punta alla pagina corrente
+                        const isValidLink = originalHref &&
+                            originalHref !== '#' &&
+                            originalHref !== '' &&
+                            (originalHref.startsWith('http://') || originalHref.startsWith('https://')) &&
+                            !browserHref.includes(window.location.hostname + '/section-modpack.html');
 
-                                // POI config fallback
-                                if (!url && config.downloadLinks) {
-                                    if (isUpdateBtn) {
-                                        // Per update button, usa update.latest o zip da modpack
-                                        url = config.downloadLinks.update?.latest ||
-                                            config.downloadLinks.curseforge?.modpack ||
-                                            config.downloadLinks.sklauncher?.modpack ||
-                                            null;
-                                        console.log('[Download Links] 📋 URL da config (update):', url ? url.substring(0, 50) + '...' : 'null');
-                                    } else if (format === 'mrpack' && config.downloadLinks.modrinth && config.downloadLinks.modrinth.modpack) {
-                                        url = config.downloadLinks.modrinth.modpack;
-                                        console.log('[Download Links] 📋 URL da config (mrpack):', url.substring(0, 50) + '...');
-                                    } else if (format === 'zip') {
-                                        url = config.downloadLinks.curseforge?.modpack ||
-                                            config.downloadLinks.sklauncher?.modpack ||
-                                            config.downloadLinks.update?.latest ||
-                                            null;
-                                        console.log('[Download Links] 📋 URL da config (zip):', url ? url.substring(0, 50) + '...' : 'null');
-                                    }
-                                }
+                        if (isValidLink) {
+                            console.log('[Download Links] Link', index + 1, 'già valido:', originalHref.substring(0, 50) + '...');
+                            return;
+                        }
+
+                        // Se il link è # o vuoto, deve essere aggiornato
+                        if (originalHref === '#' || originalHref === '') {
+                            console.log('[Download Links] Link', index + 1, 'da aggiornare (href originale:', originalHref, ')');
+                        }
+
+                        let url = null;
+
+                        // PRIMA: Prova GitHub se disponibile
+                        if (githubData) {
+                            if (isUpdateBtn || format === 'zip') {
+                                url = githubData.zipUrl;
+                            } else if (format === 'mrpack' && githubData.mrpackUrl) {
+                                url = githubData.mrpackUrl;
                             }
 
-                            // Applica URL se trovato
                             if (url) {
                                 btn.href = url;
-                                btn.setAttribute('data-url', url); // Salva per prossime volte
+                                btn.style.pointerEvents = 'auto';
+                                btn.style.opacity = '1';
+                                btn.removeAttribute('disabled');
                                 const btnType = isUpdateBtn ? 'UPDATE' : 'MODPACK';
-                                console.log('[Download Links] ✅ Link abilitato [' + btnType + ']:', format, '→', url.substring(0, 60) + '...');
-                            } else {
-                                const btnType = isUpdateBtn ? 'UPDATE' : 'MODPACK';
-                                console.warn('[Download Links] ⚠ Nessun URL trovato per [' + btnType + ']');
-                            }
-                        } else {
-                            // Link già ha URL, salvalo
-                            if (btn.href && btn.href !== '#' && btn.href !== '' && btn.href !== window.location.href) {
-                                btn.setAttribute('data-url', btn.href);
+                                console.log('[Download Links] ✅ Link', index + 1, '[' + btnType + '] aggiornato da GitHub:', url.substring(0, 60) + '...');
+                                return;
                             }
                         }
+
+                        // SECONDO: Prova config come fallback
+                        if (configData && configData.downloadLinks) {
+                            if (isUpdateBtn && configData.downloadLinks.update && configData.downloadLinks.update.latest) {
+                                url = configData.downloadLinks.update.latest;
+                            } else if (format === 'mrpack' && configData.downloadLinks.modrinth && configData.downloadLinks.modrinth.modpack) {
+                                url = configData.downloadLinks.modrinth.modpack;
+                            } else if (format === 'zip') {
+                                url = configData.downloadLinks.curseforge?.modpack ||
+                                    configData.downloadLinks.sklauncher?.modpack ||
+                                    configData.downloadLinks.update?.latest ||
+                                    null;
+                            }
+
+                            if (url) {
+                                btn.href = url;
+                                btn.style.pointerEvents = 'auto';
+                                btn.style.opacity = '1';
+                                btn.removeAttribute('disabled');
+                                const btnType = isUpdateBtn ? 'UPDATE' : 'MODPACK';
+                                console.log('[Download Links] ✅ Link', index + 1, '[' + btnType + '] aggiornato da config:', url.substring(0, 60) + '...');
+                                return;
+                            }
+                        }
+
+                        // Se non trovato, abilita comunque il link (potrebbe essere aggiornato dopo)
+                        btn.style.pointerEvents = 'auto';
+                        btn.style.opacity = '1';
+                        btn.removeAttribute('disabled');
+                        console.warn('[Download Links] ⚠ Link', index + 1, 'non aggiornato (nessun URL trovato)');
                     });
                 }
 
-                // ========== CARICA GITHUB IN BACKGROUND ==========
-                function loadGitHubInBackground() {
-                    if (!configData) {
-                        loadConfigAsync().then(config => {
-                            if (config && config.github && config.github.repository && config.github.repository !== 'NOMEUTENTE/NOMEREPO') {
-                                loadGitHubRelease(config.github.repository).then(() => {
-                                    enableDownloadLinks(true);
-                                });
-                            }
-                        });
-                    } else if (configData.github && configData.github.repository && configData.github.repository !== 'NOMEUTENTE/NOMEREPO') {
-                        loadGitHubRelease(configData.github.repository).then(() => {
-                            enableDownloadLinks(true);
-                        });
-                    }
-                }
+                // Funzione per forzare il refresh (pubblica globalmente)
+                window.refreshDownloadLinks = async function () {
+                    console.log('[Download Links] 🔄 Refresh forzato...');
 
-                // ========== SETUP EVENT HANDLERS ==========
-                function setupHandlers() {
-                    // Hover (solo per modpack buttons, update button ha già i suoi stili)
-                    document.addEventListener('mouseover', function (e) {
-                        const target = e.target.closest('.download-modpack-btn');
-                        if (target && target.href && target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
-                            target.style.transform = 'translateY(-3px)';
-                            target.style.boxShadow = '0 12px 25px rgba(0, 0, 0, 0.4)';
-                            target.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1))';
-                        }
-                    }, true);
-
-                    document.addEventListener('mouseout', function (e) {
-                        const target = e.target.closest('.download-modpack-btn');
-                        if (target && target.href && target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
-                            target.style.transform = 'translateY(0)';
-                            target.style.boxShadow = '0 8px 15px rgba(0, 0, 0, 0.3)';
-                            target.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
-                        }
-                    }, true);
-
-                    // Click (gestisce sia modpack che update buttons)
-                    document.addEventListener('click', function (e) {
-                        const target = e.target.closest('.download-modpack-btn, .download-update-btn, #update-download-btn');
-                        if (!target) return;
-
-                        // Escludi il pulsante "COME OTTIMIZZARE"
-                        const isOptimizeBtn = target.id === 'optimize-modpack-btn' ||
-                            target.textContent.includes('OTTIMIZZARE') ||
-                            target.textContent.includes('ottimizzare');
-
-                        if (isOptimizeBtn) {
-                            // Lascia che il pulsante ottimizza funzioni normalmente
-                            return;
-                        }
-
-                        const isUpdateBtn = target.classList.contains('download-update-btn') ||
-                            (target.id === 'update-download-btn' && !isOptimizeBtn) ||
-                            (target.textContent.includes('SCARICA AGGIORNAMENTO') && !isOptimizeBtn) ||
-                            (target.textContent.includes('Scarica Aggiornamento') && !isOptimizeBtn);
-
-                        if (!target.href || target.href === '#' || target.href === '' || target.href === window.location.href) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            const btnType = isUpdateBtn ? 'UPDATE' : 'MODPACK';
-                            console.log('[Download Links] ⚠ Click su link vuoto [' + btnType + '], abilito...');
-
-                            enableDownloadLinks(true);
-
-                            setTimeout(() => {
-                                if (target.href && target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
-                                    console.log('[Download Links] ✅ Download avviato:', target.href.substring(0, 50) + '...');
-                                    window.open(target.href, '_blank');
-                                } else {
-                                    console.log('[Download Links] ⚠ Link ancora vuoto, riprovo...');
-                                    enableDownloadLinks(true);
-                                    setTimeout(() => {
-                                        if (target.href && target.href !== '#' && target.href !== '' && target.href !== window.location.href) {
-                                            console.log('[Download Links] ✅ Download avviato (retry):', target.href.substring(0, 50) + '...');
-                                            window.open(target.href, '_blank');
-                                        } else {
-                                            console.error('[Download Links] ❌ Impossibile abilitare il link dopo 2 tentativi');
-                                        }
-                                    }, 300);
-                                }
-                            }, 100);
-                            return false;
-                        }
-                    }, true);
-                }
-
-                // ========== MUTATION OBSERVER ULTRA-AGGRESSIVO ==========
-                function setupObserver() {
-                    const observer = new MutationObserver(function (mutations) {
-                        mutations.forEach(function (mutation) {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'href') {
-                                const target = mutation.target;
-                                const isRelevant = target.classList && (
-                                    target.classList.contains('download-modpack-btn') ||
-                                    target.classList.contains('download-update-btn') ||
-                                    target.id === 'update-download-btn'
-                                );
-                                if (isRelevant) {
-                                    if (!target.href || target.href === '#' || target.href === '' || target.href === window.location.href) {
-                                        console.log('[Download Links] 🔄 Link modificato a "#", riabilito...');
-                                        enableDownloadLinks(true);
-                                    }
-                                }
-                            }
-                        });
-                    });
-
-                    function observeLinks() {
-                        const downloadBtns = document.querySelectorAll('.download-modpack-btn, .download-update-btn, #update-download-btn');
-                        downloadBtns.forEach(btn => {
-                            observer.observe(btn, {
-                                attributes: true,
-                                attributeFilter: ['href', 'style', 'disabled']
-                            });
-                        });
-                        if (downloadBtns.length > 0) {
-                            console.log('[Download Links] 👁 Observer attivo su', downloadBtns.length, 'link');
-                        }
+                    // Svuota la cache
+                    try {
+                        localStorage.removeItem(CACHE_GITHUB_KEY);
+                        localStorage.removeItem(CACHE_CONFIG_KEY);
+                        console.log('[Download Links] Cache svuotata');
+                    } catch (e) {
+                        console.error('[Download Links] Errore svuotamento cache:', e);
                     }
 
-                    observeLinks();
-                    setTimeout(observeLinks, 100);
-                    setTimeout(observeLinks, 500);
-                }
+                    // Reset dei dati
+                    githubData = null;
+                    configData = null;
+                    isInitialized = false;
 
-                // ========== INIZIALIZZAZIONE ULTRA-AGGRESSIVA ==========
-                function init() {
-                    if (isInitialized) return;
-                    isInitialized = true;
+                    // Mostra il pulsante se non è già visibile
+                    const refreshContainer = document.getElementById('refresh-download-links-container');
+                    if (refreshContainer) {
+                        refreshContainer.style.display = 'flex';
+                    }
+
+                    // Ricarica tutto
+                    await init();
+                };
+
+                // Funzione principale di inizializzazione
+                async function init() {
+                    // Evita inizializzazioni multiple
+                    if (isInitialized) {
+                        console.log('[Download Links] Già inizializzato, salto');
+                        return;
+                    }
 
                     console.log('[Download Links] 🚀 Inizializzazione...');
 
-                    // 1. Abilita IMMEDIATAMENTE (con config sincrono)
-                    enableDownloadLinks(true);
+                    // 1. Carica il config (usa cache se disponibile)
+                    const config = await loadConfig();
+                    if (!config) {
+                        console.error('[Download Links] ❌ Impossibile caricare il config');
+                        return;
+                    }
 
-                    // 2. Setup handlers
-                    setupHandlers();
-                    setupObserver();
+                    // 2. Se GitHub è configurato, carica la release (usa cache se disponibile)
+                    if (config.github && config.github.repository && config.github.repository !== 'NOMEUTENTE/NOMEREPO') {
+                        console.log('[Download Links] Repository GitHub configurato:', config.github.repository);
+                        await loadGitHubRelease(config.github.repository);
+                    }
 
-                    // 3. Carica GitHub in background
-                    loadGitHubInBackground();
+                    // 3. Aggiorna i link
+                    updateDownloadLinks();
 
-                    // 4. Retry multipli
-                    [50, 100, 200, 300, 500, 1000, 2000, 3000].forEach(delay => {
-                        setTimeout(() => enableDownloadLinks(true), delay);
-                    });
+                    // Mostra il pulsante refresh solo se l'utente ha ricaricato la pagina più volte
+                    const shouldShow = shouldShowRefreshButton();
+                    console.log('[Download Links] Dovrei mostrare il pulsante refresh?', shouldShow);
+                    try {
+                        const count = sessionStorage.getItem(RELOAD_COUNT_KEY);
+                        console.log('[Download Links] Ricaricamenti attuali:', count || '0', '| Soglia:', RELOAD_THRESHOLD);
+                    } catch (e) {
+                        console.error('[Download Links] Errore lettura sessionStorage:', e);
+                    }
 
-                    // 5. Event listeners
-                    window.addEventListener('load', () => {
-                        setTimeout(() => enableDownloadLinks(true), 100);
-                    });
+                    if (shouldShow) {
+                        const refreshContainer = document.getElementById('refresh-download-links-container');
+                        if (refreshContainer) {
+                            refreshContainer.style.display = 'flex';
+                            console.log('[Download Links] ✅ Pulsante refresh mostrato (utente ha ricaricato più volte)');
+                        } else {
+                            console.warn('[Download Links] ⚠ Container refresh non trovato!');
+                        }
+                    } else {
+                        console.log('[Download Links] Pulsante refresh nascosto (ricaricamenti insufficienti)');
+                    }
 
-                    document.addEventListener('DOMContentLoaded', () => {
-                        setTimeout(() => enableDownloadLinks(true), 100);
-                    });
-
-                    // 6. Controllo periodico AGRESSIVO
-                    setInterval(() => {
-                        enableDownloadLinks(true);
-                    }, 500); // Ogni 500ms!
-
+                    isInitialized = true;
                     console.log('[Download Links] ✅ Inizializzazione completata');
                 }
 
-                // Avvia IMMEDIATAMENTE
+                // Traccia il ricaricamento all'avvio
+                const reloadCount = trackPageReload();
+                console.log('[Download Links] Ricaricamenti totali nella sessione:', reloadCount);
+
+                // Avvia quando il DOM è pronto (solo una volta)
                 if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', init);
+                    document.addEventListener('DOMContentLoaded', function () {
+                        setTimeout(init, 500);
+                    });
                 } else {
-                    init();
+                    setTimeout(init, 500);
                 }
 
-                // Avvia anche subito (per sicurezza)
-                setTimeout(init, 0);
+                // Riprova solo una volta dopo che la pagina è completamente caricata (se non già inizializzato)
+                window.addEventListener('load', function () {
+                    if (!isInitialized) {
+                        setTimeout(init, 1000);
+                    }
+                });
             })();
+
+            // Assicurati che la funzione sia accessibile globalmente anche dopo il caricamento
+            // (in caso di problemi con l'IIFE)
+            if (typeof window.refreshDownloadLinks === 'undefined') {
+                console.warn('[Download Links] ⚠ Funzione refreshDownloadLinks non trovata, potrebbe essere un problema di timing');
+            }
+
+            // Bind esplicito del click per il pulsante Aggiorna
+            document.addEventListener('DOMContentLoaded', function () {
+                var refreshBtn = document.getElementById('refresh-download-links-btn');
+                if (refreshBtn) {
+                    refreshBtn.removeAttribute('onclick');
+                    var busy = false;
+                    refreshBtn.addEventListener('click', async function (e) {
+                        e.preventDefault();
+                        if (busy) return;
+                        busy = true;
+                        // Segna come usato e nascondi subito il container per evitare richieste ripetute
+                        try { sessionStorage.setItem('downloadLinks_refresh_used', '1'); } catch (err) { }
+                        var refreshContainer = document.getElementById('refresh-download-links-container');
+                        if (refreshContainer) { refreshContainer.style.display = 'none'; }
+                        if (typeof window.refreshDownloadLinks === 'function') {
+                            try {
+                                await window.refreshDownloadLinks();
+                            } catch (err) {
+                                console.error(err);
+                            } finally {
+                                window.location.reload();
+                            }
+                        } else {
+                            console.error('[Download Links] Funzione refreshDownloadLinks non trovata!');
+                            alert('Errore: funzione non disponibile. Ricarica la pagina.');
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
         </script>
 
     </main>
-    <<!-- Footer -->
-        <footer>
+    <!-- Footer -->
+    <footer>
 
-            <div class="credits">© 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato
-                di Mojang AB.</div>
-        </footer>
-        <script>
-            // Gestione selettore launcher (Modpack)
-            window.selectLauncher = function (launcherId) {
-                var placeholder = document.getElementById('tab-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                var tabContainer = document.getElementById('tab-content-container');
-                if (tabContainer) tabContainer.style.display = 'block';
-                var placeholder = document.getElementById('tab-placeholder');
-                if (placeholder) placeholder.style.display = 'none';
-                const installationContents = document.querySelectorAll('.installation-tabs .tab-content-container .tab-content');
-                installationContents.forEach(content => {
-                    content.style.display = 'none';
-                });
-                const selectedContent = document.getElementById(launcherId);
-                if (selectedContent) {
-                    selectedContent.style.display = 'block';
-                    selectedContent.style.animation = 'none';
-                    void selectedContent.offsetWidth;
-                    selectedContent.style.animation = 'fadeIn 0.6s ease-in-out';
-                }
-                const buttons = document.querySelectorAll('.launcher-btn');
-                buttons.forEach(button => {
-                    button.classList.remove('active');
-                    button.setAttribute('aria-pressed', 'false');
-                    const indicator = button.querySelector('.active-indicator');
-                    if (indicator) indicator.style.transform = 'scaleX(0)';
-                    button.style.transform = '';
-                    button.style.boxShadow = '';
-                });
-                const activeButton = document.getElementById(`${launcherId}-btn`);
-                if (activeButton) {
-                    activeButton.classList.add('active');
-                    activeButton.setAttribute('aria-pressed', 'true');
-                    const indicator = activeButton.querySelector('.active-indicator');
-                    if (indicator) indicator.style.transform = 'scaleX(1)';
-                    activeButton.style.transform = '';
-                    activeButton.style.boxShadow = '';
-                }
+        <div class="credits"> 2025 Server Manfredonia. Tutti i diritti riservati. Minecraft è un marchio registrato
+            di Mojang AB.</div>
+    </footer>
+    <script>
+        // Gestione selettore launcher (Modpack)
+        window.selectLauncher = function (launcherId) {
+            var placeholder = document.getElementById('tab-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+            var tabContainer = document.getElementById('tab-content-container');
+            if (tabContainer) tabContainer.style.display = 'block';
+            var placeholder = document.getElementById('tab-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+            const installationContents = document.querySelectorAll('.installation-tabs .tab-content-container .tab-content');
+            installationContents.forEach(content => {
+                content.style.display = 'none';
+            });
+            const selectedContent = document.getElementById(launcherId);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+                selectedContent.style.animation = 'none';
+                void selectedContent.offsetWidth;
+                selectedContent.style.animation = 'fadeIn 0.6s ease-in-out';
             }
-            // Gestione tab (se usati)
-            window.showTab = function (tabId) {
-                const tabContents = document.querySelectorAll('#modpack-section .tab-content');
-                tabContents.forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                const selectedTab = document.getElementById(tabId);
-                if (selectedTab) {
-                    selectedTab.classList.add('active');
-                }
-                const tabButtons = document.querySelectorAll('#modpack-section .tab-button');
-                tabButtons.forEach(button => {
-                    button.classList.remove('active');
-                });
-                const activeButton = document.querySelector(`#modpack-section .tab-button[onclick="showTab('${tabId}')"]`);
-                if (activeButton) {
-                    activeButton.classList.add('active');
-                }
+            const buttons = document.querySelectorAll('.launcher-btn');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                button.setAttribute('aria-pressed', 'false');
+                const indicator = button.querySelector('.active-indicator');
+                if (indicator) indicator.style.transform = 'scaleX(0)';
+                button.style.transform = '';
+                button.style.boxShadow = '';
+            });
+            const activeButton = document.getElementById(`${launcherId}-btn`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+                activeButton.setAttribute('aria-pressed', 'true');
+                const indicator = activeButton.querySelector('.active-indicator');
+                if (indicator) indicator.style.transform = 'scaleX(1)';
+                activeButton.style.transform = '';
+                activeButton.style.boxShadow = '';
             }
-            // Gestione FAQ accordion/tab
-            window.addEventListener('DOMContentLoaded', function () {
-                const faqItems = document.querySelectorAll('.faq-accordion .faq-item');
-                faqItems.forEach(item => {
-                    const question = item.querySelector('.faq-question');
-                    const answer = item.querySelector('.faq-answer');
-                    if (!question || !answer) return;
-                    if (item.classList.contains('active')) {
+        }
+        // Gestione tab (se usati)
+        window.showTab = function (tabId) {
+            const tabContents = document.querySelectorAll('#modpack-section .tab-content');
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            const tabButtons = document.querySelectorAll('#modpack-section .tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            const activeButton = document.querySelector(`#modpack-section .tab-button[onclick="showTab('${tabId}')"]`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+        // Gestione FAQ accordion/tab
+        window.addEventListener('DOMContentLoaded', function () {
+            const faqItems = document.querySelectorAll('.faq-accordion .faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                if (!question || !answer) return;
+                if (item.classList.contains('active')) {
+                    answer.style.height = answer.scrollHeight + 'px';
+                    answer.style.opacity = '1';
+                    answer.style.paddingTop = '20px';
+                } else {
+                    answer.style.height = '0';
+                    answer.style.opacity = '0';
+                    answer.style.paddingTop = '0';
+                }
+                question.addEventListener('click', function () {
+                    const isActive = item.classList.toggle('active');
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                            const otherAnswer = otherItem.querySelector('.faq-answer');
+                            if (otherAnswer) {
+                                otherAnswer.style.height = '0';
+                                otherAnswer.style.opacity = '0';
+                                otherAnswer.style.paddingTop = '0';
+                            }
+                        }
+                    });
+                    if (isActive) {
                         answer.style.height = answer.scrollHeight + 'px';
                         answer.style.opacity = '1';
                         answer.style.paddingTop = '20px';
@@ -1139,33 +1262,11 @@
                         answer.style.opacity = '0';
                         answer.style.paddingTop = '0';
                     }
-                    question.addEventListener('click', function () {
-                        const isActive = item.classList.toggle('active');
-                        faqItems.forEach(otherItem => {
-                            if (otherItem !== item && otherItem.classList.contains('active')) {
-                                otherItem.classList.remove('active');
-                                const otherAnswer = otherItem.querySelector('.faq-answer');
-                                if (otherAnswer) {
-                                    otherAnswer.style.height = '0';
-                                    otherAnswer.style.opacity = '0';
-                                    otherAnswer.style.paddingTop = '0';
-                                }
-                            }
-                        });
-                        if (isActive) {
-                            answer.style.height = answer.scrollHeight + 'px';
-                            answer.style.opacity = '1';
-                            answer.style.paddingTop = '20px';
-                        } else {
-                            answer.style.height = '0';
-                            answer.style.opacity = '0';
-                            answer.style.paddingTop = '0';
-                        }
-                    });
                 });
             });
-        </script>
-        <script src="js/transition.js"></script>
+        });
+    </script>
+    <script src="js/transition.js"></script>
 </body>
 
 </html>
