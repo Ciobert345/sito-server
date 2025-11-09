@@ -81,14 +81,113 @@
 
     <main class="container">
         <div class="container">
-            <div class="glass-card updates-scrollable pop-card" style="margin-top: 100px;">
+
+
+            <style>
+                @keyframes spin {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+
+                #github-changelog-body::-webkit-scrollbar {
+                    width: 8px;
+                }
+
+                #github-changelog-body::-webkit-scrollbar-track {
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 4px;
+                }
+
+                #github-changelog-body::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 4px;
+                }
+
+                #github-changelog-body::-webkit-scrollbar-thumb:hover {
+                    background: rgba(255, 255, 255, 0.5);
+                }
+            </style>
+
+            <!-- Sezione Notion (esistente) -->
+            <div class="glass-card updates-scrollable pop-card" style="margin-bottom: 20px;">
                 <h1
-                    style="text-align: center; margin-bottom: 20px; font-size: 3rem; color: var(--primary); text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); letter-spacing: 2px;">
-                    Aggiornamenti</h1>
+                    style="text-align: center; margin-bottom: 15px; font-size: 2.5rem; color: var(--primary); text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); letter-spacing: 2px;">
+                    Wiki
+                </h1>
                 <div class="iframe-wrapper">
                     <iframe
                         src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2"
                         allowfullscreen></iframe>
+                </div>
+            </div>
+            <!-- Sezione Changelog GitHub -->
+            <div id="github-changelog-section" class="glass-card pop-card"
+                style="margin-top: 100px; margin-bottom: 20px; display: none; position: relative; overflow: hidden;">
+                <div style="position: relative; z-index: 1;">
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <h2
+                            style="margin: 0; font-size: 2rem; color: white; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); letter-spacing: 1px; flex: 1;">
+                            Ultima Release
+                        </h2>
+                        <div id="refresh-changelog-container"
+                            style="display: none; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; white-space: nowrap;">Se
+                                non riesci a scaricare l'ultima versione premi questo tasto</span>
+                            <button id="refresh-changelog-btn"
+                                onclick="if(typeof refreshChangelog === 'function') { refreshChangelog(); } else { console.error('[Changelog] Funzione refreshChangelog non trovata!'); alert('Errore: funzione non disponibile. Ricarica la pagina.'); }"
+                                style="display: flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.08); padding: 8px 14px; border-radius: 20px; color: rgba(255, 255, 255, 0.9); font-weight: 500; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.15); cursor: pointer; transition: all 0.3s ease; white-space: nowrap;"
+                                onmouseover="this.style.background='rgba(255, 255, 255, 0.15)'; this.style.borderColor='rgba(255, 255, 255, 0.25)'"
+                                onmouseout="this.style.background='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.15)'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="flex-shrink: 0;">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <polyline points="1 20 1 14 7 14"></polyline>
+                                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15">
+                                    </path>
+                                </svg>
+                                Aggiorna
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="github-changelog-loading"
+                        style="text-align: center; padding: 20px; color: rgba(255, 255, 255, 0.7); font-size: 1rem;">
+                        <div
+                            style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;">
+                        </div>
+                        <div>Caricamento changelog...</div>
+                    </div>
+
+                    <div id="github-changelog-error"
+                        style="display: none; text-align: center; padding: 20px; color: rgba(255, 150, 150, 0.9); background: rgba(255, 0, 0, 0.1); border-radius: 12px; border: 1px solid rgba(255, 100, 100, 0.3);">
+                        <div style="font-size: 1rem; font-weight: 500;">Impossibile caricare il changelog</div>
+                        <div style="font-size: 0.85rem; margin-top: 5px; opacity: 0.8;">Verifica la connessione o
+                            riprova più tardi</div>
+                    </div>
+
+                    <div id="github-changelog-content" style="display: none;">
+                        <div style="text-align: center; margin-bottom: 15px;">
+                            <span id="github-version-tag"
+                                style="display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)); padding: 6px 15px; border-radius: 20px; color: white; font-weight: 600; font-size: 1rem; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.2);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" style="flex-shrink: 0;">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                                <span id="github-version-text"></span>
+                            </span>
+                        </div>
+                        <div id="github-changelog-body"
+                            style="color: rgba(255, 255, 255, 0.95); line-height: 1.7; padding: 20px; background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.15)); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 500px; overflow-y: auto; word-wrap: break-word;">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,6 +197,515 @@
             Mojang AB.</div>
     </footer>
     <script src="js/transition.js"></script>
+
+    <!-- Script per caricare il changelog da GitHub -->
+    <script>
+        (function () {
+            'use strict';
+
+            const CACHE_CONFIG_KEY = 'downloadLinks_config';
+            const CACHE_GITHUB_KEY = 'downloadLinks_github';
+            const CACHE_DURATION = 5 * 60 * 1000; // 5 minuti per config
+            const CACHE_GITHUB_DURATION = 15 * 60 * 1000; // 15 minuti per GitHub
+            const RELOAD_COUNT_KEY = 'changelog_reloadCount';
+            const RELOAD_THRESHOLD = 5; // Mostra il pulsante dopo 5 ricaricamenti
+            const REFRESH_USED_KEY = 'changelog_refresh_used';
+
+            let configData = null;
+            let githubData = null;
+            let isInitialized = false;
+
+            // Traccia i ricaricamenti della pagina
+            function trackPageReload() {
+                try {
+                    const count = sessionStorage.getItem(RELOAD_COUNT_KEY);
+                    const newCount = count ? parseInt(count) + 1 : 1;
+                    sessionStorage.setItem(RELOAD_COUNT_KEY, newCount.toString());
+                    console.log('[Changelog] Ricaricamenti nella sessione:', newCount);
+                    return newCount;
+                } catch (e) {
+                    console.error('[Changelog] Errore tracciamento ricaricamenti:', e);
+                    return 0;
+                }
+            }
+
+            // Controlla se mostrare il pulsante refresh
+            function shouldShowRefreshButton() {
+                try {
+                    const count = sessionStorage.getItem(RELOAD_COUNT_KEY);
+                    const reloadCount = count ? parseInt(count) : 0;
+                    const used = sessionStorage.getItem(REFRESH_USED_KEY) === '1';
+                    return !used && reloadCount >= RELOAD_THRESHOLD;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            // Carica il config.json con cache
+            async function loadConfig() {
+                if (configData) return configData;
+
+                // Controlla la cache
+                try {
+                    const cached = localStorage.getItem(CACHE_CONFIG_KEY);
+                    if (cached) {
+                        const parsed = JSON.parse(cached);
+                        const age = Date.now() - parsed.timestamp;
+                        if (age < CACHE_DURATION) {
+                            configData = parsed.data;
+                            return configData;
+                        }
+                    }
+                } catch (e) {
+                    // Cache non valida, continua
+                }
+
+                try {
+                    const response = await fetch('config.json?t=' + Date.now());
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    configData = await response.json();
+
+                    // Salva in cache
+                    try {
+                        localStorage.setItem(CACHE_CONFIG_KEY, JSON.stringify({
+                            data: configData,
+                            timestamp: Date.now()
+                        }));
+                    } catch (e) {
+                        // localStorage non disponibile, ignora
+                    }
+
+                    return configData;
+                } catch (error) {
+                    console.error('[Changelog] Errore caricamento config:', error);
+                    return null;
+                }
+            }
+
+            // Carica l'ultima release da GitHub con cache
+            async function loadGitHubRelease(repo) {
+                if (!repo || repo === 'NOMEUTENTE/NOMEREPO') return null;
+                if (githubData) return githubData;
+
+                // Controlla la cache
+                try {
+                    const cached = localStorage.getItem(CACHE_GITHUB_KEY);
+                    if (cached) {
+                        const parsed = JSON.parse(cached);
+                        const age = Date.now() - parsed.timestamp;
+                        if (parsed.repo === repo && age < CACHE_GITHUB_DURATION) {
+                            githubData = parsed.data;
+                            console.log('[Changelog] Cache GitHub trovata:', {
+                                version: githubData.version,
+                                hasChangelog: !!githubData.changelog,
+                                changelogLength: githubData.changelog ? githubData.changelog.length : 0
+                            });
+
+                            // Se il changelog non è presente nella cache, ricarica da GitHub
+                            if (!githubData.changelog && githubData.changelog !== null) {
+                                console.log('[Changelog] Cache senza changelog, ricarico da GitHub...');
+                                // Continua a caricare da GitHub
+                            } else {
+                                return githubData;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('[Changelog] Errore lettura cache:', e);
+                    // Cache non valida, continua
+                }
+
+                try {
+                    const apiUrl = `https://api.github.com/repos/${repo}/releases/latest`;
+
+                    const headers = {
+                        'Accept': 'application/vnd.github.v3+json'
+                    };
+
+                    if (configData && configData.github && configData.github.token) {
+                        headers['Authorization'] = `token ${configData.github.token}`;
+                    }
+
+                    const response = await fetch(apiUrl, { headers });
+
+                    if (!response.ok) {
+                        console.warn('[Changelog] Errore GitHub API:', response.status, response.statusText);
+                        if (response.status === 403) {
+                            console.warn('[Changelog] Rate limit raggiunto, provo cache...');
+                            // Prova a usare la cache anche se vecchia
+                            try {
+                                const cached = localStorage.getItem(CACHE_GITHUB_KEY);
+                                if (cached) {
+                                    const parsed = JSON.parse(cached);
+                                    if (parsed.repo === repo && parsed.data) {
+                                        githubData = parsed.data;
+                                        console.log('[Changelog] Usando cache GitHub (anche se vecchia)');
+                                        return githubData;
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('[Changelog] Errore lettura cache:', e);
+                            }
+                        }
+                        return null;
+                    }
+
+                    const release = await response.json();
+                    console.log('[Changelog] Release ricevuta da GitHub:', release);
+                    console.log('[Changelog] Release body:', release.body ? release.body.substring(0, 200) : 'null/undefined');
+
+                    if (!release.tag_name) {
+                        console.warn('[Changelog] Release senza tag_name');
+                        return null;
+                    }
+
+                    let zipUrl = null;
+                    let mrpackUrl = null;
+
+                    if (release.assets) {
+                        release.assets.forEach(asset => {
+                            const name = asset.name.toLowerCase();
+                            if (name.endsWith('.zip') && !zipUrl) {
+                                zipUrl = asset.browser_download_url;
+                            } else if (name.endsWith('.mrpack') && !mrpackUrl) {
+                                mrpackUrl = asset.browser_download_url;
+                            }
+                        });
+
+                        if (!zipUrl && release.assets.length > 0) {
+                            zipUrl = release.assets[0].browser_download_url;
+                        }
+                    }
+
+                    // Estrai il changelog dal body della release
+                    const changelogText = release.body || null;
+                    console.log('[Changelog] Changelog estratto:', changelogText ? changelogText.substring(0, 100) + '...' : 'null/undefined');
+
+                    githubData = {
+                        zipUrl,
+                        mrpackUrl,
+                        version: release.tag_name,
+                        changelog: changelogText, // Salva null se non c'è, non una stringa vuota
+                        publishedAt: release.published_at
+                    };
+
+                    console.log('[Changelog] GitHub data preparata:', {
+                        version: githubData.version,
+                        hasChangelog: !!githubData.changelog,
+                        changelogLength: githubData.changelog ? githubData.changelog.length : 0,
+                        changelogPreview: githubData.changelog ? githubData.changelog.substring(0, 100) : 'vuoto'
+                    });
+
+                    // Salva in cache
+                    try {
+                        localStorage.setItem(CACHE_GITHUB_KEY, JSON.stringify({
+                            data: githubData,
+                            repo: repo,
+                            timestamp: Date.now()
+                        }));
+                    } catch (e) {
+                        // localStorage non disponibile, ignora
+                    }
+
+                    return githubData;
+                } catch (error) {
+                    console.error('[Changelog] Errore GitHub:', error);
+                    return null;
+                }
+            }
+
+            // Converte markdown base in HTML
+            function markdownToHtml(text) {
+                if (!text || text.trim() === '') {
+                    return '<p style="color: rgba(255, 255, 255, 0.6); font-style: italic; text-align: center; padding: 20px;">Nessun changelog disponibile per questa release.</p>';
+                }
+
+                // Escape HTML per sicurezza
+                let html = text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+                // Converti markdown in HTML (ordine importante!)
+                // Prima i code blocks (per evitare conflitti)
+                html = html.replace(/`([^`]+?)`/g, '<code style="background: rgba(255, 255, 255, 0.2); padding: 3px 8px; border-radius: 5px; color: #ffd700; font-family: \'Consolas\', \'Monaco\', monospace; font-size: 0.9em; border: 1px solid rgba(255, 255, 255, 0.1);">$1</code>');
+
+                // Poi i link
+                html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #4a9eff; text-decoration: underline; transition: color 0.3s ease;" onmouseover="this.style.color=\'#6bb6ff\'" onmouseout="this.style.color=\'#4a9eff\'">$1</a>');
+
+                // Poi bold (prima di italic per evitare conflitti)
+                html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong style="color: white; font-weight: 600;">$1</strong>');
+
+                // Poi italic (solo singolo asterisco, non doppio)
+                html = html.replace(/\*([^*\n]+?)\*/g, function (match, content) {
+                    // Se è già stato processato come bold, salta
+                    if (match.includes('<strong>')) return match;
+                    return '<em style="color: rgba(255, 255, 255, 0.85); font-style: italic;">' + content + '</em>';
+                });
+
+                // Headers (deve essere dopo altri elementi inline)
+                html = html
+                    .replace(/^###\s+(.+)$/gm, '<h3 style="color: white; margin-top: 25px; margin-bottom: 12px; font-size: 1.4rem; font-weight: 600; border-left: 4px solid rgba(255, 255, 255, 0.3); padding-left: 15px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">$1</h3>')
+                    .replace(/^##\s+(.+)$/gm, '<h2 style="color: white; margin-top: 30px; margin-bottom: 15px; font-size: 1.6rem; font-weight: 600; border-left: 4px solid rgba(255, 255, 255, 0.4); padding-left: 15px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">$1</h2>')
+                    .replace(/^#\s+(.+)$/gm, '<h1 style="color: white; margin-top: 35px; margin-bottom: 20px; font-size: 1.9rem; font-weight: 600; border-left: 4px solid rgba(255, 255, 255, 0.5); padding-left: 15px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">$1</h1>');
+
+                // Liste (prima di line breaks)
+                html = html.replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left: 20px; margin-bottom: 8px; list-style-type: disc; color: rgba(255, 255, 255, 0.9); padding-left: 5px;">$1</li>');
+                html = html.replace(/^\d+\.\s+(.+)$/gm, '<li style="margin-left: 20px; margin-bottom: 8px; list-style-type: decimal; color: rgba(255, 255, 255, 0.9); padding-left: 5px;">$1</li>');
+
+                // Avvolgi le liste consecutive
+                html = html.replace(/(<li[^>]*>.*?<\/li>(?:\s*<li[^>]*>.*?<\/li>)*)/gs, function (match) {
+                    if (!match.includes('<ul') && !match.includes('<ol')) {
+                        return '<ul style="margin: 15px 0; padding-left: 30px; color: rgba(255, 255, 255, 0.9);">' + match + '</ul>';
+                    }
+                    return match;
+                });
+
+                // Line breaks doppie (paragrafi) - alla fine
+                html = html.replace(/\n\n+/g, '</p><p style="margin-bottom: 15px; color: rgba(255, 255, 255, 0.95);">');
+
+                // Line breaks singole
+                html = html.replace(/\n/g, '<br>');
+
+                return html;
+            }
+
+            // Mostra il changelog
+            function displayChangelog(data) {
+                console.log('[Changelog] displayChangelog chiamata con:', data);
+
+                const loadingEl = document.getElementById('github-changelog-loading');
+                const errorEl = document.getElementById('github-changelog-error');
+                const contentEl = document.getElementById('github-changelog-content');
+                const versionEl = document.getElementById('github-version-tag');
+                const bodyEl = document.getElementById('github-changelog-body');
+                const sectionEl = document.getElementById('github-changelog-section');
+                const refreshBtn = document.getElementById('refresh-changelog-btn');
+
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (errorEl) errorEl.style.display = 'none';
+
+                if (data && data.version) {
+                    console.log('[Changelog] Mostro changelog per versione:', data.version);
+
+                    // Aggiorna il testo della versione
+                    // Il tag_name di GitHub include già la "v", quindi non aggiungerla di nuovo
+                    const versionText = data.version.startsWith('v') ? data.version : 'v' + data.version;
+                    const versionTextEl = document.getElementById('github-version-text');
+                    if (versionTextEl) {
+                        versionTextEl.textContent = versionText;
+                    } else if (versionEl) {
+                        // Fallback se l'elemento non esiste
+                        versionEl.textContent = versionText;
+                    }
+
+                    if (bodyEl) {
+                        const changelogText = data.changelog || '';
+                        console.log('[Changelog] Changelog text length:', changelogText ? changelogText.length : 0);
+                        console.log('[Changelog] Changelog text preview:', changelogText ? changelogText.substring(0, 100) : 'vuoto');
+
+                        // Converti markdown in HTML e avvolgi in paragrafo
+                        const htmlContent = markdownToHtml(changelogText);
+                        bodyEl.innerHTML = '<p style="margin-bottom: 10px; color: rgba(255, 255, 255, 0.95);">' + htmlContent + '</p>';
+                    }
+
+                    // Mostra il pulsante refresh solo se l'utente ha ricaricato la pagina più volte
+                    const shouldShow = shouldShowRefreshButton();
+                    console.log('[Changelog] Dovrei mostrare il pulsante refresh?', shouldShow);
+                    if (shouldShow) {
+                        const refreshContainer = document.getElementById('refresh-changelog-container');
+                        if (refreshContainer) {
+                            refreshContainer.style.display = 'flex';
+                            console.log('[Changelog] ✅ Pulsante refresh mostrato (utente ha ricaricato più volte)');
+                        } else {
+                            console.warn('[Changelog] ⚠ Container refresh non trovato!');
+                        }
+                    } else {
+                        console.log('[Changelog] Pulsante refresh nascosto (ricaricamenti:', sessionStorage.getItem(RELOAD_COUNT_KEY) || '0', '<', RELOAD_THRESHOLD, ')');
+                    }
+
+                    if (contentEl) {
+                        contentEl.style.display = 'block';
+                        console.log('[Changelog] Contenuto changelog mostrato');
+                    }
+                    if (sectionEl) {
+                        sectionEl.style.display = 'block';
+                        console.log('[Changelog] Sezione changelog mostrata');
+                    }
+
+                    console.log('[Changelog] ✅ Changelog visualizzato con successo');
+                } else {
+                    console.warn('[Changelog] ⚠ Dati non validi per displayChangelog:', data);
+
+                    // Mostra comunque la sezione con un messaggio informativo
+                    if (sectionEl) sectionEl.style.display = 'block';
+                    if (loadingEl) loadingEl.style.display = 'none';
+
+                    // Se abbiamo almeno la versione, mostrala
+                    if (data && data.version) {
+                        if (versionEl) versionEl.textContent = 'v' + data.version;
+                        if (bodyEl) {
+                            bodyEl.innerHTML = '<p style="color: rgba(255, 255, 255, 0.7); font-style: italic;">Nessun changelog disponibile per questa release.</p>';
+                        }
+                        if (refreshBtn) {
+                            refreshBtn.style.display = 'inline-flex';
+                        }
+                        if (contentEl) contentEl.style.display = 'block';
+                    } else {
+                        if (errorEl) errorEl.style.display = 'block';
+                    }
+                }
+            }
+
+            // Funzione per forzare il refresh (pubblica globalmente)
+            window.refreshChangelog = async function () {
+                console.log('[Changelog] 🔄 Refresh forzato...');
+
+                // Svuota la cache
+                try {
+                    localStorage.removeItem(CACHE_GITHUB_KEY);
+                    console.log('[Changelog] Cache GitHub svuotata');
+                } catch (e) {
+                    console.error('[Changelog] Errore svuotamento cache:', e);
+                }
+
+                // Reset dei dati
+                githubData = null;
+
+                // Mostra loading
+                const loadingEl = document.getElementById('github-changelog-loading');
+                const errorEl = document.getElementById('github-changelog-error');
+                const contentEl = document.getElementById('github-changelog-content');
+
+                if (loadingEl) loadingEl.style.display = 'block';
+                if (errorEl) errorEl.style.display = 'none';
+                if (contentEl) contentEl.style.display = 'none';
+
+                // Ricarica il config
+                configData = null;
+                const config = await loadConfig();
+                if (!config) {
+                    console.error('[Changelog] ❌ Config non caricato');
+                    if (loadingEl) loadingEl.style.display = 'none';
+                    if (errorEl) errorEl.style.display = 'block';
+                    return;
+                }
+
+                // Ricarica la release
+                if (config.github && config.github.repository && config.github.repository !== 'NOMEUTENTE/NOMEREPO') {
+                    const releaseData = await loadGitHubRelease(config.github.repository);
+                    if (releaseData && releaseData.version) {
+                        console.log('[Changelog] ✅ Release aggiornata, versione:', releaseData.version);
+                        displayChangelog(releaseData);
+                    } else {
+                        console.warn('[Changelog] ⚠ Release non trovata');
+                        if (loadingEl) loadingEl.style.display = 'none';
+                        if (errorEl) errorEl.style.display = 'block';
+                    }
+                }
+            };
+
+            // Funzione principale
+            async function init() {
+                if (isInitialized) {
+                    console.log('[Changelog] Già inizializzato, salto');
+                    return;
+                }
+
+                console.log('[Changelog] 🚀 Inizializzazione...');
+
+                const config = await loadConfig();
+                if (!config) {
+                    console.error('[Changelog] ❌ Config non caricato');
+                    document.getElementById('github-changelog-loading').style.display = 'none';
+                    document.getElementById('github-changelog-error').style.display = 'block';
+                    document.getElementById('github-changelog-section').style.display = 'block';
+                    return;
+                }
+
+                console.log('[Changelog] Config caricato:', config);
+
+                if (config.github && config.github.repository && config.github.repository !== 'NOMEUTENTE/NOMEREPO') {
+                    console.log('[Changelog] Repository GitHub configurato:', config.github.repository);
+                    const releaseData = await loadGitHubRelease(config.github.repository);
+                    console.log('[Changelog] Release data:', releaseData);
+
+                    if (releaseData && releaseData.version) {
+                        console.log('[Changelog] ✅ Release trovata, versione:', releaseData.version);
+                        displayChangelog(releaseData);
+                    } else {
+                        console.warn('[Changelog] ⚠ Release non trovata o senza dati');
+                        document.getElementById('github-changelog-loading').style.display = 'none';
+                        document.getElementById('github-changelog-error').style.display = 'block';
+                        document.getElementById('github-changelog-section').style.display = 'block';
+                    }
+                } else {
+                    console.log('[Changelog] GitHub non configurato, nascondo sezione');
+                    // GitHub non configurato, nascondi la sezione
+                    document.getElementById('github-changelog-section').style.display = 'none';
+                }
+
+                isInitialized = true;
+                console.log('[Changelog] ✅ Inizializzazione completata');
+            }
+
+            // Traccia il ricaricamento all'avvio
+            const reloadCount = trackPageReload();
+            console.log('[Changelog] Ricaricamenti totali nella sessione:', reloadCount);
+
+            // Avvia quando il DOM è pronto
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    setTimeout(init, 500);
+                });
+            } else {
+                setTimeout(init, 500);
+            }
+
+            window.addEventListener('load', function () {
+                if (!isInitialized) {
+                    setTimeout(init, 1000);
+                }
+            });
+
+            // Assicurati che la funzione sia accessibile globalmente anche dopo il caricamento
+            // (in caso di problemi con l'IIFE)
+            if (typeof window.refreshChangelog === 'undefined') {
+                console.warn('[Changelog] ⚠ Funzione refreshChangelog non trovata, potrebbe essere un problema di timing');
+            }
+
+            // Bind esplicito del click per il pulsante Aggiorna del changelog
+            document.addEventListener('DOMContentLoaded', function () {
+                var btn = document.getElementById('refresh-changelog-btn');
+                if (btn) {
+                    btn.removeAttribute('onclick');
+                    var busy = false;
+                    btn.addEventListener('click', async function (e) {
+                        e.preventDefault();
+                        if (busy) return;
+                        busy = true;
+                        // Segna come usato e nascondi subito il container per evitare richieste ripetute
+                        try { sessionStorage.setItem('changelog_refresh_used', '1'); } catch (err) { }
+                        var container = document.getElementById('refresh-changelog-container');
+                        if (container) { container.style.display = 'none'; }
+                        if (typeof window.refreshChangelog === 'function') {
+                            try {
+                                await window.refreshChangelog();
+                            } catch (err) {
+                                console.error(err);
+                            } finally {
+                                window.location.reload();
+                            }
+                        } else {
+                            console.error('[Changelog] Funzione refreshChangelog non trovata!');
+                            alert('Errore: funzione non disponibile. Ricarica la pagina.');
+                            window.location.reload();
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>
