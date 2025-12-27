@@ -21,7 +21,7 @@
     },
     "countdown": {
         "enabled": true,
-        "date": "2025-12-31T20:15:00",
+        "date": "2025-12-30T20:16:00",
         "title": "Aggiornamento in arrivo",
         "expiredMessage": "Il server è ora disponibile!"
     },
