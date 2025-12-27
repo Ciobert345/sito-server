@@ -1,0 +1,136 @@
+{
+    "siteInfo": {
+        "title": "Server Manfredonia",
+        "description": "Percepisci anche te i traumi di Manfredonia, entra nel server!"
+    },
+    "serverMetadata": {
+        "ip": "server-manfredonia.ddns.net",
+        "modpackVersion": "v2.5"
+    },
+    "updateNotice": {
+        "enabled": false,
+        "title": "Novità importanti!",
+        "subtitle": "",
+        "showBadge": true,
+        "badgeText": "🚀 Aggiornamento del sito ✨",
+        "features": [
+            "Il sito è stato rifatto <strong>da capo</strong> per ottimizzarlo",
+            "Aggiunti il tutorial per la <strong>Dashboard</strong>",
+            "Aggiunta la sezione <strong>Dashboard</strong>"
+        ]
+    },
+    "countdown": {
+        "enabled": true,
+        "date": "2025-12-31T20:15:00",
+        "title": "Aggiornamento in arrivo",
+        "expiredMessage": "Il server è ora disponibile!"
+    },
+    "github": {
+        "repository": "Ciobert345/Mod-server-Manfredonia",
+        "token": ""
+    },
+    "infoBanners": [
+        {
+            "id": "banner1",
+            "enabled": true,
+            "title": "⚠️AGGIORNARE IL MODPACK⚠️",
+            "subtitle": "",
+            "message": "Per giocare è necessario aggiornare il modpack",
+            "icon": "notification",
+            "style": "banner-red"
+        },
+        {
+            "id": "banner2",
+            "enabled": false,
+            "title": "⚠️AGGIORNARE HEXALIA⚠️",
+            "subtitle": "",
+            "message": "Per giocare è necessario aggiornare la mod Hexalia all'ultima versione: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
+            "icon": "notification",
+            "style": "banner-red"
+        }
+    ],
+    "checkIframeServer": false,
+    "feedbackRoadmap": {
+        "enabled": true,
+        "sections": {
+            "feedback": {
+                "enabled": true,
+                "title": "Segnala un problema del Modpack",
+                "subtitle": "Aiutaci a migliorare il modpack segnalando eventuali problemi",
+                "formspreeUrl": "https://formspree.io/f/xblavdda",
+                "successMessage": "Grazie per la tua segnalazione! Il team esaminerà il problema al più presto."
+            },
+            "suggestions": {
+                "enabled": true,
+                "title": "Suggerimenti per il Modpack",
+                "subtitle": "Aiutaci a migliorare il modpack con i tuoi suggerimenti",
+                "formspreeUrl": "https://formspree.io/f/xblavdda",
+                "successMessage": "Grazie per il tuo suggerimento! Il team valuterà la tua proposta al più presto."
+            },
+            "roadmap": {
+                "enabled": true,
+                "title": "Roadmap del Modpack",
+                "subtitle": "Scopri cosa stiamo sviluppando e le prossime novità",
+                "columns": [
+                    {
+                        "id": "backlog",
+                        "title": "Backlog",
+                        "color": "#6c757d"
+                    },
+                    {
+                        "id": "nextup",
+                        "title": "Next Up",
+                        "color": "#007bff"
+                    },
+                    {
+                        "id": "inprogress",
+                        "title": "In Progress",
+                        "color": "#ffc107"
+                    },
+                    {
+                        "id": "done",
+                        "title": "Done",
+                        "color": "#28a745"
+                    }
+                ],
+                "items": [
+                    {
+                        "id": "13",
+                        "title": "Update di Dicembre",
+                        "type": "nextup",
+                        "priority": "Alta",
+                        "column": "inprogress"
+                    },
+                    {
+                        "id": "10",
+                        "title": "Crash quando si esce dal server",
+                        "type": "Bugfix",
+                        "priority": "Alta",
+                        "column": "done"
+                    },
+                    {
+                        "id": "11",
+                        "title": "Crash quando un goblin trader finisce di mangiare",
+                        "type": "Bugfix",
+                        "priority": "Alta",
+                        "column": "backlog"
+                    },
+                    {
+                        "id": "8",
+                        "title": "Correzione bug Incudine di Thallium",
+                        "type": "Bugfix",
+                        "priority": "Alta",
+                        "column": "backlog"
+                    },
+                    {
+                        "id": "9",
+                        "title": "Aggiunta di altre quest",
+                        "type": "Miglioramento",
+                        "priority": "Bassa",
+                        "column": "backlog"
+                    }
+                ]
+            }
+        }
+    }
+}
