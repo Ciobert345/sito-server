@@ -9,6 +9,7 @@ const Utilities: React.FC = () => {
   const { config, loading } = useConfig();
   const [suggestionUrls, setSuggestionUrls] = useState<string[]>([]);
   const [currentUrl, setCurrentUrl] = useState('');
+  const [activeFormTab, setActiveFormTab] = useState<'suggestions' | 'bugs'>('suggestions');
 
   const addUrl = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,56 +31,136 @@ const Utilities: React.FC = () => {
   const renderRoadmapColumn = (column: RoadmapColumn) => {
     const items = roadmap.items.filter(i => i.column === column.id);
 
-    // Map existing columns to colors if not fully specified in config (config has hex codes)
-    // The previous CSS classes were convenient. We might use inline styles for the hex codes from config.
-
     return (
-      <div key={column.id} className="flex flex-col gap-6">
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ backgroundColor: column.color }}
-            ></div>
-            <span className="text-sm font-black text-white/50 uppercase tracking-[0.2em]">{column.title}</span>
+      <div key={column.id} className="flex flex-col gap-10 h-full">
+        {/* Column Header - Hyper Premium */}
+        <div className="flex items-center justify-between px-6 py-4 rounded-[24px] bg-black/40 border border-white/5 backdrop-blur-xl relative overflow-hidden group shrink-0">
+          {/* Animated Background Glow */}
+          <div
+            className="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-[60px] opacity-10 group-hover:opacity-20 transition-all duration-1000"
+            style={{ backgroundColor: column.color }}
+          ></div>
+
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="relative">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: column.color, boxShadow: `0 0 15px ${column.color}` }}
+              ></div>
+              <div className="absolute inset-0 rounded-full animate-ping opacity-20" style={{ backgroundColor: column.color }}></div>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em] leading-none mb-1">Status</span>
+              <span className="text-sm font-black text-white uppercase tracking-[0.1em]">{column.title}</span>
+            </div>
           </div>
-          <span className="text-xs font-bold text-white bg-white/10 px-3 py-0.5 rounded-full border border-white/10">{items.length}</span>
+
+          <div className="flex flex-col items-end relative z-10">
+            <span className="text-xl font-black text-white tabular-nums leading-none">{items.length < 10 ? `0${items.length}` : items.length}</span>
+            <span className="text-[8px] font-black text-white/20 uppercase tracking-widest mt-1">Assignments</span>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-4 min-h-[300px]">
+        {/* Task Cards - Hyper Premium */}
+        <div className="flex flex-col gap-6 flex-grow">
           {items.map(item => (
-            <div key={item.id} className="glass-card p-5 rounded-2xl group hover:border-white/30 transition-all hover:-translate-y-1">
-              <div className="flex justify-between mb-4">
-                <span className="px-3 py-1 rounded-full text-[10px] font-black bg-white/10 text-white border border-white/20 uppercase tracking-widest">{item.type || 'General'}</span>
-                <span className="material-symbols-outlined text-white/20 text-sm group-hover:text-white transition-colors">more_horiz</span>
-              </div>
-              <h4 className="text-white font-bold text-base mb-2 group-hover:text-white transition-colors uppercase tracking-tight">{item.title}</h4>
-              {item.description && <p className="text-gray-500 text-xs mb-4 leading-relaxed">{item.description}</p>}
+            <div
+              key={item.id}
+              className="group relative flex flex-col"
+            >
+              {/* Card Ambient Glow (Hover) */}
+              <div
+                className="absolute -inset-2 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-700 rounded-[40px]"
+              ></div>
 
-              {/* Logic for showing progress bar if mapped? The old config doesn't have progress %. We can omit or assume. */}
-              {item.progress !== undefined && (
-                <div className="mb-4">
-                  <div className="w-full bg-white/5 rounded-full h-1.5 mb-2 overflow-hidden">
-                    <div className="bg-white h-full shadow-[0_0_10px_rgba(255,255,255,0.6)]" style={{ width: `${item.progress}%` }}></div>
-                  </div>
+              <div className="relative glass-card p-7 rounded-[35px] border border-white/5 bg-[#0a0a0a]/40 group-hover:bg-white/[0.02] group-hover:border-white/20 transition-all duration-500 group-hover:-translate-y-2 overflow-hidden flex flex-col">
+                {/* Decorative Pattern */}
+                <div className="absolute top-0 right-0 p-4 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
+                  <span className="material-symbols-outlined text-6xl select-none">data_object</span>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 text-white/20 group-hover:text-white/50 transition-colors">
-                  {item.comments && (
-                    <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[16px]">chat_bubble</span>
-                      <span className="text-[10px] font-bold">{item.comments}</span>
+                <div className="flex flex-col gap-6 flex-grow">
+                  {/* Top Meta */}
+                  <div className="flex justify-between items-center shrink-0">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-1.5 rounded-full bg-white opacity-20"></div>
+                      <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                        {item.type || 'STND-R'}
+                      </span>
+                    </div>
+                    {(item.priority === 'Alta' || item.priority === 'High') ? (
+                      <div className="flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-full">
+                        <span className="w-1 h-1 rounded-full bg-red-500 animate-pulse"></span>
+                        <span className="text-[8px] font-black text-red-400 uppercase tracking-widest">Priority</span>
+                      </div>
+                    ) : (
+                      <span className="material-symbols-outlined text-white/5 text-xl group-hover:text-white/20 transition-colors">grid_view</span>
+                    )}
+                  </div>
+
+                  {/* Title & Description */}
+                  <div className="flex flex-col gap-2">
+                    <h4 className="text-lg font-black text-white group-hover:text-white transition-colors uppercase tracking-tight leading-snug">
+                      {item.title}
+                    </h4>
+                    {item.description && (
+                      <p className="text-gray-500 text-[11px] leading-relaxed font-medium">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Progress Section */}
+                  {item.progress !== undefined && (
+                    <div className="bg-black/20 rounded-2xl p-4 border border-white/[0.02] mt-auto">
+                      <div className="flex justify-between items-center mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-sm text-white/20">query_stats</span>
+                          <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">Deployment</span>
+                        </div>
+                        <span className="text-xs font-black text-white font-mono">{item.progress}%</span>
+                      </div>
+                      <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                        <div
+                          className="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                          style={{ width: `${item.progress}%` }}
+                        ></div>
+                      </div>
                     </div>
                   )}
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded border border-white/5 ${item.priority === 'Alta' ? 'text-red-400 bg-red-400/5' : 'text-gray-500'}`}>
-                    {item.priority || 'Normal'}
-                  </span>
+
+                  {/* Footer Meta */}
+                  <div className={"flex items-center justify-between pt-4 border-t border-white/5" + (item.progress === undefined ? " mt-auto" : "")}>
+                    <div className="flex items-center gap-4">
+                      {item.comments && (
+                        <div className="flex items-center gap-2 py-1.5 px-3 bg-white/5 rounded-xl border border-white/5">
+                          <span className="material-symbols-outlined text-sm text-gray-400">forum</span>
+                          <span className="text-[10px] font-bold text-gray-400">{item.comments}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <button className="flex items-center gap-2 text-white/10 group-hover:text-white transition-all">
+                      <span className="text-[9px] font-black uppercase tracking-widest">Details</span>
+                      <span className="material-symbols-outlined text-sm">arrow_outward</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
+
+          {items.length === 0 && (
+            <div className="flex-grow flex flex-col items-center justify-center gap-5 py-20 border border-dashed border-white/5 rounded-[40px] bg-black/20 h-full">
+              <div className="w-16 h-16 rounded-full bg-white/[0.02] flex items-center justify-center border border-white/5 shadow-inner">
+                <span className="material-symbols-outlined text-white/10 text-3xl">hourglass_empty</span>
+              </div>
+              <div className="text-center">
+                <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">No Active Tasks</p>
+                <p className="text-[8px] font-bold text-white/10 uppercase tracking-widest mt-1">Standby for updates</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -96,111 +177,185 @@ const Utilities: React.FC = () => {
         </p>
       </section>
 
-      {/* Forms & Suggestions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      {/* Unified Feedback & Suggestions System */}
+      <div className="w-full max-w-7xl">
+        <div className="glass-card rounded-[40px] overflow-hidden border border-white/10 relative group shadow-2xl">
+          {/* Subtle background effects */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/[0.03] rounded-full blur-[120px] -mr-64 -mt-64 pointer-events-none group-hover:bg-white/[0.05] transition-all duration-1000"></div>
 
-        {/* Suggestion System */}
-        {suggestions.enabled && (
-          <section className="glass-card glass-card-hover rounded-3xl p-16 flex flex-col gap-8 relative overflow-hidden group border-b-4 border-purple-500/20 h-full">
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-              <span className="material-symbols-outlined text-9xl">school</span>
-            </div>
-            <div className="flex flex-col gap-2 relative z-10">
-              <h3 className="text-2xl font-black uppercase italic text-white tracking-tight">{suggestions.title}</h3>
-              <p className="text-xs text-gray-500 uppercase tracking-widest">{suggestions.subtitle}</p>
-            </div>
+          {/* Tab Switcher - More refined and fixed for overlap */}
+          <div className="flex gap-2 border-b border-white/5 bg-black/40 p-2">
+            <button
+              onClick={() => setActiveFormTab('suggestions')}
+              className={`flex-1 flex items-center justify-center gap-4 py-5 rounded-[22px] text-xs font-black uppercase tracking-[0.2em] transition-all duration-500 relative ${activeFormTab === 'suggestions' ? 'bg-white text-black shadow-2xl z-10' : 'text-white/30 hover:text-white/60 hover:bg-white/5'}`}
+            >
+              <span className="material-symbols-outlined text-xl">lightbulb</span>
+              <span className="hidden sm:inline">Suggestions</span>
+              <span className="sm:hidden">Suggest</span>
+              {activeFormTab === 'suggestions' && <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white blur-[2px] rounded-full"></div>}
+            </button>
+            <button
+              onClick={() => setActiveFormTab('bugs')}
+              className={`flex-1 flex items-center justify-center gap-4 py-5 rounded-[22px] text-xs font-black uppercase tracking-[0.2em] transition-all duration-500 relative ${activeFormTab === 'bugs' ? 'bg-white text-black shadow-2xl z-10' : 'text-white/30 hover:text-white/60 hover:bg-white/5'}`}
+            >
+              <span className="material-symbols-outlined text-xl">pest_control</span>
+              <span className="hidden sm:inline">Bug Reports</span>
+              <span className="sm:hidden">Reports</span>
+              {activeFormTab === 'bugs' && <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-white blur-[2px] rounded-full"></div>}
+            </button>
+          </div>
 
-            {/* Note: In a real app we would submit to suggestions.formspreeUrl */}
-            <form action={suggestions.formspreeUrl} method="POST" className="flex flex-col gap-8">
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={currentUrl}
-                  onChange={(e) => setCurrentUrl(e.target.value)}
-                  placeholder="Add mod link (Modrinth/CurseForge)..."
-                  className="flex-grow bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white transition-all outline-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addUrl(e as any);
-                    }
-                  }}
-                />
-                <button type="button" onClick={addUrl as any} className="bg-white text-black px-4 rounded-xl font-bold hover:scale-105 transition-transform active:scale-95">
-                  <span className="material-symbols-outlined">add</span>
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-2 min-h-[80px] p-4 bg-black/40 rounded-2xl border border-white/5">
-                {suggestionUrls.length === 0 && <span className="text-xs text-white/20 font-bold uppercase tracking-widest self-center w-full text-center italic">No links added yet</span>}
-                {suggestionUrls.map(url => (
-                  <div key={url} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/10 rounded-full group hover:bg-white/20 transition-all">
-                    <span className="text-[10px] font-bold text-gray-400 max-w-[200px] truncate">{url}</span>
-                    <input type="hidden" name="links[]" value={url} />
-                    <button type="button" onClick={() => removeUrl(url)} className="text-gray-500 hover:text-white">
-                      <span className="material-symbols-outlined text-[14px]">close</span>
-                    </button>
+          <div className="p-8 md:p-16 relative z-10 min-h-[800px] flex flex-col">
+            {activeFormTab === 'suggestions' ? (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 flex flex-col gap-12 flex-grow">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 shrink-0">
+                  <div className="flex flex-col gap-3">
+                    <h3 className="text-4xl md:text-5xl font-black uppercase italic text-white tracking-tighter leading-none">{suggestions.title}</h3>
+                    <p className="text-sm text-gray-500 font-bold uppercase tracking-[0.4em]">{suggestions.subtitle}</p>
                   </div>
-                ))}
-              </div>
-
-              <textarea
-                name="message"
-                placeholder="Tell us why this would benefit the community..."
-                className="w-full min-h-[120px] bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:border-white transition-all outline-none resize-none"
-                required
-              ></textarea>
-
-              <button type="submit" className="w-full py-4 bg-white text-black font-black uppercase text-xs tracking-[0.2em] rounded-xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                Submit Suggestion
-              </button>
-            </form>
-          </section>
-        )}
-
-        {/* Bug Report Form */}
-        {feedback.enabled && (
-          <section className="glass-card glass-card-hover rounded-3xl p-16 flex flex-col gap-8 relative overflow-hidden group border-b-4 border-orange-500/20 h-full">
-            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-              <span className="material-symbols-outlined text-9xl">pest_control</span>
-            </div>
-            <div className="flex flex-col gap-2 relative z-10">
-              <h3 className="text-2xl font-black uppercase italic text-white tracking-tight">{feedback.title}</h3>
-              <p className="text-xs text-gray-500 uppercase tracking-widest">{feedback.subtitle}</p>
-            </div>
-
-            <form action={feedback.formspreeUrl} method="POST" className="flex flex-col gap-8 h-full relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <select name="version" className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white transition-all outline-none appearance-none text-gray-400 focus:text-white">
-                    <option className="bg-black" value="" disabled selected>Select Modpack Version...</option>
-                    <option className="bg-black text-white" value={config.modpackVersion || 'Latest'}>{config.modpackVersion || 'Latest'} (Current)</option>
-                    <option className="bg-black text-white" value="Old">Older Version</option>
-                  </select>
+                  <div className="h-px flex-grow bg-white/5 mx-8 hidden md:block mb-3"></div>
+                  <div className="flex items-center gap-3 text-white/20">
+                    <span className="material-symbols-outlined text-xl">auto_awesome</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Community Hub</span>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <input
-                    type="url"
-                    name="logLink"
-                    placeholder="Log File Link (SwissTransfer / Pastebin)..."
-                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:border-white transition-all outline-none"
-                  />
-                </div>
+
+                <form action={suggestions.formspreeUrl} method="POST" className="flex flex-col gap-10 flex-grow">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 flex-grow">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex items-center justify-between px-1">
+                        <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">References / Links</label>
+                      </div>
+                      <div className="flex gap-3 shrink-0">
+                        <div className="relative flex-grow">
+                          <input
+                            type="url"
+                            value={currentUrl}
+                            onChange={(e) => setCurrentUrl(e.target.value)}
+                            placeholder="Paste mod URL..."
+                            className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-sm focus:border-white/20 focus:bg-white/[0.06] transition-all outline-none"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                addUrl(e as any);
+                              }
+                            }}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={addUrl as any}
+                          className="bg-white/10 hover:bg-white text-white hover:text-black py-4 px-6 rounded-2xl font-bold transition-all duration-500 active:scale-95 flex items-center justify-center border border-white/5 shadow-lg shadow-black/20"
+                        >
+                          <span className="material-symbols-outlined">add</span>
+                        </button>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 p-6 bg-black/40 rounded-3xl border border-white/5 mt-2 overflow-y-auto flex-grow max-h-[300px]">
+                        {suggestionUrls.length === 0 && (
+                          <div className="flex flex-col items-center justify-center w-full h-full gap-3 text-white/5 py-4">
+                            <span className="material-symbols-outlined text-4xl">folder_off</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">No references added</span>
+                          </div>
+                        )}
+                        {suggestionUrls.map(url => (
+                          <div key={url} className="flex items-center gap-3 px-4 py-2.5 bg-white/[0.03] border border-white/5 rounded-xl group hover:border-white/20 transition-all h-fit">
+                            <span className="text-[10px] font-mono text-gray-500 max-w-[200px] truncate">{url}</span>
+                            <input type="hidden" name="links[]" value={url} />
+                            <button type="button" onClick={() => removeUrl(url)} className="text-gray-500 hover:text-white transition-colors">
+                              <span className="material-symbols-outlined text-[18px]">close</span>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                      <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">The Proposal</label>
+                      <textarea
+                        name="message"
+                        placeholder="Detail the benefits, features, and why the community would love this..."
+                        className="w-full h-full bg-white/[0.03] border border-white/5 rounded-[32px] p-8 text-sm focus:border-white/20 focus:bg-white/[0.06] transition-all outline-none resize-none leading-relaxed"
+                        required
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <button type="submit" className="shrink-0 w-full py-6 bg-white text-black font-black uppercase text-[11px] tracking-[0.5em] rounded-2xl hover:bg-gray-200 transition-all shadow-[0_20px_60px_-15px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] group/btn mt-4">
+                    <span className="flex items-center justify-center gap-3">
+                      Submit Proposal
+                      <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </span>
+                  </button>
+                </form>
               </div>
+            ) : (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 flex flex-col gap-12 flex-grow">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 shrink-0">
+                  <div className="flex flex-col gap-3">
+                    <h3 className="text-4xl md:text-5xl font-black uppercase italic text-white tracking-tighter leading-none">{feedback.title}</h3>
+                    <p className="text-sm text-gray-500 font-bold uppercase tracking-[0.4em]">{feedback.subtitle}</p>
+                  </div>
+                  <div className="h-px flex-grow bg-white/5 mx-8 hidden md:block mb-3"></div>
+                  <div className="flex items-center gap-3 text-white/20">
+                    <span className="material-symbols-outlined text-xl">bug_report</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Quality Control</span>
+                  </div>
+                </div>
 
-              <textarea
-                name="description"
-                placeholder="Describe the issue and how to replicate it..."
-                className="w-full min-h-[120px] bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:border-white transition-all outline-none resize-none"
-                required
-              ></textarea>
+                <form action={feedback.formspreeUrl} method="POST" className="flex flex-col gap-10 flex-grow">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10 shrink-0">
+                    <div className="flex flex-col gap-4">
+                      <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Environment / Version</label>
+                      <div className="relative">
+                        <select
+                          name="version"
+                          className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-sm focus:border-white/20 focus:bg-white/[0.06] transition-all outline-none appearance-none text-gray-400 focus:text-white"
+                          required
+                        >
+                          <option className="bg-[#1a1a1a]" value="" disabled selected>Identify current version...</option>
+                          <option className="bg-[#1a1a1a]" value={config.modpackVersion || 'Latest'}>{config.modpackVersion || 'Latest'} (Standard)</option>
+                          <option className="bg-[#1a1a1a]" value="Legacy">Legacy / Custom Build</option>
+                        </select>
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 material-symbols-outlined text-white/10 pointer-events-none">expand_more</span>
+                      </div>
+                    </div>
 
-              <button type="submit" className="mt-auto w-full py-4 bg-white text-black font-black uppercase text-xs tracking-[0.2em] rounded-xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                Submit Bug Report
-              </button>
-            </form>
-          </section>
-        )}
+                    <div className="flex flex-col gap-4">
+                      <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Tracing / Log Link</label>
+                      <div className="relative">
+                        <input
+                          type="url"
+                          name="logLink"
+                          placeholder="Pastebin or SwissTransfer link..."
+                          className="w-full bg-white/[0.03] border border-white/5 rounded-2xl px-6 py-5 text-sm focus:border-white/20 focus:bg-white/[0.06] transition-all outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4 flex-grow">
+                    <label className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Technical Brief</label>
+                    <textarea
+                      name="description"
+                      placeholder="Describe the anomaly, steps to reproduce, and terminal output if available..."
+                      className="w-full h-full bg-white/[0.03] border border-white/5 rounded-[32px] p-8 text-sm focus:border-white/20 focus:bg-white/[0.06] transition-all outline-none resize-none leading-relaxed flex-grow"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <button type="submit" className="shrink-0 w-full py-6 bg-white text-black font-black uppercase text-[11px] tracking-[0.5em] rounded-2xl hover:bg-gray-200 transition-all shadow-[0_20px_60px_-15px_rgba(255,255,255,0.1)] hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] group/btn mt-4">
+                    <span className="flex items-center justify-center gap-3">
+                      Dispatch Bug Report
+                      <span className="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">bolt</span>
+                    </span>
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Roadmap Section */}

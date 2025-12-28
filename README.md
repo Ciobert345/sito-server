@@ -1,20 +1,66 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+<img width="2692" height="1538" alt="Screenshot 2025-07-22 130703 (1)" src="https://github.com/user-attachments/assets/6fb36d3b-cfe2-48e7-a40d-440b9fc2e74c" />
 
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1Xj_ZRiM0y4TYw1e0WAVVe0veiqiYZ7tF
-
-## Run Locally
-
-**Prerequisites:**  Node.js
+# 🎮 Server Manfredonia
 
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+**Server Manfredonia** è un’esperienza Minecraft moddata basata su **BetterMinecraft Fabric Edition**, arricchita da un **pannello di controllo web** per monitorare e gestire il server in tempo reale, e da un sistema di **accesso su whitelist** per garantire un ambiente di gioco sicuro e moderato.
+
+---
+
+## ✨ Caratteristiche principali
+
+- 🌍 **Modpack BetterMinecraft Fabric**  
+  - Nuove dimensioni, biomi e boss  
+  - Magia avanzata (Botania, Ars Nouveau)  
+  - Tecnologia (Create, Applied Energistics)  
+  - Performance ottimizzate e miglioramenti grafici  
+
+- 🔧 **Installazione semplificata**  
+  - Supporto per CurseForge, Modrinth e SKLauncher  
+  - Guida passo‑passo per importare il modpack  
+  - Raccomandazione: almeno 8 GB di RAM  
+
+- 🔒 **Whitelist e accesso**  
+  - Modulo online per richiedere l’accesso  
+  - Approvazione in 24 h  
+  - Canale Discord dedicato  
+
+- 📊 **Pannello di controllo web**  
+  - Monitoraggio in tempo reale (TPS, giocatori online)  
+  - Console live per log e comandi  
+  - Controllo alimentazione: avvia, spegni, riavvia  
+  - Integrazione Discord per notifiche  
+
+- ⚙️ **Ottimizzazione & FAQ**  
+  - Consigli RAM, mod performance (Optifine/Sodium)  
+  - Pre‑generazione mondo e caricamento chunk  
+  - Guida a crash, errori e mod consigliate  
+
+---
+
+CONFIGURAZIONE BANNER INFO
+Ogni oggetto in infoBanners può avere queste proprietà:
+"id": string             // identificatore univoco del banner
+"enabled": boolean       // se true il banner viene mostrato
+"title": string          // titolo principale del banner (puoi usare emoji)
+"subtitle": string       // sottotitolo opzionale (può essere vuoto)
+"message": string        // testo principale del banner
+"icon": string           // nome icona (unicode, emoji o nome custom)
+"style": string          // colore/stile del banner, valori possibili:
+                         //   "banner-yellow" (giallo)
+                         //   "banner-purple" (viola)
+                         //   "banner-blue" (blu)
+                         //   "banner-green" (verde)
+                         //   "banner-red" (rosso)
+
+
+Esempio:
+{
+  "id": "banner1",
+  "enabled": true,
+  "title": "Titolo banner",
+  "subtitle": "",
+  "message": "Testo del messaggio",
+  "icon": "notification",
+  "style": "banner-blue"
+}

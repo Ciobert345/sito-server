@@ -281,7 +281,7 @@ const Modpack: React.FC = () => {
             <div className="flex flex-col gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
               {/* RAM Allocation */}
-              <div className="flex flex-col md:flex-row gap-8 items-start border-b border-white/5 pb-12">
+              <div className="flex flex-col md:flex-row gap-8 items-stretch border-b border-white/5 pb-12">
                 <div className="flex-1">
                   <h3 className="text-2xl font-black text-white uppercase italic mb-4">Memory Allocation</h3>
                   <p className="text-sm text-gray-400 leading-relaxed mb-6">
@@ -298,13 +298,15 @@ const Modpack: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <div className="flex-1 p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-2xl">
-                  <h4 className="text-yellow-200 font-bold uppercase text-sm mb-2 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-lg">warning</span> Important
+                <div className="flex-1 p-8 bg-gradient-to-br from-yellow-500/20 to-orange-500/5 border border-yellow-500/30 rounded-3xl flex flex-col justify-center relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                  <h4 className="text-yellow-400 font-black uppercase text-base mb-3 flex items-center gap-3 relative z-10">
+                    <span className="material-symbols-outlined text-2xl">warning</span>
+                    <span>Important</span>
                   </h4>
-                  <p className="text-xs text-yellow-200/70 leading-relaxed">
+                  <p className="text-sm md:text-base text-yellow-100/80 leading-relaxed font-medium relative z-10">
                     Never allocate more than half your system RAM if you have 8GB or less.
-                    Always check Task Manager (Performance &gt; Memory) to verify your total available RAM before configuring.
+                    Always check <span className="text-yellow-400 font-bold underline underline-offset-4 cursor-default">Task Manager</span> to verify your total available RAM before configuring.
                   </p>
                 </div>
               </div>

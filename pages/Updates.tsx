@@ -91,28 +91,30 @@ const Updates: React.FC = () => {
         <p className="text-gray-400 max-w-2xl text-lg font-light">Stay updated with the latest mechanical tweaks and community guides.</p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         {/* Left: Wiki Cards / Iframe Trigger */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.3em] mb-2 px-2">Essential Wiki</h3>
+        <div className="lg:col-span-1 flex flex-col h-full gap-6">
+          <div className="flex items-center justify-between px-2 h-8">
+            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.3em]">Essential Wiki</h3>
+          </div>
 
           {/* Notion Embed Wrapper */}
-          <div className="glass-card rounded-2xl overflow-hidden h-[600px] relative group border border-white/10">
+          <div className="glass-card rounded-2xl overflow-hidden flex-grow relative group border border-white/10 min-h-[500px]">
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
               <span className="bg-black/80 px-4 py-2 rounded-xl text-white font-bold uppercase tracking-widest text-xs border border-white/20">Interactive Wiki</span>
             </div>
             <iframe
               src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2"
-              className="w-full h-full border-none bg-[#191919]"
+              className="w-full h-full border-none bg-[#191919] min-h-full"
               title="Manfredonia Wiki"
             ></iframe>
           </div>
 
-          <div className="mt-6 glass-card rounded-3xl p-6 flex flex-col gap-3">
+          <div className="glass-card rounded-3xl p-6 flex flex-col gap-3 shrink-0">
             <div className="flex flex-col gap-1 text-center">
               <span className="material-symbols-outlined text-3xl text-white/30">support_agent</span>
-              <h3 className="text-lg font-black text-white uppercase tracking-tight">Accesso Supporto</h3>
-              <p className="text-[10px] text-gray-500 leading-relaxed">Richiedi accesso al supporto Discord</p>
+              <h3 className="text-lg font-black text-white uppercase tracking-tight">Need Support?</h3>
+              <p className="text-[10px] text-gray-500 leading-relaxed">Request support in the discord server</p>
             </div>
 
             <form action="https://formspree.io/f/mqabzreg" method="POST" className="flex flex-col gap-2">
@@ -148,21 +150,21 @@ const Updates: React.FC = () => {
               <input type="hidden" name="_autoresponse" value="Grazie per la tua richiesta di accesso al supporto. Abbiamo ricevuto i tuoi dati e ti contatteremo presto." />
 
               <button type="submit" className="w-full py-2 bg-white text-black font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-gray-200 transition-all mt-1">
-                Invia Richiesta
+                Send Request
               </button>
             </form>
           </div>
         </div>
 
         {/* Right: Changelogs */}
-        <div className="lg:col-span-2 flex flex-col gap-8">
-          <div className="flex items-center justify-between px-2">
+        <div className="lg:col-span-2 flex flex-col h-full gap-6">
+          <div className="flex items-center justify-between px-2 h-8">
             <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.3em]">Latest Releases</h3>
             {releases.length > 0 && <span className="text-xs font-bold text-green-400 bg-green-400/10 px-3 py-1 rounded-full border border-green-400/20">{releases.length} Updates</span>}
           </div>
 
           {loading ? (
-            <div className="glass-card rounded-2xl p-12 flex items-center justify-center">
+            <div className="glass-card rounded-2xl flex-grow flex items-center justify-center">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
             </div>
           ) : releases.length > 0 ? (
@@ -196,11 +198,13 @@ const Updates: React.FC = () => {
 
                       <div className="flex items-center justify-between">
                         <h2 className="text-3xl font-black text-white uppercase tracking-tight">{release.title}</h2>
-                        <div className="flex items-center justify-center size-10 rounded-lg bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all flex-shrink-0">
-                          <span className="material-symbols-outlined text-white/60 text-xl transition-transform" style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-                            keyboard_arrow_down
-                          </span>
-                        </div>
+                        {!isExpanded && (
+                          <div className="flex items-center justify-center size-10 rounded-lg bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all flex-shrink-0">
+                            <span className="material-symbols-outlined text-white/60 text-xl transition-transform" style={{ transform: 'rotate(0deg)' }}>
+                              keyboard_arrow_down
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {isExpanded && (

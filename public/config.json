@@ -1,7 +1,7 @@
 {
     "siteInfo": {
         "title": "Server Manfredonia",
-        "description": "Percepisci anche te i traumi di Manfredonia, entra nel server!"
+        "description": "Experience the thrill of Manfredonia, join the server now!"
     },
     "serverMetadata": {
         "ip": "server-manfredonia.ddns.net",
@@ -9,21 +9,21 @@
     },
     "updateNotice": {
         "enabled": false,
-        "title": "Novità importanti!",
+        "title": "Important News!",
         "subtitle": "",
         "showBadge": true,
-        "badgeText": "🚀 Aggiornamento del sito ✨",
+        "badgeText": "🚀 Site Update ✨",
         "features": [
-            "Il sito è stato rifatto <strong>da capo</strong> per ottimizzarlo",
-            "Aggiunti il tutorial per la <strong>Dashboard</strong>",
-            "Aggiunta la sezione <strong>Dashboard</strong>"
+            "The site has been rebuilt <strong>from scratch</strong> for optimization",
+            "Added <strong>Dashboard</strong> tutorial",
+            "Added <strong>Dashboard</strong> section"
         ]
     },
     "countdown": {
         "enabled": true,
         "date": "2025-12-30T20:16:00",
-        "title": "Aggiornamento in arrivo",
-        "expiredMessage": "Il server è ora disponibile!"
+        "title": "Upcoming Update",
+        "expiredMessage": "The server is now available!"
     },
     "github": {
         "repository": "Ciobert345/Mod-server-Manfredonia",
@@ -33,18 +33,18 @@
         {
             "id": "banner1",
             "enabled": true,
-            "title": "⚠️AGGIORNARE IL MODPACK⚠️",
+            "title": "⚠️UPDATE MODPACK⚠️",
             "subtitle": "",
-            "message": "Per giocare è necessario aggiornare il modpack",
+            "message": "To play, you must update the modpack",
             "icon": "notification",
             "style": "banner-red"
         },
         {
             "id": "banner2",
             "enabled": false,
-            "title": "⚠️AGGIORNARE HEXALIA⚠️",
+            "title": "⚠️UPDATE HEXALIA⚠️",
             "subtitle": "",
-            "message": "Per giocare è necessario aggiornare la mod Hexalia all'ultima versione: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
+            "message": "To play, you must update the Hexalia mod to the latest version: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
             "icon": "notification",
             "style": "banner-red"
         }
@@ -55,22 +55,22 @@
         "sections": {
             "feedback": {
                 "enabled": true,
-                "title": "Segnala un problema del Modpack",
-                "subtitle": "Aiutaci a migliorare il modpack segnalando eventuali problemi",
+                "title": "Report a Modpack Problem",
+                "subtitle": "Help us improve the modpack by reporting any issues",
                 "formspreeUrl": "https://formspree.io/f/xblavdda",
-                "successMessage": "Grazie per la tua segnalazione! Il team esaminerà il problema al più presto."
+                "successMessage": "Thank you for your report! The team will review the issue as soon as possible."
             },
             "suggestions": {
                 "enabled": true,
-                "title": "Suggerimenti per il Modpack",
-                "subtitle": "Aiutaci a migliorare il modpack con i tuoi suggerimenti",
+                "title": "Modpack Suggestions",
+                "subtitle": "Help us improve the modpack with your suggestions",
                 "formspreeUrl": "https://formspree.io/f/xblavdda",
-                "successMessage": "Grazie per il tuo suggerimento! Il team valuterà la tua proposta al più presto."
+                "successMessage": "Thank you for your suggestion! The team will evaluate your proposal soon."
             },
             "roadmap": {
                 "enabled": true,
-                "title": "Roadmap del Modpack",
-                "subtitle": "Scopri cosa stiamo sviluppando e le prossime novità",
+                "title": "Modpack Roadmap",
+                "subtitle": "Discover what we are developing and upcoming features",
                 "columns": [
                     {
                         "id": "backlog",
@@ -96,37 +96,37 @@
                 "items": [
                     {
                         "id": "13",
-                        "title": "Update di Dicembre",
+                        "title": "December Update",
                         "type": "nextup",
-                        "priority": "Alta",
+                        "priority": "High",
                         "column": "inprogress"
                     },
                     {
                         "id": "10",
-                        "title": "Crash quando si esce dal server",
+                        "title": "Crash when leaving server",
                         "type": "Bugfix",
-                        "priority": "Alta",
+                        "priority": "High",
                         "column": "done"
                     },
                     {
                         "id": "11",
-                        "title": "Crash quando un goblin trader finisce di mangiare",
+                        "title": "Crash when goblin trader finishes eating",
                         "type": "Bugfix",
-                        "priority": "Alta",
+                        "priority": "High",
                         "column": "backlog"
                     },
                     {
                         "id": "8",
-                        "title": "Correzione bug Incudine di Thallium",
+                        "title": "Thallium Anvil bug fix",
                         "type": "Bugfix",
-                        "priority": "Alta",
+                        "priority": "High",
                         "column": "backlog"
                     },
                     {
                         "id": "9",
-                        "title": "Aggiunta di altre quest",
-                        "type": "Miglioramento",
-                        "priority": "Bassa",
+                        "title": "Adding more quests",
+                        "type": "Improvement",
+                        "priority": "Low",
                         "column": "backlog"
                     }
                 ]
