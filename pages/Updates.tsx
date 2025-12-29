@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../contexts/ConfigContext';
+import { getReleases } from '../utils/githubCache';
 
 interface ReleaseUpdate {
   version: string;
@@ -54,15 +55,7 @@ const Updates: React.FC = () => {
       setLoading(true);
       try {
         const repo = config.github.repository;
-        const headers: HeadersInit = { 'Accept': 'application/vnd.github.v3+json' };
-        if (config.github.token) {
-          headers['Authorization'] = `token ${config.github.token}`;
-        }
-
-        const response = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=4`, { headers });
-        if (!response.ok) throw new Error('Failed to fetch');
-
-        const data = await response.json();
+        const data = await getReleases(repo, 4);
         const releasesData = data.map((release: any) => ({
           version: release.tag_name,
           date: new Date(release.published_at).toLocaleDateString('it-IT', {

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../contexts/ConfigContext';
+import { getLatestRelease } from '../utils/githubCache';
 
 interface ReleaseData {
   version: string;
@@ -28,24 +29,9 @@ const Modpack: React.FC = () => {
       setError(null);
       try {
         const repo = config.github.repository;
-        const headers: HeadersInit = { 'Accept': 'application/vnd.github.v3+json' };
-        if (config.github.token) {
-          headers['Authorization'] = `token ${config.github.token}`;
-        }
-
-        const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, { headers });
-
-        if (!response.ok) {
-          if (response.status === 403) throw new Error("Rate limit exceeded");
-          if (response.status === 404) throw new Error("Release not found");
-          throw new Error("Failed to fetch release");
-        }
-
-        const data = await response.json();
-
+        const data = await getLatestRelease(repo);
         let zipUrl = null;
         let mrpackUrl = null;
-
         if (data.assets && Array.isArray(data.assets)) {
           data.assets.forEach((asset: any) => {
             const name = asset.name.toLowerCase();
@@ -54,17 +40,15 @@ const Modpack: React.FC = () => {
           });
           if (!zipUrl && data.assets.length > 0) zipUrl = data.assets[0].browser_download_url;
         }
-
         setRelease({
           version: data.tag_name,
           zipUrl,
           mrpackUrl,
           name: data.name
         });
-
       } catch (err) {
-        console.error("GitHub Fetch Error:", err);
-        setError("Unable to retrieve latest version info");
+        console.error('GitHub Fetch Error:', err);
+        setError('Unable to retrieve latest version info');
       } finally {
         setLoading(false);
       }
@@ -79,25 +63,17 @@ const Modpack: React.FC = () => {
 
     const fetchManager = async () => {
       try {
-        const headers: HeadersInit = { 'Accept': 'application/vnd.github.v3+json' };
-        if (config.github?.token) {
-          headers['Authorization'] = `token ${config.github.token}`;
-        }
-
-        const response = await fetch('https://api.github.com/repos/Ciobert345/Manfredonia-Manager/releases/latest', { headers });
-        if (response.ok) {
-          const data = await response.json();
-          setManagerRelease({
-            version: data.tag_name,
-            zipUrl: data.assets.find((a: any) => a.name.toLowerCase().endsWith('.msix'))?.browser_download_url ||
-              data.assets.find((a: any) => a.name.toLowerCase().endsWith('.exe'))?.browser_download_url ||
-              data.html_url,
-            mrpackUrl: null,
-            name: data.name
-          });
-        }
+        const data = await getLatestRelease('Ciobert345/Manfredonia-Manager');
+        setManagerRelease({
+          version: data.tag_name,
+          zipUrl: data.assets?.find((a: any) => a.name.toLowerCase().endsWith('.msix'))?.browser_download_url ||
+            data.assets?.find((a: any) => a.name.toLowerCase().endsWith('.exe'))?.browser_download_url ||
+            data.html_url,
+          mrpackUrl: null,
+          name: data.name
+        });
       } catch (e) {
-        console.error("Failed to fetch manager release", e);
+        console.error('Failed to fetch manager release', e);
       }
     };
     fetchManager();

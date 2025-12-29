@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useConfig } from '../contexts/ConfigContext';
+import { getReleases } from '../utils/githubCache';
 
 interface Release {
   tag_name: string;
@@ -25,15 +26,8 @@ const Information: React.FC = () => {
           headers['Authorization'] = `token ${config.github.token}`;
         }
 
-        const response = await fetch(
-          `https://api.github.com/repos/${config.github.repository}/releases?per_page=3`,
-          { headers }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setReleases(data);
-        }
+        const responseData = await getReleases(config.github.repository, 3);
+        setReleases(responseData);
       } catch (error) {
         console.error('Failed to fetch releases:', error);
       } finally {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import bgImage from '../src/assets/bk.jpg';
 import { useConfig } from '../contexts/ConfigContext';
 import Countdown from '../components/Countdown';
+import { getLatestRelease, getReleases } from '../utils/githubCache';
 
 // Tailwind replacements for custom animations
 // Note: Some complex animations like 'kenBurns' might be simplified or handled via standard Tailwind classes where possible, 
@@ -59,10 +60,9 @@ const Mobile: React.FC = () => {
 
         const fetchVersion = async () => {
             try {
-                const response = await fetch('https://api.github.com/repos/Ciobert345/Mod-server-Manfredonia/releases/latest');
-                const data = await response.json();
-                if (data.tag_name) {
-                    setLatestVersion(data.tag_name);
+                const latest = await getLatestRelease('Ciobert345/Mod-server-Manfredonia');
+                if (latest?.tag_name) {
+                    setLatestVersion(latest.tag_name);
                 }
             } catch (error) {
                 console.error('Error fetching latest version:', error);
@@ -85,16 +85,8 @@ const Mobile: React.FC = () => {
             setReleasesLoading(true);
             try {
                 const repo = config.github.repository;
-                const headers: HeadersInit = { 'Accept': 'application/vnd.github.v3+json' };
-                if (config.github.token) {
-                    headers['Authorization'] = `token ${config.github.token}`;
-                }
-
-                const response = await fetch(`https://api.github.com/repos/${repo}/releases?per_page=4`, { headers });
-                if (!response.ok) throw new Error('Failed to fetch');
-
-                const data = await response.json();
-                const releasesData = data.map((release: any) => ({
+                const data = await getReleases(repo, 4);
+                const releasesData = (data || []).map((release: any) => ({
                     version: release.tag_name,
                     date: new Date(release.published_at).toLocaleDateString('it-IT', {
                         day: '2-digit',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Countdown from '../components/Countdown';
 // import { APP_CONFIG } from '../constants'; // Replaced by useConfig
 import { useConfig } from '../contexts/ConfigContext';
+import { getLatestRelease } from '../utils/githubCache';
 
 const Home: React.FC = () => {
   const { config, loading } = useConfig();
@@ -31,8 +32,7 @@ const Home: React.FC = () => {
 
     const fetchVersion = async () => {
       try {
-        const response = await fetch('https://api.github.com/repos/Ciobert345/Mod-server-Manfredonia/releases/latest');
-        const data = await response.json();
+        const data = await getLatestRelease('Ciobert345/Mod-server-Manfredonia');
         if (data.tag_name) {
           setLatestVersion(data.tag_name);
         }

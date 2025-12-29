@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useConfig } from '../contexts/ConfigContext';
+import { getLatestRelease } from '../utils/githubCache';
 
 const Dashboard: React.FC = () => {
   const { config, loading: configLoading } = useConfig();
@@ -33,8 +34,7 @@ const Dashboard: React.FC = () => {
 
         // Fetch GitHub release
         if (config?.github?.repository) {
-          const githubRes = await fetch(`https://api.github.com/repos/${config.github.repository}/releases/latest`);
-          const githubData = await githubRes.json();
+          const githubData = await getLatestRelease(config.github.repository);
           setLatestRelease(githubData.tag_name || 'v1.0.0');
           addLog('SYS_INFO:', `Static config synchronized (v${githubData.tag_name || '1.0.0'}).`, 'text-blue-500/40');
         }

@@ -1,136 +1,129 @@
 {
-    "siteInfo": {
-        "title": "Server Manfredonia",
-        "description": "Experience the thrill of Manfredonia, join the server now!"
+  "siteInfo": {
+    "title": "Server Manfredonia",
+    "description": "Experience the thrill of Manfredonia, join the server now!"
+  },
+  "serverMetadata": {
+    "ip": "server-manfredonia.ddns.net",
+    "modpackVersion": "v2.5"
+  },
+  "updateNotice": {
+    "enabled": false,
+    "title": "Important News!",
+    "features": [
+      "The site has been rebuilt <strong>from scratch</strong> for optimization",
+      "Added <strong>Dashboard</strong> tutorial",
+      "Added <strong>Dashboard</strong> section"
+    ]
+  },
+  "countdown": {
+    "enabled": true,
+    "date": "2025-12-30T18:00:00",
+    "title": "Upcoming Update",
+    "expiredMessage": "The server is now available!"
+  },
+  "github": {
+    "repository": "Ciobert345/Mod-server-Manfredonia"
+  },
+  "infoBanners": [
+    {
+      "id": "banner1",
+      "enabled": true,
+      "title": "⚠️UPDATE MODPACK⚠️",
+      "subtitle": "",
+      "message": "To play, you must update the modpack",
+      "icon": "notification",
+      "style": "banner-red"
     },
-    "serverMetadata": {
-        "ip": "server-manfredonia.ddns.net",
-        "modpackVersion": "v2.5"
-    },
-    "updateNotice": {
-        "enabled": false,
-        "title": "Important News!",
-        "subtitle": "",
-        "showBadge": true,
-        "badgeText": "🚀 Site Update ✨",
-        "features": [
-            "The site has been rebuilt <strong>from scratch</strong> for optimization",
-            "Added <strong>Dashboard</strong> tutorial",
-            "Added <strong>Dashboard</strong> section"
-        ]
-    },
-    "countdown": {
-        "enabled": true,
-        "date": "2025-12-30T16:00:00",
-        "title": "Upcoming Update",
-        "expiredMessage": "The server is now available!"
-    },
-    "github": {
-        "repository": "Ciobert345/Mod-server-Manfredonia",
-        "token": ""
-    },
-    "infoBanners": [
-        {
-            "id": "banner1",
-            "enabled": true,
-            "title": "⚠️UPDATE MODPACK⚠️",
-            "subtitle": "",
-            "message": "To play, you must update the modpack",
-            "icon": "notification",
-            "style": "banner-red"
-        },
-        {
-            "id": "banner2",
-            "enabled": false,
-            "title": "⚠️UPDATE HEXALIA⚠️",
-            "subtitle": "",
-            "message": "To play, you must update the Hexalia mod to the latest version: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
-            "icon": "notification",
-            "style": "banner-red"
-        }
-    ],
-    "checkIframeServer": false,
-    "feedbackRoadmap": {
-        "enabled": true,
-        "sections": {
-            "feedback": {
-                "enabled": true,
-                "title": "Report a Modpack Problem",
-                "subtitle": "Help us improve the modpack by reporting any issues",
-                "formspreeUrl": "https://formspree.io/f/xblavdda",
-                "successMessage": "Thank you for your report! The team will review the issue as soon as possible."
-            },
-            "suggestions": {
-                "enabled": true,
-                "title": "Modpack Suggestions",
-                "subtitle": "Help us improve the modpack with your suggestions",
-                "formspreeUrl": "https://formspree.io/f/xblavdda",
-                "successMessage": "Thank you for your suggestion! The team will evaluate your proposal soon."
-            },
-            "roadmap": {
-                "enabled": true,
-                "title": "Modpack Roadmap",
-                "subtitle": "Discover what we are developing and upcoming features",
-                "columns": [
-                    {
-                        "id": "backlog",
-                        "title": "Backlog",
-                        "color": "#6c757d"
-                    },
-                    {
-                        "id": "nextup",
-                        "title": "Next Up",
-                        "color": "#007bff"
-                    },
-                    {
-                        "id": "inprogress",
-                        "title": "In Progress",
-                        "color": "#ffc107"
-                    },
-                    {
-                        "id": "done",
-                        "title": "Done",
-                        "color": "#28a745"
-                    }
-                ],
-                "items": [
-                    {
-                        "id": "13",
-                        "title": "December Update",
-                        "type": "nextup",
-                        "priority": "High",
-                        "column": "inprogress"
-                    },
-                    {
-                        "id": "10",
-                        "title": "Crash when leaving server",
-                        "type": "Bugfix",
-                        "priority": "High",
-                        "column": "done"
-                    },
-                    {
-                        "id": "11",
-                        "title": "Crash when goblin trader finishes eating",
-                        "type": "Bugfix",
-                        "priority": "High",
-                        "column": "backlog"
-                    },
-                    {
-                        "id": "8",
-                        "title": "Thallium Anvil bug fix",
-                        "type": "Bugfix",
-                        "priority": "High",
-                        "column": "backlog"
-                    },
-                    {
-                        "id": "9",
-                        "title": "Adding more quests",
-                        "type": "Improvement",
-                        "priority": "Low",
-                        "column": "backlog"
-                    }
-                ]
-            }
-        }
+    {
+      "id": "banner2",
+      "enabled": false,
+      "title": "⚠️UPDATE HEXALIA⚠️",
+      "subtitle": "",
+      "message": "To play, you must update the Hexalia mod to the latest version: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
+      "icon": "notification",
+      "style": "banner-red"
     }
+  ],
+  "feedbackRoadmap": {
+    "enabled": true,
+    "sections": {
+      "feedback": {
+        "enabled": true,
+        "title": "Report a Modpack Problem",
+        "subtitle": "Help us improve the modpack by reporting any issues",
+        "formspreeUrl": "https://formspree.io/f/xblavdda"
+      },
+      "suggestions": {
+        "enabled": true,
+        "title": "Modpack Suggestions",
+        "subtitle": "Help us improve the modpack with your suggestions",
+        "formspreeUrl": "https://formspree.io/f/xblavdda"
+      },
+      "roadmap": {
+        "enabled": true,
+        "title": "Modpack Roadmap",
+        "subtitle": "Discover what we are developing and upcoming features",
+        "columns": [
+          {
+            "id": "backlog",
+            "title": "Backlog",
+            "color": "#6c757d"
+          },
+          {
+            "id": "nextup",
+            "title": "Next Up",
+            "color": "#007bff"
+          },
+          {
+            "id": "inprogress",
+            "title": "In Progress",
+            "color": "#ffc107"
+          },
+          {
+            "id": "done",
+            "title": "Done",
+            "color": "#28a745"
+          }
+        ],
+        "items": [
+          {
+            "id": "13",
+            "title": "December Update",
+            "type": "nextup",
+            "priority": "High",
+            "column": "inprogress"
+          },
+          {
+            "id": "10",
+            "title": "Crash when leaving server",
+            "type": "Bugfix",
+            "priority": "High",
+            "column": "done"
+          },
+          {
+            "id": "11",
+            "title": "Crash when goblin trader finishes eating",
+            "type": "Bugfix",
+            "priority": "High",
+            "column": "backlog"
+          },
+          {
+            "id": "8",
+            "title": "Thallium Anvil bug fix",
+            "type": "Bugfix",
+            "priority": "High",
+            "column": "backlog"
+          },
+          {
+            "id": "9",
+            "title": "Adding more quests",
+            "type": "Improvement",
+            "priority": "Low",
+            "column": "backlog"
+          }
+        ]
+      }
+    }
+  }
 }
