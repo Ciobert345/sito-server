@@ -1,4 +1,4 @@
-<img width="1840" height="976" alt="immagine" src="https://github.com/user-attachments/assets/59644abc-722f-4bde-a0b1-911a07ace20f" />
+<img width="1736" height="872" alt="immagine" src="https://github.com/user-attachments/assets/6be4c73a-abd0-44e4-a720-7a4bc72bab9d" />
 
 # 🎮 Server Manfredonia
 
