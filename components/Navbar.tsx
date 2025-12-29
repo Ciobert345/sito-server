@@ -9,6 +9,65 @@ const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [readIds, setReadIds] = useState<string[]>([]);
+  const [pushEnabled, setPushEnabled] = useState(false);
+
+  // Persistence and Push Logic
+  useEffect(() => {
+    const savedRead = localStorage.getItem('manfredonia_read_notifications');
+    if (savedRead) setReadIds(JSON.parse(savedRead));
+
+    const savedPush = localStorage.getItem('manfredonia_push_enabled');
+    if (savedPush === 'true') setPushEnabled(true);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('manfredonia_read_notifications', JSON.stringify(readIds));
+  }, [readIds]);
+
+  useEffect(() => {
+    if (!config?.infoBanners || !pushEnabled) return;
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    const enabledBanners = config.infoBanners.filter(b => b.enabled);
+    const lastKnownIds = JSON.parse(localStorage.getItem('manfredonia_last_banner_ids') || '[]');
+
+    const newBanners = enabledBanners.filter(b => !lastKnownIds.includes(b.id));
+
+    if (newBanners.length > 0) {
+      newBanners.forEach(banner => {
+        new window.Notification(banner.title, {
+          body: banner.message.replace(/<[^>]*>?/gm, ''),
+          icon: '/favicon.ico'
+        });
+      });
+    }
+
+    localStorage.setItem('manfredonia_last_banner_ids', JSON.stringify(enabledBanners.map(b => b.id)));
+  }, [config?.infoBanners, pushEnabled]);
+
+  const togglePush = async () => {
+    if (!pushEnabled) {
+      if ('Notification' in window) {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          setPushEnabled(true);
+          localStorage.setItem('manfredonia_push_enabled', 'true');
+        }
+      }
+    } else {
+      setPushEnabled(false);
+      localStorage.setItem('manfredonia_push_enabled', 'false');
+    }
+  };
+
+  const markAllAsRead = () => {
+    const enabledIds = config?.infoBanners?.filter(b => b.enabled).map(b => b.id) || [];
+    setReadIds(prev => Array.from(new Set([...prev, ...enabledIds])));
+  };
+
+  const unreadCount = config?.infoBanners?.filter(b => b.enabled && !readIds.includes(b.id)).length || 0;
 
 
   // Add scroll effect transparency
@@ -87,13 +146,13 @@ const Navbar: React.FC = () => {
                   className="flex items-center justify-center h-10 w-10 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/30 text-white transition-all relative group"
                 >
                   <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">
-                    {config?.infoBanners?.some(b => b.enabled) ? 'notifications_active' : 'notifications'}
+                    {unreadCount > 0 ? 'notifications_active' : 'notifications'}
                   </span>
-                  {config?.infoBanners?.filter(b => b.enabled).length > 0 && (
+                  {unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[9px] font-bold text-white items-center justify-center">
-                        {config.infoBanners.filter(b => b.enabled).length}
+                        {unreadCount}
                       </span>
                     </span>
                   )}
@@ -102,11 +161,31 @@ const Navbar: React.FC = () => {
                 {/* Notifications Dropdown */}
                 {notificationsOpen && (
                   <div className="absolute top-14 right-0 w-80 sm:w-96 bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-                    <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/5">
-                      <h3 className="font-bold text-white uppercase tracking-wider text-xs">Notifications</h3>
-                      <span className="text-[10px] text-gray-500 font-mono">
-                        {config?.infoBanners?.filter(b => b.enabled).length || 0} New
-                      </span>
+                    <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                      <div className="flex flex-col">
+                        <h3 className="font-bold text-white uppercase tracking-wider text-[10px]">Security Protocol 1.0</h3>
+                        <span className="text-[9px] text-gray-500 font-mono">
+                          {unreadCount} Unread Events
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={togglePush}
+                          className={`size-8 rounded-lg flex items-center justify-center border transition-all ${pushEnabled ? 'bg-blue-500/20 border-blue-500/40 text-blue-400' : 'bg-white/5 border-white/10 text-gray-500 hover:text-white'}`}
+                          title={pushEnabled ? "Disable Browser Push" : "Enable Browser Push"}
+                        >
+                          <span className="material-symbols-outlined text-[18px]">
+                            {pushEnabled ? 'notifications_paused' : 'add_alert'}
+                          </span>
+                        </button>
+                        <button
+                          onClick={markAllAsRead}
+                          className="size-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 hover:text-white hover:border-white/30 transition-all"
+                          title="Mark all as read"
+                        >
+                          <span className="material-symbols-outlined text-[18px]">done_all</span>
+                        </button>
+                      </div>
                     </div>
                     <div className="max-h-[400px] overflow-y-auto">
                       {config?.infoBanners?.filter(b => b.enabled).length === 0 ? (
@@ -116,7 +195,11 @@ const Navbar: React.FC = () => {
                         </div>
                       ) : (
                         config?.infoBanners?.filter(b => b.enabled).map(banner => (
-                          <div key={banner.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors relative group">
+                          <div
+                            key={banner.id}
+                            className={`p-4 border-b border-white/5 hover:bg-white/5 transition-colors relative group ${!readIds.includes(banner.id) ? 'bg-blue-500/[0.02]' : ''}`}
+                            onClick={() => setReadIds(prev => Array.from(new Set([...prev, banner.id])))}
+                          >
                             <div className="flex gap-3">
                               <div className="flex-shrink-0 mt-1">
                                 <div className={`size-8 rounded-lg flex items-center justify-center ${banner.style?.includes('red') ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}`}>
@@ -126,9 +209,14 @@ const Navbar: React.FC = () => {
                                 </div>
                               </div>
                               <div className="flex flex-col gap-1">
-                                <h4 className="text-sm font-bold text-white leading-tight">{banner.title}</h4>
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-sm font-bold text-white leading-tight">{banner.title}</h4>
+                                  {!readIds.includes(banner.id) && (
+                                    <span className="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                                  )}
+                                </div>
                                 {banner.subtitle && <p className="text-xs text-gray-400">{banner.subtitle}</p>}
-                                <div className="text-xs text-gray-500 mt-1 leading-relaxed" dangerouslySetInnerHTML={{ __html: banner.message }} />
+                                <div className="text-xs text-gray-500 mt-1 leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity" dangerouslySetInnerHTML={{ __html: banner.message }} />
                               </div>
                             </div>
                           </div>

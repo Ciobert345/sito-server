@@ -79,7 +79,7 @@ export interface Config {
   countdown: CountdownConfig;
   github: {
     repository: string;
-    token: string;
+    token?: string;
   };
   infoBanners: InfoBanner[];
   checkIframeServer: boolean;
