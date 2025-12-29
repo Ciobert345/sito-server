@@ -126,7 +126,9 @@ const Mobile: React.FC = () => {
     }, [readIds]);
 
     useEffect(() => {
-        if (!config?.infoBanners || !pushEnabled || Notification.permission !== 'granted') return;
+        if (!config?.infoBanners || !pushEnabled) return;
+        if (!('Notification' in window)) return;
+        if (Notification.permission !== 'granted') return;
 
         const enabledBanners = config.infoBanners.filter(b => b.enabled);
         const lastKnownIds = JSON.parse(localStorage.getItem('manfredonia_last_banner_ids') || '[]');
@@ -134,10 +136,14 @@ const Mobile: React.FC = () => {
 
         if (newBanners.length > 0) {
             newBanners.forEach(banner => {
-                new Notification(banner.title, {
-                    body: banner.message.replace(/<[^>]*>?/gm, ''),
-                    icon: '/favicon.ico'
-                });
+                try {
+                    new Notification(banner.title, {
+                        body: banner.message.replace(/<[^>]*>?/gm, ''),
+                        icon: '/favicon.ico'
+                    });
+                } catch (e) {
+                    console.error("Notification error:", e);
+                }
             });
         }
         localStorage.setItem('manfredonia_last_banner_ids', JSON.stringify(enabledBanners.map(b => b.id)));
