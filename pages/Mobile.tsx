@@ -87,18 +87,8 @@ const Mobile: React.FC = () => {
                 const repo = config.github.repository;
                 const data = await getReleases(repo, 10);
 
-                // Sort by version number (DESC) and take only first 4
-                const sortedData = [...(data || [])].sort((a: any, b: any) => {
-                    const clean = (v: string) => v.replace(/^v\.?/, "").split(".").map(Number);
-                    const vA = clean(a.tag_name);
-                    const vB = clean(b.tag_name);
-                    for (let i = 0; i < Math.max(vA.length, vB.length); i++) {
-                        const pA = vA[i] || 0;
-                        const pB = vB[i] || 0;
-                        if (pB !== pA) return pB - pA;
-                    }
-                    return 0;
-                }).slice(0, 4);
+                // Sorting is now handled globally in getReleases (githubCache.ts)
+                const sortedData = (data || []).slice(0, 4);
 
                 const releasesData = sortedData.map((release: any) => ({
                     version: release.tag_name,

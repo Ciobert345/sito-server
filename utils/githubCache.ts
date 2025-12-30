@@ -73,12 +73,32 @@ async function fetchWithCache<T = any>(url: string, token?: string, ttlMinutes =
   }
 }
 
+// Helper to compare semantic versions (DESC)
+const compareVersions = (a: string, b: string) => {
+  const clean = (v: string) => v.replace(/^v\.?/, "").split(".").map(Number);
+  const vA = clean(a);
+  const vB = clean(b);
+  for (let i = 0; i < Math.max(vA.length, vB.length); i++) {
+    const pA = vA[i] || 0;
+    const pB = vB[i] || 0;
+    if (pB !== pA) return pB - pA;
+  }
+  return 0;
+};
+
 export async function getLatestRelease(repo: string, token?: string, ttlMinutes = 10): Promise<any> {
-  const url = `https://api.github.com/repos/${repo}/releases/latest`;
-  return fetchWithCache<any>(url, token, ttlMinutes);
+  // Use getReleases and sort locally because GitHub's /latest is unreliable with non-standard release patterns
+  const releases = await getReleases(repo, 10, token, ttlMinutes);
+  if (!releases || releases.length === 0) return null;
+
+  const sorted = [...releases].sort((a, b) => compareVersions(a.tag_name, b.tag_name));
+  return sorted[0];
 }
 
 export async function getReleases(repo: string, perPage: number = 4, token?: string, ttlMinutes = 10): Promise<any[]> {
   const url = `https://api.github.com/repos/${repo}/releases?per_page=${perPage}`;
-  return fetchWithCache<any[]>(url, token, ttlMinutes);
+  const data = await fetchWithCache<any[]>(url, token, ttlMinutes);
+
+  // Also provide sorting for getReleases to assist callers who don't sort manually
+  return (data || []).sort((a, b) => compareVersions(a.tag_name, b.tag_name));
 }
