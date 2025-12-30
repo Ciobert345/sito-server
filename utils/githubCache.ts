@@ -37,8 +37,10 @@ async function fetchWithCache<T = any>(url: string, token?: string, ttlMinutes =
 
     const headers = buildHeaders(token, cached?.etag ?? null);
     const req = fetch(url, { headers }).then(async (res) => {
-      // 304 Not Modified: serve cached
+      // 304 Not Modified: serve cached and update timestamp to avoid re-validating every time
       if (res.status === 304 && cached) {
+        const toStore: CachedResponse<T> = { ...cached, timestamp: now };
+        try { localStorage.setItem(cacheKey, JSON.stringify(toStore)); } catch { }
         return cached.data;
       }
 
@@ -46,7 +48,7 @@ async function fetchWithCache<T = any>(url: string, token?: string, ttlMinutes =
         const etag = res.headers.get('ETag');
         const data = (await res.json()) as T;
         const toStore: CachedResponse<T> = { data, etag, timestamp: now };
-        try { localStorage.setItem(cacheKey, JSON.stringify(toStore)); } catch {}
+        try { localStorage.setItem(cacheKey, JSON.stringify(toStore)); } catch { }
         return data;
       }
 
@@ -71,12 +73,12 @@ async function fetchWithCache<T = any>(url: string, token?: string, ttlMinutes =
   }
 }
 
-export async function getLatestRelease(repo: string, token?: string, ttlMinutes = 60): Promise<any> {
+export async function getLatestRelease(repo: string, token?: string, ttlMinutes = 10): Promise<any> {
   const url = `https://api.github.com/repos/${repo}/releases/latest`;
   return fetchWithCache<any>(url, token, ttlMinutes);
 }
 
-export async function getReleases(repo: string, perPage: number = 4, token?: string, ttlMinutes = 60): Promise<any[]> {
+export async function getReleases(repo: string, perPage: number = 4, token?: string, ttlMinutes = 10): Promise<any[]> {
   const url = `https://api.github.com/repos/${repo}/releases?per_page=${perPage}`;
   return fetchWithCache<any[]>(url, token, ttlMinutes);
 }
