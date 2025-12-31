@@ -28,7 +28,7 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": true,
+      "enabled": false,
       "title": "⚠️UPDATE MODPACK⚠️",
       "subtitle": "",
       "message": "To play, you must update the modpack",
@@ -37,12 +37,12 @@
     },
     {
       "id": "banner2",
-      "enabled": false,
-      "title": "⚠️UPDATE HEXALIA⚠️",
+      "enabled": true,
+      "title": "🥳BUON ANNO!!!🥳",
       "subtitle": "",
-      "message": "To play, you must update the Hexalia mod to the latest version: https://modrinth.com/mod/hexalia/version/5iGlYAw1",
+      "message": "Signori, Felice anno nuovo!!!!",
       "icon": "notification",
-      "style": "banner-red"
+      "style": "banner-blue"
     }
   ],
   "feedbackRoadmap": {
