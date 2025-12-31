@@ -150,7 +150,7 @@ const Modpack: React.FC = () => {
         <h3 className="text-xl font-bold text-white uppercase tracking-widest opacity-50 ml-2">Alternative Downloads</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {[
-            { name: 'Server Pack', icon: 'local_fire_department', color: 'border-orange-500/20', rec: false, url: release?.zipUrl, note: '.zip Format' },
+            { name: 'Curseforge', icon: 'local_fire_department', color: 'border-orange-500/20', rec: false, url: release?.zipUrl, note: '.zip Format' },
             { name: 'Modrinth', icon: 'eco', color: 'border-green-500/20', rec: false, url: release?.mrpackUrl || release?.zipUrl, note: '.mrpack Format' },
             { name: 'SkLauncher / Universal', icon: 'folder_zip', color: 'border-blue-500/20', rec: false, url: release?.zipUrl, note: 'Import from Zip' }
           ].map(item => (
