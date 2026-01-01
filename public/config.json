@@ -28,12 +28,12 @@
   "infoBanners": [
     {
       "id": "banner1",
-      "enabled": false,
+      "enabled": true,
       "title": "🚨NEW WIKI🚨",
       "subtitle": "",
       "message": "A new wiki has been made, try it in the page 'updates'!",
       "icon": "notification",
-      "style": "banner-red"
+      "style": "banner-blue"
     },
     {
       "id": "banner2",
