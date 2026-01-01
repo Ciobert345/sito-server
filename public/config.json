@@ -29,9 +29,9 @@
     {
       "id": "banner1",
       "enabled": false,
-      "title": "⚠️UPDATE MODPACK⚠️",
+      "title": "🚨NEW WIKI🚨",
       "subtitle": "",
-      "message": "To play, you must update the modpack",
+      "message": "A new wiki has been made, try it in the page 'updates'!",
       "icon": "notification",
       "style": "banner-red"
     },
