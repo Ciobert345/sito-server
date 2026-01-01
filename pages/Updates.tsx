@@ -95,13 +95,13 @@ const Updates: React.FC = () => {
             <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.3em]">Essential Wiki</h3>
           </div>
 
-          {/* Notion Embed Wrapper */}
+          {/* Wiki Embed Wrapper */}
           <div className="glass-card rounded-2xl overflow-hidden flex-grow relative group border border-white/10 min-h-[500px]">
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
               <span className="bg-black/80 px-4 py-2 rounded-xl text-white font-bold uppercase tracking-widest text-xs border border-white/20">Interactive Wiki</span>
             </div>
             <iframe
-              src="https://dent-comte-e60.notion.site/ebd/20e1a36dbdb98050b8fac5ae5f158659?v=20e1a36dbdb98036aa1f000c15ecf1b2"
+              src="https://manfredonia-pack-wiki.netlify.app/"
               className="w-full h-full border-none bg-[#191919] min-h-full"
               title="Manfredonia Wiki"
             ></iframe>
