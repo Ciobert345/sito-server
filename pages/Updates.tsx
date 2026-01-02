@@ -96,15 +96,27 @@ const Updates: React.FC = () => {
           </div>
 
           {/* Wiki Embed Wrapper */}
-          <div className="glass-card rounded-2xl overflow-hidden flex-grow relative group border border-white/10 min-h-[500px]">
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
-              <span className="bg-black/80 px-4 py-2 rounded-xl text-white font-bold uppercase tracking-widest text-xs border border-white/20">Interactive Wiki</span>
+          <div className="glass-card rounded-2xl overflow-hidden flex-grow flex flex-col relative group border border-white/10 min-h-[500px]">
+            <div className="relative flex-grow w-full">
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
+                <span className="bg-black/80 px-4 py-2 rounded-xl text-white font-bold uppercase tracking-widest text-xs border border-white/20">Interactive Wiki</span>
+              </div>
+              <iframe
+                src="https://manfredonia-pack-wiki.netlify.app/"
+                className="w-full h-full border-none bg-[#191919]"
+                title="Manfredonia Wiki"
+              ></iframe>
             </div>
-            <iframe
-              src="https://manfredonia-pack-wiki.netlify.app/"
-              className="w-full h-full border-none bg-[#191919] min-h-full"
-              title="Manfredonia Wiki"
-            ></iframe>
+
+            <a
+              href="https://manfredonia-pack-wiki.netlify.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 bg-white/5 border-t border-white/10 flex items-center justify-center gap-2 hover:bg-white/10 transition-all group shrink-0 z-30"
+            >
+              <span className="text-xs font-black text-white uppercase tracking-widest">Open Full Wiki</span>
+              <span className="material-symbols-outlined text-white/60 text-sm group-hover:translate-x-1 transition-transform">open_in_new</span>
+            </a>
           </div>
 
           <div className="glass-card rounded-3xl p-6 flex flex-col gap-3 shrink-0">
