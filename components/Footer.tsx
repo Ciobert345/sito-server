@@ -14,8 +14,8 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div className="flex flex-col gap-4 text-center items-center">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="size-8 flex items-center justify-center rounded-lg bg-gradient-to-br from-white to-gray-400 text-black shadow-[0_0_10px_rgba(255,255,255,0.2)] transition-transform group-hover:scale-110 group-hover:rotate-3">
-                <span className="material-symbols-outlined text-lg font-variation-fill">diamond</span>
+              <div className="size-8 flex items-center justify-center rounded-lg transition-transform group-hover:scale-110 group-hover:rotate-3">
+                <img src="/site-icon-rack-white.svg" alt="Server Manfredonia Logo" className="w-full h-full object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
               </div>
               <h5 className="text-white font-bold text-lg tracking-tight uppercase group-hover:text-shadow-glow transition-all">Server Manfredonia</h5>
             </Link>
