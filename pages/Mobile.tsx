@@ -293,8 +293,8 @@ const Mobile: React.FC = () => {
                 <div className="flex justify-between items-center">
                     {/* Branding: Diamond + Text */}
                     <a href="#top" className="flex items-center gap-3 group">
-                        <div className={`relative flex items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-200 text-black shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 ${scrolled ? 'size-9' : 'size-10'}`}>
-                            <span className={`material-symbols-outlined font-variation-fill transition-all ${scrolled ? 'text-lg' : 'text-2xl'}`}>diamond</span>
+                        <div className={`relative flex items-center justify-center rounded-xl transition-all duration-300 ${scrolled ? 'size-9' : 'size-10'}`}>
+                            <img src="/site-icon-rack-white.svg" alt="Server Manfredonia Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
                         </div>
                         <div className={`flex flex-col transition-all duration-300 ${scrolled ? 'opacity-100' : 'opacity-90'}`}>
                             <h1 className="font-black text-white uppercase tracking-tighter leading-none text-base md:text-lg">Server Manfredonia</h1>
@@ -719,6 +719,7 @@ const Mobile: React.FC = () => {
                                 >
                                     <span className="material-symbols-outlined text-lg">open_in_new</span>
                                     <span>Open Dashboard</span>
+                                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                 </a>
 
                                 {/* SSL Warning */}
@@ -765,6 +766,7 @@ const Mobile: React.FC = () => {
 
                         {/* Content */}
                         <div className="p-4 sm:p-6">
+
                             {releasesLoading ? (
                                 <div className="flex items-center justify-center py-12">
                                     <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-white"></div>
@@ -844,6 +846,21 @@ const Mobile: React.FC = () => {
                                     <p className="text-xs">No release notes found or unable to fetch from GitHub.</p>
                                 </div>
                             )}
+                        </div>
+
+                        {/* Footer Action - Wiki */}
+                        <div className="p-4 sm:p-6 pt-4 mt-2 border-t border-white/5 bg-white/[0.02]">
+                            <a
+                                href="https://manfredonia-pack-wiki.netlify.app/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full py-4 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all group relative overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none"></div>
+                                <span className="material-symbols-outlined text-white/60 text-lg group-hover:rotate-12 transition-transform">menu_book</span>
+                                <span className="text-xs font-black text-white uppercase tracking-[0.2em]">Open Official Wiki</span>
+                                <span className="material-symbols-outlined text-white/40 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </a>
                         </div>
                     </div>
                 </section>
