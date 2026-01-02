@@ -112,8 +112,8 @@ const Navbar: React.FC = () => {
             {/* Logo Area */}
             <Link to="/" className="flex items-center gap-3 group relative">
               <div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-              <div className="relative size-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-white to-gray-200 text-black shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
-                <span className="material-symbols-outlined text-2xl font-variation-fill">diamond</span>
+              <div className="relative size-10 flex items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
+                <img src="/site-icon-rack-white.svg" alt="Server Manfredonia Logo" className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
               </div>
               <div className="flex flex-col">
                 <h1 className="font-bold text-lg md:text-xl tracking-tight leading-none text-white uppercase group-hover:text-shadow-glow transition-all whitespace-nowrap">Server Manfredonia</h1>
