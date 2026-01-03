@@ -92,14 +92,14 @@
             "title": "December Update",
             "type": "nextup",
             "priority": "High",
-            "column": "inprogress"
+            "column": "Done"
           },
           {
             "id": "10",
             "title": "Crash when leaving server",
             "type": "Bugfix",
             "priority": "High",
-            "column": "done"
+            "column": "backlog"
           },
           {
             "id": "11",
@@ -119,8 +119,8 @@
             "id": "9",
             "title": "Adding more quests",
             "type": "Improvement",
-            "priority": "Low",
-            "column": "backlog"
+            "priority": "high",
+            "column": "nextup"
           }
         ]
       }
