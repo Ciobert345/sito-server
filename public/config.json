@@ -92,7 +92,7 @@
             "title": "December Update",
             "type": "nextup",
             "priority": "High",
-            "column": "Done"
+            "column": "done"
           },
           {
             "id": "10",
@@ -120,7 +120,7 @@
             "title": "Adding more quests",
             "type": "Improvement",
             "priority": "high",
-            "column": "nextup"
+            "column": "inprogress"
           }
         ]
       }
