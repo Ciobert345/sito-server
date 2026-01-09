@@ -37,7 +37,7 @@
     },
     {
       "id": "banner2",
-      "enabled": true,
+      "enabled": false,
       "title": "🥳BUON ANNO!!!🥳",
       "subtitle": "",
       "message": "Signori, felice anno nuovo!!!!",
