@@ -28,6 +28,9 @@ const Account: React.FC = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [status, setStatus] = useState<{ type: 'success' | 'error', msg: string } | null>(null);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [unlockedIntel, setUnlockedIntel] = useState<UnlockedIntel[]>([]);
@@ -315,6 +318,50 @@ const Account: React.FC = () => {
                             </div>
 
                             <div className="p-8">
+                                {/* Status Alert UI */}
+                                <AnimatePresence>
+                                    {status && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                                            animate={{ height: 'auto', opacity: 1, marginBottom: 24 }}
+                                            exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                                            className={`relative overflow-hidden rounded-xl border ${status.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/10 border-red-500/30'}`}
+                                        >
+                                            <div className="flex items-center gap-4 p-4">
+                                                <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${status.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                                                    <span className="material-symbols-outlined text-xl">
+                                                        {status.type === 'success' ? 'check_circle' : 'warning'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col gap-0.5">
+                                                    <div className={`text-[10px] font-black uppercase tracking-widest ${status.type === 'success' ? 'text-emerald-400' : 'text-red-400'}`}>
+                                                        {status.type === 'success' ? 'Status: Nominal' : 'Status: Alert'}
+                                                    </div>
+                                                    <p className="text-[11px] font-mono text-white/70 leading-relaxed uppercase tracking-tight">
+                                                        {status.msg}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setStatus(null)}
+                                                    className="ml-auto p-2 text-white/20 hover:text-white transition-colors"
+                                                >
+                                                    <span className="material-symbols-outlined text-lg">close</span>
+                                                </button>
+                                            </div>
+                                            {/* Progress bar at the bottom */}
+                                            {status.type === 'success' && (
+                                                <motion.div
+                                                    initial={{ width: '100%' }}
+                                                    animate={{ width: 0 }}
+                                                    transition={{ duration: 5, ease: "linear" }}
+                                                    onAnimationComplete={() => setStatus(null)}
+                                                    className="absolute bottom-0 left-0 h-0.5 bg-emerald-500/40"
+                                                />
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 <AnimatePresence mode="wait">
                                     {activeTab === 'identity' ? (
                                         <motion.div
@@ -407,37 +454,70 @@ const Account: React.FC = () => {
                                             <div className="grid grid-cols-1 gap-6">
                                                 <div className="flex flex-col gap-2">
                                                     <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Primary Session Key (Current)</label>
-                                                    <input
-                                                        type="password"
-                                                        value={oldPassword}
-                                                        onChange={(e) => setOldPassword(e.target.value)}
-                                                        className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:bg-white/[0.05] focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-white/10"
-                                                        placeholder="••••••••"
-                                                        required
-                                                    />
+                                                    <div className="relative">
+                                                        <input
+                                                            type={showOldPassword ? "text" : "password"}
+                                                            value={oldPassword}
+                                                            onChange={(e) => setOldPassword(e.target.value)}
+                                                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:bg-white/[0.05] focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-white/10 pr-12"
+                                                            placeholder="••••••••"
+                                                            required
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowOldPassword(!showOldPassword)}
+                                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/60 transition-all"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[18px]">
+                                                                {showOldPassword ? 'visibility_off' : 'visibility'}
+                                                            </span>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                                     <div className="flex flex-col gap-2">
                                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">New Security Sequence</label>
-                                                        <input
-                                                            type="password"
-                                                            value={newPassword}
-                                                            onChange={(e) => setNewPassword(e.target.value)}
-                                                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:bg-white/[0.05] focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-white/10"
-                                                            placeholder="••••••••"
-                                                            required
-                                                        />
+                                                        <div className="relative">
+                                                            <input
+                                                                type={showNewPassword ? "text" : "password"}
+                                                                value={newPassword}
+                                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:bg-white/[0.05] focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-white/10 pr-12"
+                                                                placeholder="••••••••"
+                                                                required
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/60 transition-all"
+                                                            >
+                                                                <span className="material-symbols-outlined text-[18px]">
+                                                                    {showNewPassword ? 'visibility_off' : 'visibility'}
+                                                                </span>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <div className="flex flex-col gap-2">
                                                         <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Verify Sequence</label>
-                                                        <input
-                                                            type="password"
-                                                            value={confirmPassword}
-                                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:bg-white/[0.05] focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-white/10"
-                                                            placeholder="••••••••"
-                                                            required
-                                                        />
+                                                        <div className="relative">
+                                                            <input
+                                                                type={showConfirmPassword ? "text" : "password"}
+                                                                value={confirmPassword}
+                                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:bg-white/[0.05] focus:border-blue-500/40 focus:ring-1 focus:ring-blue-500/20 outline-none transition-all placeholder:text-white/10 pr-12"
+                                                                placeholder="••••••••"
+                                                                required
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 hover:text-white/60 transition-all"
+                                                            >
+                                                                <span className="material-symbols-outlined text-[18px]">
+                                                                    {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                                                                </span>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
