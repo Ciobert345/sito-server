@@ -275,8 +275,9 @@ const LoginModal: React.FC = () => {
                                 </button>
                             </form>
 
-                            <div className="mt-10 flex flex-col gap-6">
-                                <div className="flex flex-col gap-4">
+                            <div className="mt-10 flex flex-col gap-5">
+                                <div className="space-y-4">
+                                    {/* Action Link 1: Toggle Login/Signup */}
                                     <button
                                         onClick={() => {
                                             if (isForgotPassword) {
@@ -286,17 +287,57 @@ const LoginModal: React.FC = () => {
                                             }
                                             setError(null);
                                         }}
-                                        className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.3em] transition-all"
+                                        className="w-full relative group/btn overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-all hover:bg-white/[0.05] hover:border-white/20"
                                     >
-                                        {isForgotPassword ? 'Back to Login' : isSignUp ? 'Already have an account? Login' : 'New user? Request Access'}
+                                        <div className="relative z-10 flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="size-8 rounded-lg bg-white/5 flex items-center justify-center text-white/20 group-hover/btn:text-white transition-colors">
+                                                    <span className="material-symbols-outlined text-[18px]">
+                                                        {isForgotPassword ? 'arrow_back' : isSignUp ? 'login' : 'person_add'}
+                                                    </span>
+                                                </div>
+                                                <div className="flex flex-col items-start gap-0.5">
+                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60 group-hover/btn:text-white transition-colors">
+                                                        {isForgotPassword ? 'Back to Access' : isSignUp ? 'Identity Link' : 'Request Registry'}
+                                                    </span>
+                                                    <span className="text-[9px] font-mono text-white/20 uppercase">
+                                                        {isForgotPassword ? 'Return to entry terminal' : isSignUp ? 'Secure sign-in protocol' : 'Create new operative profile'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <span className="material-symbols-outlined text-[16px] text-white/10 group-hover/btn:translate-x-1 group-hover/btn:text-white/40 transition-all">chevron_right</span>
+                                        </div>
+
+                                        {/* Corner Accents */}
+                                        <div className="absolute top-0 left-0 size-1.5 border-t border-l border-white/20 rounded-tl-sm pointer-events-none" />
+                                        <div className="absolute bottom-0 right-0 size-1.5 border-b border-r border-white/20 rounded-br-sm pointer-events-none" />
                                     </button>
 
                                     {!isSignUp && !isForgotPassword && (
                                         <button
                                             onClick={() => { setIsForgotPassword(true); setError(null); }}
-                                            className="text-[10px] font-black text-emerald-500/40 hover:text-emerald-500 uppercase tracking-[0.3em] transition-all"
+                                            className="w-full relative group/btn overflow-hidden rounded-xl border border-emerald-500/10 bg-emerald-500/[0.02] p-4 transition-all hover:bg-emerald-500/[0.05] hover:border-emerald-500/30"
                                         >
-                                            Forgot Security Codes?
+                                            <div className="relative z-10 flex items-center justify-between">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="size-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500/30 group-hover/btn:text-emerald-400 transition-colors">
+                                                        <span className="material-symbols-outlined text-[18px]">lock_reset</span>
+                                                    </div>
+                                                    <div className="flex flex-col items-start gap-0.5">
+                                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/60 group-hover/btn:text-emerald-400 transition-colors">
+                                                            Reset Credentials
+                                                        </span>
+                                                        <span className="text-[9px] font-mono text-white/20 uppercase">
+                                                            Recover lost access codes
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <span className="material-symbols-outlined text-[16px] text-emerald-500/10 group-hover/btn:translate-x-1 group-hover/btn:text-emerald-500/40 transition-all">key</span>
+                                            </div>
+
+                                            {/* Corner Accents */}
+                                            <div className="absolute top-0 left-0 size-1.5 border-t border-l border-emerald-500/30 rounded-tl-sm pointer-events-none" />
+                                            <div className="absolute bottom-0 right-0 size-1.5 border-b border-r border-emerald-500/30 rounded-br-sm pointer-events-none" />
                                         </button>
                                     )}
                                 </div>
