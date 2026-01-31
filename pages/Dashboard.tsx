@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
     players?: { online: number; max: number };
     cpu?: number;
     ram?: number;
-    uptime?: string;
+    latency?: number;
     statusText?: string;
     isUnreachable?: boolean;
   }>({ online: false, statusText: 'SYNCING', isUnreachable: true });
@@ -56,8 +56,12 @@ const Dashboard: React.FC = () => {
       }
 
       if (currentServerId) {
-        const stats = await mcssService.getServerStats(currentServerId);
-        const servers = await mcssService.getServers();
+        const startTime = Date.now();
+        const [stats, servers] = await Promise.all([
+          mcssService.getServerStats(currentServerId),
+          mcssService.getServers()
+        ]);
+        const latency = Date.now() - startTime;
         const server = servers.find(s => s.serverId === currentServerId);
 
         const statusMap: { [key: number]: string } = {
@@ -70,7 +74,7 @@ const Dashboard: React.FC = () => {
           cpu: stats.cpuUsage,
           ram: stats.ramUsage,
           players: { online: stats.onlinePlayers, max: stats.maxPlayers },
-          uptime: stats.uptime || '00:00:00',
+          latency: latency,
           isUnreachable: false
         });
       }
@@ -511,9 +515,9 @@ const Dashboard: React.FC = () => {
                   </div>
                   <div className="h-8 w-px bg-white/5"></div>
                   <div className="flex flex-col text-right">
-                    <span className="text-[9px] font-mono text-white/20 uppercase tracking-[0.3em] leading-none mb-1">Uptime</span>
+                    <span className="text-[9px] font-mono text-white/20 uppercase tracking-[0.3em] leading-none mb-1">Latency</span>
                     <span className="text-sm font-mono text-white/60 uppercase tracking-widest leading-none font-bold">
-                      {serverStatus.uptime || 'SYNCING'}
+                      {serverStatus.latency ? `${serverStatus.latency}ms` : 'SYNCING'}
                     </span>
                     <span className="text-[8px] font-mono text-white/10 uppercase mt-auto">SN: CORE-X7</span>
                   </div>

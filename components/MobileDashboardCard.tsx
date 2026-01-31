@@ -15,7 +15,7 @@ export const MobileDashboardCard: React.FC = () => {
         players: { online: number; max: number };
         cpu: number;
         ram: number;
-        uptime: string;
+        latency?: number;
         statusText: string;
         unreachable?: boolean;
     }>({
@@ -24,7 +24,7 @@ export const MobileDashboardCard: React.FC = () => {
         players: { online: 0, max: 0 },
         cpu: 0,
         ram: 0,
-        uptime: '00:00:00',
+        latency: 0,
         statusText: 'OFFLINE',
         unreachable: true
     });
@@ -73,10 +73,12 @@ export const MobileDashboardCard: React.FC = () => {
                     }
 
                     if (currentServerId) {
+                        const startTime = Date.now();
                         const [serverStats, servers] = await Promise.all([
                             mcssService.getServerStats(currentServerId),
                             mcssService.getServers()
                         ]);
+                        const latency = Date.now() - startTime;
 
                         if (!serverStats || !servers) throw new Error('Incomplete data from MCSS');
 
@@ -94,7 +96,7 @@ export const MobileDashboardCard: React.FC = () => {
                             cpu: serverStats?.cpuUsage ?? 0,
                             ram: serverStats?.ramUsage ?? 0,
                             players: { online: serverStats?.onlinePlayers ?? 0, max: serverStats?.maxPlayers ?? 20 },
-                            uptime: serverStats?.uptime || '00:00:00',
+                            latency: latency,
                             unreachable: false
                         });
                         mcssSuccess = true;
@@ -378,6 +380,12 @@ export const MobileDashboardCard: React.FC = () => {
                                     <div className="flex flex-col items-center">
                                         <h3 className="text-sm font-black text-white/60 uppercase tracking-[0.4em] italic mb-1">Signal Lost</h3>
                                         <span className="text-[10px] font-mono text-red-500/30 uppercase tracking-[0.2em]">Retrying_Uplink...</span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.2em] mb-0.5">Latency</span>
+                                        <span className="text-[10px] font-mono font-black text-white/60 tracking-tighter italic">
+                                            {stats.latency ? `${stats.latency}ms` : '---'}
+                                        </span>
                                     </div>
                                 </div>
 
