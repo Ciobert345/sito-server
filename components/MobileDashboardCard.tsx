@@ -214,18 +214,17 @@ export const MobileDashboardCard: React.FC = () => {
         };
     }, [activeTab]);
 
-    const consoleEndRef = useRef<HTMLDivElement>(null);
+    const hasScrolledRef = useRef(false);
 
     useEffect(() => {
-        if (activeTab === 'console') {
-            const timer = setTimeout(() => {
-                if (consoleEndRef.current) {
-                    consoleEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
-                }
-            }, 100);
-            return () => clearTimeout(timer);
+        if (activeTab === 'console' && consoleLogs.length > 0 && !hasScrolledRef.current && consoleContainerRef.current) {
+            consoleContainerRef.current.scrollTop = consoleContainerRef.current.scrollHeight;
+            hasScrolledRef.current = true;
         }
-    }, [activeTab]);
+        if (activeTab !== 'console') {
+            hasScrolledRef.current = false;
+        }
+    }, [activeTab, consoleLogs]);
 
     const handleAction = async (action: string) => {
         if (!mcssService || !serverId || actionLoading) return;
@@ -345,7 +344,7 @@ export const MobileDashboardCard: React.FC = () => {
                     ))}
                 </div>
 
-                <AnimatePresence>
+                <AnimatePresence mode="wait">
                     {(stats.unreachable && gracePassed) ? (
                         <motion.div
                             key="unreachable-locked"
@@ -390,10 +389,10 @@ export const MobileDashboardCard: React.FC = () => {
                     ) : activeTab === 'overview' ? (
                         <motion.div
                             key="overview"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
                             className="flex flex-col gap-8 h-[420px] justify-between relative"
                         >
                             <AnimatePresence>
@@ -524,10 +523,10 @@ export const MobileDashboardCard: React.FC = () => {
                     ) : (
                         <motion.div
                             key="console"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
                             className="flex flex-col gap-0 h-[420px] bg-black/40 rounded-xl border border-white/10 overflow-hidden relative"
                         >
                             <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
@@ -545,7 +544,6 @@ export const MobileDashboardCard: React.FC = () => {
                                         <span className="text-white/20 mr-2 select-none">|</span>{log}
                                     </div>
                                 ))}
-                                <div ref={consoleEndRef} />
                             </div>
 
                             <AnimatePresence>
