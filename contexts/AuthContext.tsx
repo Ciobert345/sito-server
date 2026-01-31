@@ -5,7 +5,7 @@ import { MCSSService } from '../services/mcss';
 import { useConfig } from './ConfigContext';
 
 // Control verbosity of Auth/Intel logs
-const DEBUG_AUTH = true;
+const DEBUG_AUTH = false;
 
 const debugLog = (...args: any[]) => {
     if (DEBUG_AUTH) console.log('[AuthContext]', ...args);
