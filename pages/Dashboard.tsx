@@ -100,7 +100,7 @@ const Dashboard: React.FC = () => {
   }, [config, configLoading, authLoading, mcssService, fetchDetailedStats]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setGracePassed(true), 2200);
+    const timer = setTimeout(() => setGracePassed(true), 4000);
     return () => clearTimeout(timer);
   }, []);
 

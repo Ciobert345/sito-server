@@ -147,7 +147,7 @@ export const MobileDashboardCard: React.FC = () => {
         const intervalTime = stats.unreachable ? 300000 : 10000;
         const interval = setInterval(fetchStats, intervalTime);
 
-        const timer = setTimeout(() => setGracePassed(true), 2200);
+        const timer = setTimeout(() => setGracePassed(true), 4000);
 
         return () => {
             clearInterval(interval);
