@@ -240,16 +240,16 @@ export const MobileDashboardCard: React.FC = () => {
     }
 
     return (
-        <div className="glass-card bg-[#080808]/80 rounded-2xl border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden relative">
+        <div className="bg-[#080808]/90 rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative" style={{ transform: 'translateZ(0)' }}>
 
             {/* Notification Overlay */}
             <div className="absolute bottom-4 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4">
                 {(notifications || []).map((notif) => (
                     <div
                         key={notif.id}
-                        className={`pointer-events-auto flex items-center gap-3 px-4 py-2 rounded-xl border backdrop-blur-md shadow-2xl ${notif.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                            notif.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
-                                'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                        className={`pointer-events-auto flex items-center gap-3 px-4 py-2 rounded-xl border shadow-2xl ${notif.type === 'success' ? 'bg-[#0a2015] border-emerald-500/20 text-emerald-400' :
+                            notif.type === 'error' ? 'bg-[#2a0a0a] border-red-500/20 text-red-400' :
+                                'bg-[#0a1020] border-blue-500/20 text-blue-400'
                             }`}
                     >
                         <div className={`size-2 rounded-full ${notif.type === 'success' ? 'bg-emerald-500 animate-pulse' :
@@ -337,7 +337,7 @@ export const MobileDashboardCard: React.FC = () => {
                             {activeTab === 'overview' && (
                                 <div className="flex flex-col gap-8 h-full justify-between relative">
                                     {!gracePassed && (
-                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md rounded-2xl p-8 text-center">
+                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] rounded-2xl p-8 text-center">
                                             <div className="flex flex-col items-center gap-5 w-48">
                                                 <div className="flex flex-col items-center gap-1">
                                                     <div className="flex items-center gap-2">
@@ -448,8 +448,8 @@ export const MobileDashboardCard: React.FC = () => {
                             )}
 
                             {activeTab === 'console' && (
-                                <div className="flex flex-col h-full bg-black/40 rounded-xl border border-white/10 relative">
-                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center justify-between px-3">
+                                <div className="flex flex-col h-full bg-[#050505] rounded-xl border border-white/10 relative">
+                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center justify-between px-3 shrink-0">
                                         <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
                                         <button
                                             onClick={fetchConsole}
@@ -459,7 +459,7 @@ export const MobileDashboardCard: React.FC = () => {
                                             {actionLoading === 'console' ? 'Loading...' : 'REFRESH'}
                                         </button>
                                     </div>
-                                    <div className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-auto">
+                                    <div className="h-[340px] p-3 font-mono text-[10px] text-white/80 overflow-auto">
                                         {consoleLogs.length === 0 && !stats.unreachable && (
                                             <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
                                                 <span className="material-symbols-outlined text-2xl">data_usage</span>
@@ -470,7 +470,7 @@ export const MobileDashboardCard: React.FC = () => {
                                     </div>
 
                                     {!gracePassed && (
-                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md p-6 text-center">
+                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] p-6 text-center">
                                             <div className="flex flex-col items-center gap-3 w-32">
                                                 <span className="text-[8px] font-mono text-white/40 uppercase tracking-[0.2em] animate-pulse">Syncing Console</span>
                                                 <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
