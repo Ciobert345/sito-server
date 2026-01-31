@@ -23,7 +23,7 @@ const ResetPassword: React.FC = () => {
         }
 
         if (!user) {
-            setError("Session invalid or expired. Please request a new recovery link.");
+            setError("No active security session detected. Ensure you opened the link in this browser, or try requesting a new link if this one has expired.");
             return;
         }
 

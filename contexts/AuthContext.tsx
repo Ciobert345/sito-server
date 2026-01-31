@@ -5,7 +5,7 @@ import { MCSSService } from '../services/mcss';
 import { useConfig } from './ConfigContext';
 
 // Control verbosity of Auth/Intel logs
-const DEBUG_AUTH = false;
+const DEBUG_AUTH = true;
 
 const debugLog = (...args: any[]) => {
     if (DEBUG_AUTH) console.log('[AuthContext]', ...args);
@@ -159,6 +159,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const initAuth = async () => {
             try {
                 setAuthStatus('SESSION');
+
+                // Robust token extraction for HashRouter compatibility
+                // Finds tokens anywhere in the URL (nested hash or query)
+                const fullUrl = window.location.href;
+                const tokenMatches = fullUrl.match(/[#|&|?](access_token|refresh_token)=([^&]+)/g);
+
+                if (tokenMatches) {
+                    debugLog('Found potential tokens in URL:', tokenMatches.length);
+                    const queryStr = tokenMatches.join('&').replace(/[#|&|?]/g, '&');
+                    const params = new URLSearchParams(queryStr);
+                    const at = params.get('access_token');
+                    const rt = params.get('refresh_token');
+
+                    if (at && rt) {
+                        debugLog('Attempting manual session set with URL tokens...');
+                        const { error: setErr } = await supabase.auth.setSession({
+                            access_token: at,
+                            refresh_token: rt
+                        });
+                        if (setErr) console.error('[Auth] Manual session set error:', setErr);
+                        else debugLog('Manual session set SUCCESS');
+                    }
+                }
+
                 const { data: { session } } = await supabase.auth.getSession();
                 if (session?.user && isMounted.current) {
                     await syncUser(session.user.id, session.user.email || '', session.user.user_metadata);
