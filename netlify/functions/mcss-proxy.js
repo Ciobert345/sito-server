@@ -19,13 +19,13 @@ exports.handler = async (event) => {
         return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing mcss-target-url header' }) };
     }
 
-    console.log(`[NETLIFY-PROXY] Forwarding ${event.httpMethod} to: ${targetUrl}`);
-
     return new Promise((resolve) => {
         try {
             const url = new URL(targetUrl);
             const isHttps = url.protocol === 'https:';
             const transport = isHttps ? https : http;
+
+            console.log(`[NETLIFY-BRIDGE] Protocol: ${url.protocol} | Target: ${targetUrl}`);
 
             const options = {
                 method: event.httpMethod,
@@ -33,17 +33,16 @@ exports.handler = async (event) => {
                     'apiKey': apiKey || '',
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    'User-Agent': 'Netlify-Proxy-Bridge/1.0'
+                    'User-Agent': 'Netlify-Bridge/1.1'
                 },
-                rejectUnauthorized: false, // Bypass self-signed certs
-                timeout: 10000
+                rejectUnauthorized: false, // Essential for self-signed certs
+                timeout: 15000 // Increased timeout to 15s
             };
 
             const req = transport.request(targetUrl, options, (res) => {
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
-                    console.log(`[NETLIFY-PROXY] Target responded: ${res.statusCode}`);
                     resolve({
                         statusCode: res.statusCode,
                         headers: { ...headers, 'Content-Type': 'application/json' },
@@ -53,19 +52,15 @@ exports.handler = async (event) => {
             });
 
             req.on('error', (e) => {
-                console.error('[NETLIFY-PROXY ERROR]', e.code, e.message);
-                let errorMsg = e.message;
-                if (e.code === 'ECONNRESET' || e.message.includes('socket hang up')) {
-                    errorMsg = "Connection Reset (Socket Hang Up). This happens if the server closes the connection abruptly. Check if your MCSS server supports HTTPS on port 25560 or if it's strictly HTTP.";
+                console.error('[BRIDGE ERROR]', e.code, e.message);
+                let message = e.message;
+                if (e.code === 'ECONNRESET' || e.code === 'ECONNREFUSED') {
+                    message = `Connection ${e.code === 'ECONNRESET' ? 'Reset' : 'Refused'}. Possible causes: 1. Port 25560 is not open. 2. Firewall is blocking Netlify. 3. Protocol mismatch (trying HTTP on an HTTPS port). Target was ${url.protocol}`;
                 }
                 resolve({
                     statusCode: 502,
                     headers,
-                    body: JSON.stringify({
-                        error: errorMsg,
-                        code: e.code,
-                        target: targetUrl
-                    })
+                    body: JSON.stringify({ error: message, code: e.code, details: e.message })
                 });
             });
 
@@ -74,7 +69,7 @@ exports.handler = async (event) => {
                 resolve({
                     statusCode: 504,
                     headers,
-                    body: JSON.stringify({ error: "Connection Timeout (10s)" })
+                    body: JSON.stringify({ error: "Upstream Timeout" })
                 });
             });
 
@@ -85,7 +80,7 @@ exports.handler = async (event) => {
             resolve({
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({ error: "Invalid Configuration: " + err.message })
+                body: JSON.stringify({ error: "Bridge Config Error: " + err.message })
             });
         }
     });
