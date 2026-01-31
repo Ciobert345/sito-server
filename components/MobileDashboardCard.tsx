@@ -190,7 +190,7 @@ export const MobileDashboardCard: React.FC = () => {
         }
     };
 
-    const sendCommand = async (e: React.FormEvent) => {
+    const sendCommand = async (e: React.SyntheticEvent | { preventDefault: () => void }) => {
         e.preventDefault();
         if (!commandInput.trim() || !mcssService || !serverId) return;
         const cmd = commandInput;
@@ -480,22 +480,36 @@ export const MobileDashboardCard: React.FC = () => {
                                         </div>
                                     )}
 
-                                    <div className={`p-2 bg-white/5 border-t border-white/10 transition-opacity ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
-                                        <form onSubmit={sendCommand} className="relative flex items-center gap-2">
-                                            <span className="text-emerald-500 font-mono text-xs animate-pulse pl-2">{'>'}</span>
+                                    <div className={`p-2 bg-[#050505] border-t border-white/10 ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
+                                        <div className="relative flex items-center gap-2">
+                                            <span className="text-emerald-500 font-mono text-xs pl-2">{'>'}</span>
                                             <input
                                                 type="text"
                                                 value={commandInput}
                                                 onChange={(e) => setCommandInput(e.target.value)}
-                                                placeholder={stats.unreachable ? "Link lost..." : "Enter validated command..."}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        sendCommand(e);
+                                                    }
+                                                }}
+                                                placeholder={stats.unreachable ? "Link lost..." : "Enter command..."}
                                                 className="flex-1 bg-transparent border-none text-xs font-mono text-white placeholder-white/20 focus:ring-0 focus:outline-none py-2"
                                                 autoComplete="off"
+                                                autoCorrect="off"
+                                                autoCapitalize="off"
+                                                spellCheck="false"
+                                                data-form-type="other"
                                                 disabled={stats.unreachable}
+                                                style={{ WebkitAppearance: 'none', appearance: 'none' }}
                                             />
-                                            <button type="submit" disabled={!commandInput.trim() || stats.unreachable} className="p-1.5 hover:bg-white/10 rounded text-white/50 hover:text-white transition-colors disabled:opacity-0">
+                                            <button
+                                                onClick={(e) => sendCommand(e)}
+                                                disabled={!commandInput.trim() || stats.unreachable}
+                                                className="p-1.5 hover:bg-white/10 rounded text-white/50 hover:text-white transition-colors disabled:opacity-0"
+                                            >
                                                 <span className="material-symbols-outlined text-sm">keyboard_return</span>
                                             </button>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             )}
