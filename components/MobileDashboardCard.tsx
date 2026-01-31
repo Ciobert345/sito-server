@@ -171,18 +171,20 @@ export const MobileDashboardCard: React.FC = () => {
     // Initial load + Polling
     useEffect(() => {
         if (activeTab === 'console' && serverId) {
-            // Only show full-screen loader if we have NO logs yet
+            // First load only: show indicator if no logs exist
             if (consoleLogs.length === 0) {
                 setActionLoading('console');
+                fetchConsole().finally(() => setActionLoading(null));
+            } else {
+                // Already have logs? Just update immediately in background
+                fetchConsole();
             }
 
-            fetchConsole().finally(() => setActionLoading(null));
-
-            // Polling every 4 seconds (Balance between "live" feel and stability)
-            const interval = setInterval(fetchConsole, 4000);
+            // High-frequency polling (3s) for a "live" feel
+            const interval = setInterval(fetchConsole, 3000);
             return () => clearInterval(interval);
         }
-    }, [activeTab, serverId]);
+    }, [activeTab, serverId, consoleLogs]);
 
 
 
@@ -348,8 +350,8 @@ export const MobileDashboardCard: React.FC = () => {
                                                     <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
                                                 </div>
                                                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
-                                                    <div className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative" style={{ width: '100%' }}>
-                                                        <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
+                                                    <div className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative animate-[progress_2s_ease-in-out_infinite]" style={{ width: '100%', transformOrigin: 'left' }}>
+                                                        <div className="absolute top-0 bottom-0 right-0 w-[20px] bg-white/20 blur-sm animate-[shimmer_1.5s_infinite]" />
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-center w-full opacity-20">
@@ -457,8 +459,17 @@ export const MobileDashboardCard: React.FC = () => {
                                         </div>
                                     </div>
                                     <style>{`
+                                        @keyframes progress {
+                                            0% { transform: scaleX(0.1); opacity: 0.5; }
+                                            50% { transform: scaleX(0.8); opacity: 1; }
+                                            100% { transform: scaleX(1); opacity: 0.5; }
+                                        }
+                                        @keyframes shimmer {
+                                            0% { left: -100%; }
+                                            100% { left: 100%; }
+                                        }
                                         @keyframes slideRight {
-                                            0% { left: -50%; }
+                                            0% { left: -100%; }
                                             100% { left: 100%; }
                                         }
                                     `}</style>
@@ -476,11 +487,10 @@ export const MobileDashboardCard: React.FC = () => {
                                                         <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] animate-pulse">Establishing Link</span>
                                                         <span className="text-white/20 font-mono text-[8px] animate-pulse">...</span>
                                                     </div>
-                                                    <div className="w-48 h-0.5 bg-white/5 rounded-full overflow-hidden relative border border-white/5">
-                                                        <div
-                                                            className="absolute top-0 h-full bg-emerald-500 w-1/2"
-                                                            style={{ animation: 'slideRight 1.5s infinite linear' }}
-                                                        />
+                                                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
+                                                        <div className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative animate-[progress_2s_ease-in-out_infinite]" style={{ width: '100%', transformOrigin: 'left' }}>
+                                                            <div className="absolute top-0 bottom-0 right-0 w-[20px] bg-white/20 blur-sm animate-[shimmer_1.5s_infinite]" />
+                                                        </div>
                                                     </div>
                                                     <span className="text-[7px] font-mono text-white/20 uppercase tracking-widest mt-1">Uplink Status: Synchronizing</span>
                                                 </div>
