@@ -4,8 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 export const MobileDashboardCard: React.FC = () => {
     const { mcssService, user } = useAuth();
     const [activeTab, setActiveTab] = useState<'overview' | 'console'>('overview');
-
-    // Server State
     const [serverId, setServerId] = useState<string | null>(null);
     const clientIp = 'SCN_PROT_V4';
     const [stats, setStats] = useState<{
@@ -42,6 +40,7 @@ export const MobileDashboardCard: React.FC = () => {
     // Console State
     const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
     const [commandInput, setCommandInput] = useState('');
+    const consoleRef = useRef<HTMLPreElement>(null);
 
     // Action State
     const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -168,23 +167,34 @@ export const MobileDashboardCard: React.FC = () => {
         }
     };
 
-    // Initial load + Polling
+    // Background Polling - Active regardless of tab (Parity with Desktop)
     useEffect(() => {
-        if (activeTab === 'console' && serverId) {
-            // First load only: show indicator if no logs exist
-            if (consoleLogs.length === 0) {
-                setActionLoading('console');
-                fetchConsole().finally(() => setActionLoading(null));
-            } else {
-                // Already have logs? Just update immediately in background
-                fetchConsole();
-            }
+        if (!serverId || !mcssService) return;
 
-            // High-frequency polling (3s) for a "live" feel
-            const interval = setInterval(fetchConsole, 3000);
-            return () => clearInterval(interval);
+        // Perform initial fetch
+        fetchConsole();
+
+        // 2.5s interval for a truly "live" feel
+        const interval = setInterval(fetchConsole, 2500);
+        return () => clearInterval(interval);
+    }, [serverId, mcssService]);
+
+    // UI Loading state management when switching tabs
+    useEffect(() => {
+        if (activeTab === 'console' && consoleLogs.length === 0) {
+            setActionLoading('console');
+            // Small delay to allow initial background fetch to populate
+            const timer = setTimeout(() => setActionLoading(null), 1000);
+            return () => clearTimeout(timer);
         }
-    }, [activeTab, serverId, consoleLogs]);
+    }, [activeTab]);
+
+    // Auto-scroll console when logs arrive
+    useEffect(() => {
+        if (consoleRef.current && activeTab === 'console') {
+            consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+        }
+    }, [consoleLogs, activeTab]);
 
 
 
@@ -209,6 +219,8 @@ export const MobileDashboardCard: React.FC = () => {
         try {
             await mcssService.executeCommand(serverId, cmd);
             addNotification('info', `Executed: ${cmd}`);
+            // Immediate fetch to show response (Real-time feel)
+            setTimeout(fetchConsole, 800);
         } catch (err) {
             addNotification('error', `Failed to send command: ${cmd}`);
         }
@@ -350,8 +362,11 @@ export const MobileDashboardCard: React.FC = () => {
                                                     <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
                                                 </div>
                                                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
-                                                    <div className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative animate-[progress_2s_ease-in-out_infinite]" style={{ width: '100%', transformOrigin: 'left' }}>
-                                                        <div className="absolute top-0 bottom-0 right-0 w-[20px] bg-white/20 blur-sm animate-[shimmer_1.5s_infinite]" />
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
+                                                        style={{ animation: 'fillProgress 4s cubic-bezier(0.65, 0, 0.35, 1) forwards' }}
+                                                    >
+                                                        <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-center w-full opacity-20">
@@ -388,7 +403,7 @@ export const MobileDashboardCard: React.FC = () => {
                                                 <span className="text-[10px] text-white/30">%</span>
                                             </div>
                                             <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
-                                                <div className="h-full bg-purple-500/50" style={{ width: `${stats.ram}%` }}></div>
+                                                <div className="h-full bg-purple-500/50 transition-all duration-1000 ease-out" style={{ width: `${stats.ram}%` }}></div>
                                             </div>
                                         </div>
 
@@ -459,10 +474,9 @@ export const MobileDashboardCard: React.FC = () => {
                                         </div>
                                     </div>
                                     <style>{`
-                                        @keyframes progress {
-                                            0% { transform: scaleX(0.1); opacity: 0.5; }
-                                            50% { transform: scaleX(0.8); opacity: 1; }
-                                            100% { transform: scaleX(1); opacity: 0.5; }
+                                        @keyframes fillProgress {
+                                            0% { width: 0%; }
+                                            100% { width: 100%; }
                                         }
                                         @keyframes shimmer {
                                             0% { left: -100%; }
@@ -475,7 +489,10 @@ export const MobileDashboardCard: React.FC = () => {
                                     `}</style>
                                     <div className="h-[340px] bg-[#050505] relative overflow-hidden">
                                         {/* Logs Display - Using PRE for stability + readability */}
-                                        <pre className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30">
+                                        <pre
+                                            ref={consoleRef}
+                                            className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30"
+                                        >
                                             {logsText || (actionLoading === 'console' ? "Initialising uplink..." : "No logs available. System is waiting for data.")}
                                         </pre>
 
@@ -487,9 +504,12 @@ export const MobileDashboardCard: React.FC = () => {
                                                         <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] animate-pulse">Establishing Link</span>
                                                         <span className="text-white/20 font-mono text-[8px] animate-pulse">...</span>
                                                     </div>
-                                                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
-                                                        <div className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative animate-[progress_2s_ease-in-out_infinite]" style={{ width: '100%', transformOrigin: 'left' }}>
-                                                            <div className="absolute top-0 bottom-0 right-0 w-[20px] bg-white/20 blur-sm animate-[shimmer_1.5s_infinite]" />
+                                                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner backdrop-blur-sm">
+                                                        <div
+                                                            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative"
+                                                            style={{ animation: 'fillProgress 4s cubic-bezier(0.65, 0, 0.35, 1) forwards' }}
+                                                        >
+                                                            <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
                                                         </div>
                                                     </div>
                                                     <span className="text-[7px] font-mono text-white/20 uppercase tracking-widest mt-1">Uplink Status: Synchronizing</span>
