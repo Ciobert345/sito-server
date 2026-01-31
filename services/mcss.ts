@@ -97,22 +97,34 @@ export class MCSSService {
         try {
             const data = await this.fetchApi(`/api/v2/servers/${serverId}/stats`);
 
-            const latest = data?.latest || {};
-            const root = data || {};
+            // Some versions return an array of history, some return an object with 'latest', some return the object directly
+            const statsObj = Array.isArray(data) ? data[data.length - 1] : data;
+
+            const latest = statsObj?.latest || {};
+            const root = statsObj || {};
 
             const get = (...keys: string[]) => {
                 for (const key of keys) {
                     if (latest[key] !== undefined) return latest[key];
                     if (root[key] !== undefined) return root[key];
-                    if (root[key.toLowerCase()] !== undefined) return root[key.toLowerCase()];
+                    // Case-insensitive check
+                    const findKey = (obj: any, k: string) => {
+                        const lowK = k.toLowerCase();
+                        const found = Object.keys(obj).find(ok => ok.toLowerCase() === lowK);
+                        return found ? obj[found] : undefined;
+                    };
+                    const fkLatest = findKey(latest, key);
+                    if (fkLatest !== undefined) return fkLatest;
+                    const fkRoot = findKey(root, key);
+                    if (fkRoot !== undefined) return fkRoot;
                 }
                 return undefined;
             };
 
-            const memUsed = get('memoryUsed', 'ramUsage', 'Memory', 'RAM', 'ram');
-            const memLimit = get('memoryLimit', 'maxMemory', 'TotalMemory', 'maxRam');
+            const memUsed = get('memoryUsed', 'ramUsage', 'Memory', 'RAM', 'ram', 'memory');
+            const memLimit = get('memoryLimit', 'maxMemory', 'TotalMemory', 'maxRam', 'memoryLimit');
 
-            const rawUptime = get('uptime', 'Uptime', 'uptime_seconds', 'UptimeSeconds');
+            const rawUptime = get('uptime', 'upTime', 'up_time', 'timeRunning', 'runningTime', 'uptime_seconds', 'UptimeSeconds');
             let formattedUptime = '00:00:00';
 
             if (typeof rawUptime === 'number') {
@@ -125,12 +137,12 @@ export class MCSSService {
             }
 
             return {
-                cpuUsage: get('cpu', 'cpuUsage', 'CPU') ?? 0,
+                cpuUsage: get('cpu', 'cpuUsage', 'CPU', 'cpu_usage') ?? 0,
                 ramUsage: (memLimit && memLimit > 0)
                     ? Math.round((memUsed / memLimit) * 100)
-                    : (get('ramUsage', 'ram', 'memoryUsage') ?? 0),
-                onlinePlayers: get('playersOnline', 'onlinePlayers', 'OnlinePlayers', 'PlayersOnline') ?? 0,
-                maxPlayers: get('playerLimit', 'maxPlayers', 'MaxPlayers', 'PlayerLimit') ?? 0,
+                    : (get('ramUsage', 'ram', 'memoryUsage', 'memory_usage') ?? 0),
+                onlinePlayers: get('playersOnline', 'onlinePlayers', 'OnlinePlayers', 'PlayersOnline', 'players') ?? 0,
+                maxPlayers: get('playerLimit', 'maxPlayers', 'MaxPlayers', 'PlayerLimit', 'max_players') ?? 0,
                 uptime: formattedUptime
             };
         } catch (err: any) {
