@@ -5,6 +5,9 @@ import { useAuth } from '../contexts/AuthContext';
 
 const LoginModal: React.FC = () => {
     const [isSignUp, setIsSignUp] = useState(false);
+    const [isForgotPassword, setIsForgotPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
     // Use refs for uncontrolled inputs to avoid conflicts with password managers in Firefox
     const emailRef = React.useRef<HTMLInputElement>(null);
     const usernameRef = React.useRef<HTMLInputElement>(null);
@@ -13,8 +16,9 @@ const LoginModal: React.FC = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [recoveryEmailSent, setRecoveryEmailSent] = useState(false);
     const [loading, setLoading] = useState(false);
-    const { login, signup, setAuthModalOpen } = useAuth();
+    const { login, signup, resetPassword, setAuthModalOpen } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,7 +32,10 @@ const LoginModal: React.FC = () => {
         const confirm = confirmPasswordRef.current?.value || '';
 
         try {
-            if (isSignUp) {
+            if (isForgotPassword) {
+                await resetPassword(email);
+                setRecoveryEmailSent(true);
+            } else if (isSignUp) {
                 if (password !== confirm) {
                     throw new Error("L_SEC_ERR: Passwords mismatch");
                 }
@@ -62,7 +69,35 @@ const LoginModal: React.FC = () => {
                 </button>
 
                 <AnimatePresence mode="wait">
-                    {success ? (
+                    {recoveryEmailSent ? (
+                        <motion.div
+                            key="recovery-success"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="flex-1 flex flex-col gap-8 items-center justify-center text-center py-4"
+                        >
+                            <div className="size-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+                                <span className="material-symbols-outlined text-4xl">mail</span>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h2 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none">
+                                    Recovery <br /><span className="text-emerald-500">Sent</span>
+                                </h2>
+                                <p className="text-xs font-mono text-white/40 uppercase tracking-[0.2em] leading-relaxed max-w-[280px]">
+                                    Link di ripristino inviato. Controlla la tua casella di posta per procedere con il reset della password.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={() => { setRecoveryEmailSent(false); setIsForgotPassword(false); }}
+                                className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-[0.3em] text-white/60 hover:text-white transition-all transition-colors"
+                            >
+                                Back to Login
+                            </button>
+                        </motion.div>
+                    ) : success ? (
                         <motion.div
                             key="success-state"
                             initial={{ opacity: 0, y: 10 }}
@@ -100,7 +135,7 @@ const LoginModal: React.FC = () => {
                         >
                             <div className="mb-10 text-center">
                                 <h1 className="text-5xl font-black italic tracking-tighter uppercase text-white leading-[0.8]">
-                                    {isSignUp ? 'Request' : 'Login'} <br /><span className="text-white/30 text-4xl">{isSignUp ? 'Access' : 'Area'}</span>
+                                    {isForgotPassword ? 'Reset' : isSignUp ? 'Request' : 'Login'} <br /><span className="text-white/30 text-4xl">{isForgotPassword ? 'Password' : isSignUp ? 'Access' : 'Area'}</span>
                                 </h1>
                                 <div className="mt-4 flex justify-center">
                                     <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] border-t border-white/5 pt-2 px-8">
@@ -154,48 +189,65 @@ const LoginModal: React.FC = () => {
                                     />
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label htmlFor="auth-password" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Password</label>
-                                    <input
-                                        ref={passwordRef}
-                                        id="auth-password"
-                                        name="password"
-                                        type="password"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:border-white transition-all outline-none placeholder:text-white/10"
-                                        placeholder="••••••••"
-                                        required
-                                        autoComplete={isSignUp ? "new-password" : "current-password"}
-                                        spellCheck="false"
-                                        autoCorrect="off"
-                                        autoCapitalize="off"
-                                        data-bwignore="true"
-                                        data-1p-ignore="true"
-                                        data-lpignore="true"
-                                        data-form-type="other"
-                                    />
-                                </div>
+                                {!isForgotPassword && (
+                                    <>
+                                        <div className="space-y-2">
+                                            <label htmlFor="auth-password" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Password</label>
+                                            <div className="relative group/input">
+                                                <input
+                                                    ref={passwordRef}
+                                                    id="auth-password"
+                                                    name="password"
+                                                    type={showPassword ? "text" : "password"}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:border-white transition-all outline-none placeholder:text-white/10 pr-12"
+                                                    placeholder="••••••••"
+                                                    required={!isForgotPassword}
+                                                    autoComplete={isSignUp ? "new-password" : "current-password"}
+                                                    spellCheck="false"
+                                                    autoCorrect="off"
+                                                    autoCapitalize="off"
+                                                    data-bwignore="true"
+                                                    data-1p-ignore="true"
+                                                    data-lpignore="true"
+                                                    data-form-type="other"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-4 top-1/2 -translate-y-1/2 size-6 flex items-center justify-center rounded-lg hover:bg-white/5 text-white/20 hover:text-white/60 transition-all"
+                                                >
+                                                    <span className="material-symbols-outlined text-[18px]">
+                                                        {showPassword ? 'visibility_off' : 'visibility'}
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                {isSignUp && (
-                                    <div className="space-y-2">
-                                        <label htmlFor="confirm-password" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Confirm</label>
-                                        <input
-                                            ref={confirmPasswordRef}
-                                            id="confirm-password"
-                                            name="confirmPassword"
-                                            type="password"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:border-white transition-all outline-none placeholder:text-white/10"
-                                            placeholder="••••••••"
-                                            required={isSignUp}
-                                            autoComplete="new-password"
-                                            spellCheck="false"
-                                            autoCorrect="off"
-                                            autoCapitalize="off"
-                                            data-bwignore="true"
-                                            data-1p-ignore="true"
-                                            data-lpignore="true"
-                                            data-form-type="other"
-                                        />
-                                    </div>
+                                        {isSignUp && (
+                                            <div className="space-y-2">
+                                                <label htmlFor="confirm-password" className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] ml-1">Confirm</label>
+                                                <div className="relative group/input">
+                                                    <input
+                                                        ref={confirmPasswordRef}
+                                                        id="confirm-password"
+                                                        name="confirmPassword"
+                                                        type={showPassword ? "text" : "password"}
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-mono text-white focus:border-white transition-all outline-none placeholder:text-white/10 pr-12"
+                                                        placeholder="••••••••"
+                                                        required={isSignUp}
+                                                        autoComplete="new-password"
+                                                        spellCheck="false"
+                                                        autoCorrect="off"
+                                                        autoCapitalize="off"
+                                                        data-bwignore="true"
+                                                        data-1p-ignore="true"
+                                                        data-lpignore="true"
+                                                        data-form-type="other"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
 
                                 {error && (
@@ -216,20 +268,38 @@ const LoginModal: React.FC = () => {
                                         <div className="size-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
                                     ) : (
                                         <>
-                                            {isSignUp ? 'Submit Request' : 'Login'}
-                                            <span className="material-symbols-outlined text-sm">{isSignUp ? 'send' : 'login'}</span>
+                                            {isForgotPassword ? 'Reset Codes' : isSignUp ? 'Submit Request' : 'Login'}
+                                            <span className="material-symbols-outlined text-sm">{isForgotPassword ? 'key' : isSignUp ? 'send' : 'login'}</span>
                                         </>
                                     )}
                                 </button>
                             </form>
 
                             <div className="mt-10 flex flex-col gap-6">
-                                <button
-                                    onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
-                                    className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.3em] transition-all"
-                                >
-                                    {isSignUp ? 'Already have an account? Login' : 'New user? Request Access'}
-                                </button>
+                                <div className="flex flex-col gap-4">
+                                    <button
+                                        onClick={() => {
+                                            if (isForgotPassword) {
+                                                setIsForgotPassword(false);
+                                            } else {
+                                                setIsSignUp(!isSignUp);
+                                            }
+                                            setError(null);
+                                        }}
+                                        className="text-[10px] font-black text-white/30 hover:text-white uppercase tracking-[0.3em] transition-all"
+                                    >
+                                        {isForgotPassword ? 'Back to Login' : isSignUp ? 'Already have an account? Login' : 'New user? Request Access'}
+                                    </button>
+
+                                    {!isSignUp && !isForgotPassword && (
+                                        <button
+                                            onClick={() => { setIsForgotPassword(true); setError(null); }}
+                                            className="text-[10px] font-black text-emerald-500/40 hover:text-emerald-500 uppercase tracking-[0.3em] transition-all"
+                                        >
+                                            Forgot Security Codes?
+                                        </button>
+                                    )}
+                                </div>
 
                                 <div className="pt-6 border-t border-white/5 opacity-40">
                                     <p className="text-[8px] font-mono text-center text-white/20 uppercase tracking-[0.5em]">

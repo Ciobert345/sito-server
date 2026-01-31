@@ -12,6 +12,7 @@ import Mobile from './pages/Mobile';
 import MobileAccount from './pages/MobileAccount';
 import Account from './pages/Account';
 import Admin from './pages/Admin';
+import ResetPassword from './pages/ResetPassword';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Terminal from './components/Terminal';
@@ -251,6 +252,7 @@ const AppContent: React.FC = () => {
                 <Route path="/account" element={<Account />} />
                 <Route path="/mobile-account" element={<MobileAccount />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="*" element={<Home />} />
               </Routes>
             </main>

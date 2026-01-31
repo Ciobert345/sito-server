@@ -42,6 +42,7 @@ interface AuthContextType {
     logout: () => Promise<void>;
     updateProfile: (updates: { username?: string, avatar_url?: string | null }) => Promise<void>;
     updatePassword: (password: string) => Promise<void>;
+    resetPassword: (email: string) => Promise<void>;
     uploadAvatar: (file: File) => Promise<string>;
     verifyPassword: (password: string) => Promise<boolean>;
     markBannerAsRead: (bannerId: string) => Promise<void>;
@@ -214,6 +215,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = async () => { setLoading(true); try { await supabase.auth.signOut(); setUser(null); setMcssKey(null); } finally { setLoading(false); } };
     const updateProfile = async (u: any) => { if (!user) return; await supabase.from('profiles').update(u).eq('id', user.id); setUser({ ...user, ...u }); };
     const updatePassword = async (p: string) => { await supabase.auth.updateUser({ password: p }); };
+    const resetPassword = async (email: string) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/#/reset-password`,
+        });
+        if (error) throw error;
+    };
     const uploadAvatar = async (f: File) => { if (!user) throw new Error('NA'); const ext = f.name.split('.').pop(); const path = `${user.id}/${Math.random()}.${ext}`; await supabase.storage.from('avatars').upload(path, f); const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path); await updateProfile({ avatar_url: publicUrl }); return publicUrl; };
     const verifyPassword = async (p: string) => { if (!user?.email) return false; return !(await supabase.auth.signInWithPassword({ email: user.email, password: p })).error; };
     const markBannerAsRead = async (b: string) => { if (!user) return; const n = [...user.read_banner_ids, b]; await updateProfile({ read_banner_ids: n }); };
@@ -225,7 +232,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return (
         <AuthContext.Provider value={{
             user, mcssKey, mcssService, loading, authStatus, login, signup, logout,
-            updateProfile, updatePassword, uploadAvatar, verifyPassword,
+            updateProfile, updatePassword, resetPassword, uploadAvatar, verifyPassword,
             markBannerAsRead, markAllBannersAsRead, addXP, unlockIntel,
             attemptUnlockWithCode, unlockedIntelIds, isAuthModalOpen, setAuthModalOpen
         }}>
