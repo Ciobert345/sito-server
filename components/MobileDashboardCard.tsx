@@ -430,7 +430,7 @@ export const MobileDashboardCard: React.FC = () => {
                                                 <motion.div
                                                     initial={{ width: "0%" }}
                                                     animate={{ width: "100%" }}
-                                                    transition={{ duration: 2, ease: [0.65, 0, 0.35, 1] }}
+                                                    transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
                                                     className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
                                                 >
                                                     <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
