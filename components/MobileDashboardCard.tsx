@@ -304,7 +304,7 @@ export const MobileDashboardCard: React.FC = () => {
             {/* Notification Overlay */}
             <div className="absolute bottom-4 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4">
                 <AnimatePresence>
-                    {notifications.map((notif) => (
+                    {(notifications || []).map((notif) => (
                         <motion.div
                             key={notif.id}
                             initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -319,7 +319,7 @@ export const MobileDashboardCard: React.FC = () => {
                             <div className={`size-2 rounded-full ${notif.type === 'success' ? 'bg-emerald-500 animate-pulse' :
                                 notif.type === 'error' ? 'bg-red-500' :
                                     'bg-blue-500'
-                                }}`}></div>
+                                }`}></div>
                             <span className="text-[10px] font-black uppercase tracking-widest">{notif.message}</span>
                         </motion.div>
                     ))}
@@ -413,10 +413,10 @@ export const MobileDashboardCard: React.FC = () => {
                     ) : activeTab === 'overview' ? (
                         <motion.div
                             key="overview"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
                             className="flex flex-col gap-8 h-[420px] justify-between relative"
                         >
                             <AnimatePresence>
@@ -547,10 +547,10 @@ export const MobileDashboardCard: React.FC = () => {
                     ) : (
                         <motion.div
                             key="console"
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
                             className="flex flex-col gap-0 h-[420px] bg-black/40 rounded-xl border border-white/10 overflow-hidden relative"
                         >
                             <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
@@ -563,7 +563,7 @@ export const MobileDashboardCard: React.FC = () => {
                                         <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
                                     </div>
                                 )}
-                                {consoleLogs.map((log, i) => (
+                                {(consoleLogs || []).map((log, i) => (
                                     <div key={i} className="whitespace-pre-wrap break-all leading-tight mb-1 px-1 rounded">
                                         <span className="text-white/20 mr-2 select-none">|</span>{log}
                                     </div>
