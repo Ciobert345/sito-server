@@ -26,7 +26,7 @@ export const MobileDashboardCard: React.FC = () => {
         ram: 0,
         latency: 0,
         statusText: 'SCANNING',
-        unreachable: true
+        unreachable: false
     });
 
     // Notification State
@@ -106,17 +106,26 @@ export const MobileDashboardCard: React.FC = () => {
 
     useEffect(() => {
         fetchStats();
-        // Desktop Parity: 5s polling
-        const intervalTime = stats.unreachable ? 300000 : 5000;
+        // Desktop Parity: 5s polling, if unreachable 30s
+        const intervalTime = stats.unreachable ? 30000 : 5000;
         const interval = setInterval(fetchStats, intervalTime);
-
-        const timer = setTimeout(() => setGracePassed(true), 4000);
 
         return () => {
             clearInterval(interval);
-            clearTimeout(timer);
         };
     }, [fetchStats, stats.unreachable]);
+
+    // Independent Sync Timer (Desktop Parity)
+    useEffect(() => {
+        // Reduced to 4s for a snappier first-load experience, 
+        // but only if we have data or after 7s timeout
+        if (!stats.unreachable && stats.statusText !== 'SCANNING') {
+            setGracePassed(true);
+        } else {
+            const timer = setTimeout(() => setGracePassed(true), 7000);
+            return () => clearTimeout(timer);
+        }
+    }, [stats.unreachable, stats.statusText]);
 
     // Console Polling
     useEffect(() => {
