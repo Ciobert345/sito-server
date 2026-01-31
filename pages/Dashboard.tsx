@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
         });
       }
     } catch (err: any) {
-      console.warn('❌ [DASHBOARD] MCSS Uplink Failed:', err.message || err);
+      // console.warn('❌ [DASHBOARD] MCSS Uplink Failed:', err.message || err);
       setServerStatus(prev => ({
         ...prev,
         isUnreachable: true,
@@ -457,26 +457,6 @@ const Dashboard: React.FC = () => {
                               <span className="text-[8px] font-mono text-red-500/40 uppercase tracking-widest mt-1">Retrying_Uplink...</span>
                             </div>
                           </div>
-
-                          {/* PROACTIVE HELP BUTTON as requested by USER */}
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center gap-4 max-w-[280px]"
-                          >
-                            <span className="text-[9px] font-mono text-white/40 uppercase tracking-widest leading-loose">
-                              Seeing "Network Error"? <br /> Authorize the secure bridge:
-                            </span>
-                            <a
-                              href="https://server-manfredonia.ddns.net:25560/api/v2/servers"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-6 py-2.5 bg-blue-500/20 border border-blue-500/40 rounded-xl text-blue-400 font-black uppercase text-[9px] tracking-[0.2em] hover:bg-blue-500/30 transition-all flex items-center gap-2"
-                            >
-                              <span className="material-symbols-outlined text-sm">enhanced_encryption</span>
-                              Authorize Bridge
-                            </a>
-                          </motion.div>
                         </div>
                       )}
                     </motion.div>

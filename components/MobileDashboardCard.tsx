@@ -100,7 +100,7 @@ export const MobileDashboardCard: React.FC = () => {
                         mcssSuccess = true;
                     }
                 } catch (err: any) {
-                    console.warn('[MOBILE_CARD] MCSS Failed:', err.message || err);
+                    // console.warn('[MOBILE_CARD] MCSS Failed:', err.message || err);
                 }
             }
 
@@ -136,7 +136,7 @@ export const MobileDashboardCard: React.FC = () => {
                         const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
                         localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
                         localStorage.setItem('mcsrvstat_last_ts', Date.now().toString());
-                    } catch {}
+                    } catch { }
                     setStats(prev => ({ ...prev, unreachable: true }));
                 }
             }
@@ -330,17 +330,6 @@ export const MobileDashboardCard: React.FC = () => {
                         <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest">
                             ID: {stats.unreachable && !stats.online ? 'SIGNAL LOST' : (serverId || 'SCANNING...')}
                         </span>
-                        {stats.unreachable && (
-                            <a
-                                href="https://server-manfredonia.ddns.net:25560/api/v2/servers"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[8px] font-black uppercase text-blue-400 border-b border-blue-400/30 pb-0.5"
-                            >
-                                <span className="material-symbols-outlined text-[10px]">enhanced_encryption</span>
-                                Authorize
-                            </a>
-                        )}
                     </div>
                 </div>
                 <div className="px-2 py-1 bg-white/5 rounded text-[9px] font-mono text-white/40">V2.0</div>

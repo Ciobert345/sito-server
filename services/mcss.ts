@@ -16,6 +16,7 @@ export interface MCSSStats {
 }
 
 const DEFAULT_BASE_URL = 'https://server-manfredonia.ddns.net:25560';
+const SILENT_ERRORS = true; // Set to true to suppress repetitive fetch timeout logs in console
 
 export class MCSSService {
     private baseUrl: string;
@@ -54,7 +55,9 @@ export class MCSSService {
                 return {}; // Fallback for action responses that aren't valid JSON
             }
         } catch (err: any) {
-            console.error(`[MCSS] Proxy fetch failed for ${targetUrl}:`, err.message);
+            if (!SILENT_ERRORS) {
+                console.error(`[MCSS] Proxy fetch failed for ${targetUrl}:`, err.message);
+            }
             throw err;
         }
     }
@@ -64,7 +67,9 @@ export class MCSSService {
             const data = await this.fetchApi('/api/v2/servers');
             return Array.isArray(data) ? data : [];
         } catch (err: any) {
-            console.error('[MCSS] getServers failed:', err.message || err);
+            if (!SILENT_ERRORS) {
+                console.error('[MCSS] getServers failed:', err.message || err);
+            }
             throw err;
         }
     }
@@ -74,7 +79,9 @@ export class MCSSService {
             const data = await this.fetchApi(`/api/v2/servers/${serverId}/console?amountOfLines=${amountOfLines}`);
             return Array.isArray(data) ? data : [];
         } catch (err: any) {
-            console.error('[MCSS] getConsole failed:', err.message || err);
+            if (!SILENT_ERRORS) {
+                console.error('[MCSS] getConsole failed:', err.message || err);
+            }
             throw err;
         }
     }
@@ -115,7 +122,9 @@ export class MCSSService {
                 uptime: get('uptime', 'Uptime') || '00:00:00'
             };
         } catch (err: any) {
-            console.error('[MCSS] getServerStats failed:', err.message || err);
+            if (!SILENT_ERRORS) {
+                console.error('[MCSS] getServerStats failed:', err.message || err);
+            }
             throw err;
         }
     }
