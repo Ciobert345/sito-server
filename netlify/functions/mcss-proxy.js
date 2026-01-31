@@ -47,10 +47,11 @@ exports.handler = async (event) => {
                 let data = '';
                 res.on('data', (chunk) => { data += chunk; });
                 res.on('end', () => {
+                    const finalData = data || '{}'; // Return empty object string if body is empty
                     resolve({
                         statusCode: res.statusCode,
                         headers: { ...headers, 'Content-Type': 'application/json' },
-                        body: data
+                        body: finalData
                     });
                 });
             });

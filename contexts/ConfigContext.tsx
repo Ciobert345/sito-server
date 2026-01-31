@@ -194,7 +194,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         const safetyTimeout = setTimeout(() => {
             if (loading) {
-                console.warn('⚠ CONFIG: Safety timeout triggered');
+                // console.warn('⚠ CONFIG: Safety timeout triggered');
                 finishLoading('TIMEOUT');
             }
         }, 5000);

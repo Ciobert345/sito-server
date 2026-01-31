@@ -144,7 +144,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isMounted.current = true;
         const safetyTimeout = setTimeout(() => {
             if (!hasFinishedInitialLoad.current) {
-                console.warn('⚠ AUTH: Safety timeout triggered');
+                // console.warn('⚠ AUTH: Safety timeout triggered');
                 finishLoading('TIMEOUT');
             }
         }, 6000);

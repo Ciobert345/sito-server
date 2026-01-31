@@ -47,7 +47,12 @@ export class MCSSService {
                 throw new Error(errorData.error || `Proxy Error: ${response.status}`);
             }
 
-            return await response.json();
+            const text = await response.text();
+            try {
+                return text ? JSON.parse(text) : {};
+            } catch (pErr) {
+                return {}; // Fallback for action responses that aren't valid JSON
+            }
         } catch (err: any) {
             console.error(`[MCSS] Proxy fetch failed for ${targetUrl}:`, err.message);
             throw err;
