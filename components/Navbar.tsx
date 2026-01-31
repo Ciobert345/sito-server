@@ -35,10 +35,14 @@ const Navbar: React.FC = () => {
 
     if (newBanners.length > 0) {
       newBanners.forEach(banner => {
-        new window.Notification(banner.title, {
-          body: banner.message.replace(/<[^>]*>?/gm, ''),
-          icon: '/favicon.ico'
-        });
+        try {
+          new window.Notification(banner.title, {
+            body: banner.message.replace(/<[^>]*>?/gm, ''),
+            icon: '/favicon.ico'
+          });
+        } catch (e) {
+          console.error('[Navbar] Notification error:', e);
+        }
       });
     }
 

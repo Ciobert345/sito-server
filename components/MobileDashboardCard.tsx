@@ -15,7 +15,7 @@ export const MobileDashboardCard: React.FC = () => {
         players: { online: number; max: number };
         cpu: number;
         ram: number;
-        uptime: string;
+        latency?: number;
         statusText: string;
         unreachable?: boolean;
     }>({
@@ -24,9 +24,9 @@ export const MobileDashboardCard: React.FC = () => {
         players: { online: 0, max: 0 },
         cpu: 0,
         ram: 0,
-        uptime: '00:00:00',
+        latency: 0,
         statusText: 'OFFLINE',
-        unreachable: true
+        unreachable: false
     });
 
     // Notification State
@@ -73,10 +73,12 @@ export const MobileDashboardCard: React.FC = () => {
                     }
 
                     if (currentServerId) {
+                        const startTime = Date.now();
                         const [serverStats, servers] = await Promise.all([
                             mcssService.getServerStats(currentServerId),
                             mcssService.getServers()
                         ]);
+                        const latency = Date.now() - startTime;
 
                         if (!serverStats || !servers) throw new Error('Incomplete data from MCSS');
 
@@ -94,13 +96,13 @@ export const MobileDashboardCard: React.FC = () => {
                             cpu: serverStats?.cpuUsage ?? 0,
                             ram: serverStats?.ramUsage ?? 0,
                             players: { online: serverStats?.onlinePlayers ?? 0, max: serverStats?.maxPlayers ?? 20 },
-                            uptime: serverStats?.uptime || '00:00:00',
+                            latency: latency,
                             unreachable: false
                         });
                         mcssSuccess = true;
                     }
                 } catch (err: any) {
-                    console.warn('[MOBILE_CARD] MCSS Failed:', err.message || err);
+                    // console.warn('[MOBILE_CARD] MCSS Failed:', err.message || err);
                 }
             }
 
@@ -131,7 +133,7 @@ export const MobileDashboardCard: React.FC = () => {
                         }
                     }
                 } catch (error) {
-                    console.error('[MOBILE_CARD] All fetch methods failed');
+                    // console.error('[MOBILE_CARD] All fetch methods failed');
                     try {
                         const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
                         localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
@@ -143,15 +145,17 @@ export const MobileDashboardCard: React.FC = () => {
         };
 
         fetchStats();
-        const interval = setInterval(fetchStats, 10000); // 10s for dashboard is better
+        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
+        const intervalTime = stats.unreachable ? 300000 : 10000;
+        const interval = setInterval(fetchStats, intervalTime);
 
-        const timer = setTimeout(() => setGracePassed(true), 2200);
+        const timer = setTimeout(() => setGracePassed(true), 4000);
 
         return () => {
             clearInterval(interval);
             clearTimeout(timer);
         };
-    }, [mcssService, serverId]);
+    }, [mcssService, serverId, stats.unreachable]);
 
     // Console Polling
     useEffect(() => {
@@ -236,9 +240,14 @@ export const MobileDashboardCard: React.FC = () => {
 
     const consoleEndRef = useRef<HTMLDivElement>(null);
 
-    useLayoutEffect(() => {
-        if (activeTab === 'console' && consoleEndRef.current) {
-            consoleEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+    useEffect(() => {
+        if (activeTab === 'console') {
+            const timer = setTimeout(() => {
+                if (consoleEndRef.current) {
+                    consoleEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
         }
     }, [activeTab]);
 
@@ -295,7 +304,7 @@ export const MobileDashboardCard: React.FC = () => {
             {/* Notification Overlay */}
             <div className="absolute bottom-4 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4">
                 <AnimatePresence>
-                    {notifications.map((notif) => (
+                    {(notifications || []).map((notif) => (
                         <motion.div
                             key={notif.id}
                             initial={{ opacity: 0, y: -20, scale: 0.9 }}
@@ -310,7 +319,7 @@ export const MobileDashboardCard: React.FC = () => {
                             <div className={`size-2 rounded-full ${notif.type === 'success' ? 'bg-emerald-500 animate-pulse' :
                                 notif.type === 'error' ? 'bg-red-500' :
                                     'bg-blue-500'
-                                }}`}></div>
+                                }`}></div>
                             <span className="text-[10px] font-black uppercase tracking-widest">{notif.message}</span>
                         </motion.div>
                     ))}
@@ -330,17 +339,6 @@ export const MobileDashboardCard: React.FC = () => {
                         <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest">
                             ID: {stats.unreachable && !stats.online ? 'SIGNAL LOST' : (serverId || 'SCANNING...')}
                         </span>
-                        {stats.unreachable && (
-                            <a
-                                href="https://server-manfredonia.ddns.net:25560/api/v2/servers"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-[8px] font-black uppercase text-blue-400 border-b border-blue-400/30 pb-0.5"
-                            >
-                                <span className="material-symbols-outlined text-[10px]">enhanced_encryption</span>
-                                Authorize
-                            </a>
-                        )}
                     </div>
                 </div>
                 <div className="px-2 py-1 bg-white/5 rounded text-[9px] font-mono text-white/40">V2.0</div>
@@ -370,14 +368,55 @@ export const MobileDashboardCard: React.FC = () => {
                     ))}
                 </div>
 
-                <AnimatePresence mode="wait">
-                    {activeTab === 'overview' ? (
+                <AnimatePresence>
+                    {(stats.unreachable && gracePassed) ? (
+                        <motion.div
+                            key="unreachable-locked"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex flex-col items-center justify-center gap-8 h-[420px] text-center p-8 bg-black/40 rounded-xl border border-white/5 relative overflow-hidden"
+                        >
+                            <div className="flex flex-col items-center gap-6">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="size-14 rounded-full border border-red-500/20 flex items-center justify-center text-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                                        <span className="material-symbols-outlined text-3xl">link_off</span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <h3 className="text-sm font-black text-white/60 uppercase tracking-[0.4em] italic mb-1">Signal Lost</h3>
+                                        <span className="text-[10px] font-mono text-red-500/30 uppercase tracking-[0.2em]">Retrying_Uplink...</span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.2em] mb-0.5">Latency</span>
+                                        <span className="text-[10px] font-mono font-black text-white/60 tracking-tighter italic">
+                                            {stats.latency ? `${stats.latency}ms` : '---'}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-2 px-8 py-5 bg-white/5 border border-white/10 rounded-2xl max-w-full backdrop-blur-sm">
+                                    <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] leading-relaxed">
+                                        Il server potrebbe essere offline.<br />
+                                        Assicurati di non essere al di fuori<br />
+                                        dell'orario operativo.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Decorative scanning line */}
+                            <motion.div
+                                animate={{ top: ['0%', '100%', '0%'] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                                className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/10 to-transparent z-10"
+                            />
+                        </motion.div>
+                    ) : activeTab === 'overview' ? (
                         <motion.div
                             key="overview"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
                             className="flex flex-col gap-8 h-[420px] justify-between relative"
                         >
                             <AnimatePresence>
@@ -404,7 +443,7 @@ export const MobileDashboardCard: React.FC = () => {
                                                 <motion.div
                                                     initial={{ width: "0%" }}
                                                     animate={{ width: "100%" }}
-                                                    transition={{ duration: 2, ease: [0.65, 0, 0.35, 1] }}
+                                                    transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
                                                     className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
                                                 >
                                                     <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
@@ -508,28 +547,28 @@ export const MobileDashboardCard: React.FC = () => {
                     ) : (
                         <motion.div
                             key="console"
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
                             className="flex flex-col gap-0 h-[420px] bg-black/40 rounded-xl border border-white/10 overflow-hidden relative"
                         >
                             <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
                                 <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
                             </div>
-                            <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col-reverse">
+                            <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col">
                                 {consoleLogs.length === 0 && !stats.unreachable && (
                                     <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
                                         <span className="material-symbols-outlined text-2xl animate-spin">data_usage</span>
                                         <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
                                     </div>
                                 )}
-                                <div ref={consoleEndRef} />
-                                {consoleLogs.slice().reverse().map((log, i) => (
+                                {(consoleLogs || []).map((log, i) => (
                                     <div key={i} className="whitespace-pre-wrap break-all leading-tight mb-1 px-1 rounded">
                                         <span className="text-white/20 mr-2 select-none">|</span>{log}
                                     </div>
                                 ))}
+                                <div ref={consoleEndRef} />
                             </div>
 
                             <AnimatePresence>
