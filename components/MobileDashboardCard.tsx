@@ -203,18 +203,9 @@ export const MobileDashboardCard: React.FC = () => {
         }
     };
 
-    // Memoize console logs rendering to prevent unnecessary re-renders
-    const renderedLogs = useMemo(() => {
-        try {
-            return (consoleLogs || []).slice(-30).map((log, i) => (
-                <div key={`log-${i}`} className="mb-1">
-                    <span className="text-white/20 mr-2">|</span>{log}
-                </div>
-            ));
-        } catch (err) {
-            console.error('[Console] Render error:', err);
-            return <div className="text-red-500 text-xs">Error rendering logs</div>;
-        }
+    // Memoize logs as a single string for textarea
+    const logsText = useMemo(() => {
+        return (consoleLogs || []).slice(-50).join('\n');
     }, [consoleLogs]);
 
     if (!user) return null;
@@ -459,14 +450,20 @@ export const MobileDashboardCard: React.FC = () => {
                                             {actionLoading === 'console' ? 'Loading...' : 'REFRESH'}
                                         </button>
                                     </div>
-                                    <div className="h-[340px] p-3 font-mono text-[10px] text-white/80 overflow-auto">
+                                    <div className="h-[340px] bg-[#050505] relative">
+                                        <textarea
+                                            readOnly
+                                            value={logsText}
+                                            className="w-full h-full bg-transparent text-[10px] font-mono text-white/80 p-3 resize-none focus:outline-none"
+                                            style={{ WebkitAppearance: 'none', appearance: 'none' }}
+                                        />
+
                                         {consoleLogs.length === 0 && !stats.unreachable && (
-                                            <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-white/20 gap-2">
                                                 <span className="material-symbols-outlined text-2xl">data_usage</span>
-                                                <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
+                                                <span className="text-[9px] uppercase tracking-widest">Connect</span>
                                             </div>
                                         )}
-                                        {renderedLogs}
                                     </div>
 
                                     {!gracePassed && (
