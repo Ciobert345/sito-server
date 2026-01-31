@@ -121,15 +121,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const currentUnlocks = unlocksResult.data ? unlocksResult.data.map((u: any) => u.intel_id) : [];
             setUnlockedIntelIds(currentUnlocks);
 
-            if (profile) {
-                setUser({
-                    id: userId, email: email || '', username: profile.username || metadata?.username || 'User',
-                    isApproved: profile.is_approved, isAdmin: profile.is_admin, avatar_url: profile.avatar_url,
-                    mcss_config_id: profile.mcss_config_id, read_banner_ids: profile.read_banner_ids || [],
-                    clearance_level: profile.clearance_level || 1, experience_points: profile.experience_points || 0,
-                    permissions: profile.permissions || {}
-                });
+            setUser({
+                id: userId,
+                email: email || '',
+                username: profile?.username || metadata?.username || 'User',
+                isApproved: profile?.is_approved || false,
+                isAdmin: profile?.is_admin || false,
+                avatar_url: profile?.avatar_url,
+                mcss_config_id: profile?.mcss_config_id,
+                read_banner_ids: profile?.read_banner_ids || [],
+                clearance_level: profile?.clearance_level || 1,
+                experience_points: profile?.experience_points || 0,
+                permissions: profile?.permissions || {}
+            });
 
+            if (profile) {
                 const mcssConfig = Array.isArray(profile.mcss_config) ? profile.mcss_config[0] : profile.mcss_config;
                 setMcssKey(mcssConfig?.mcss_api_key || null);
             }
