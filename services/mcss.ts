@@ -24,7 +24,7 @@ export class MCSSService {
     constructor(apiKey: string, baseUrl: string = DEFAULT_BASE_URL) {
         this.apiKey = apiKey;
         this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-        console.log(`[MCSS] Service initialized via Netlify Proxy. Target: ${this.baseUrl}`);
+        // console.log(`[MCSS] Service initialized via Netlify Proxy. Target: ${this.baseUrl}`);
     }
 
     private async fetchApi(endpoint: string, options: RequestInit = {}) {

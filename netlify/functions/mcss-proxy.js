@@ -25,7 +25,11 @@ exports.handler = async (event) => {
             const isHttps = url.protocol === 'https:';
             const transport = isHttps ? https : http;
 
-            console.log(`[NETLIFY-BRIDGE] Protocol: ${url.protocol} | Target: ${targetUrl}`);
+            // Only log if explicit verbose flag is provided or via env
+            const isVerbose = event.headers['mcss-verbose'] === 'true' || process.env.MCSS_VERBOSE === 'true';
+            if (isVerbose) {
+                console.log(`[NETLIFY-BRIDGE] Protocol: ${url.protocol} | Target: ${targetUrl}`);
+            }
 
             const options = {
                 method: event.httpMethod,
