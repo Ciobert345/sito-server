@@ -159,28 +159,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const initAuth = async () => {
             try {
                 setAuthStatus('SESSION');
-
-                // Robust token extraction for HashRouter compatibility
-                // Finds tokens anywhere in the URL (nested hash or query)
                 const fullUrl = window.location.href;
-                const tokenMatches = fullUrl.match(/[#|&|?](access_token|refresh_token)=([^&]+)/g);
 
-                if (tokenMatches) {
-                    debugLog('Found potential tokens in URL:', tokenMatches.length);
-                    const queryStr = tokenMatches.join('&').replace(/[#|&|?]/g, '&');
-                    const params = new URLSearchParams(queryStr);
-                    const at = params.get('access_token');
-                    const rt = params.get('refresh_token');
+                // Robust extraction: support both tokens (Magic Link) and code (PKCE)
+                const tokens: any = {};
+                ['access_token', 'refresh_token', 'code'].forEach(key => {
+                    const match = fullUrl.match(new RegExp(`[#|&|?]${key}=([^&]+)`));
+                    if (match) tokens[key] = decodeURIComponent(match[1]);
+                });
 
-                    if (at && rt) {
-                        debugLog('Attempting manual session set with URL tokens...');
-                        const { error: setErr } = await supabase.auth.setSession({
-                            access_token: at,
-                            refresh_token: rt
-                        });
-                        if (setErr) console.error('[Auth] Manual session set error:', setErr);
-                        else debugLog('Manual session set SUCCESS');
-                    }
+                if (tokens.code) {
+                    debugLog('Detected PKCE code, exchanging...');
+                    await supabase.auth.exchangeCodeForSession(tokens.code);
+                } else if (tokens.access_token && tokens.refresh_token) {
+                    debugLog('Detected tokens, setting session...');
+                    await supabase.auth.setSession({
+                        access_token: tokens.access_token,
+                        refresh_token: tokens.refresh_token
+                    });
                 }
 
                 const { data: { session } } = await supabase.auth.getSession();
@@ -190,6 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     finishLoading('READY');
                 }
             } catch (err) {
+                console.error('[Auth] initAuth error:', err);
                 finishLoading('ERROR');
             }
         };
