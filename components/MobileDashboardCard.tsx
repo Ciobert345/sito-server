@@ -26,7 +26,7 @@ export const MobileDashboardCard: React.FC = () => {
         ram: 0,
         latency: 0,
         statusText: 'OFFLINE',
-        unreachable: true
+        unreachable: false
     });
 
     // Notification State
@@ -364,7 +364,7 @@ export const MobileDashboardCard: React.FC = () => {
                 </div>
 
                 <AnimatePresence mode="wait">
-                    {stats.unreachable ? (
+                    {(stats.unreachable && gracePassed) ? (
                         <motion.div
                             key="unreachable-locked"
                             initial={{ opacity: 0 }}
