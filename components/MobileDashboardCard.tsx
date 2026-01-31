@@ -166,9 +166,10 @@ export const MobileDashboardCard: React.FC = () => {
         try {
             // Fetch 100 lines to match desktop parity
             const logs = await mcssService.getConsole(serverId, 100);
-            setConsoleLogs(logs);
+            setConsoleLogs(Array.isArray(logs) ? logs : []);
         } catch (err) {
             // Silent error to keep console clean
+            setConsoleLogs([]);
         }
     };
 
@@ -188,7 +189,7 @@ export const MobileDashboardCard: React.FC = () => {
 
     // UI Loading state management when switching tabs
     useEffect(() => {
-        if (activeTab === 'console' && consoleLogs.length === 0) {
+        if (activeTab === 'console' && (!consoleLogs || consoleLogs.length === 0)) {
             // Initial load only if needed
             fetchConsole();
         }
@@ -408,8 +409,8 @@ export const MobileDashboardCard: React.FC = () => {
                                         <span className="text-[10px] text-white/30">%</span>
                                     </div>
                                     <div className="absolute inset-0 opacity-20 pointer-events-none flex items-end justify-end p-2 gap-0.5">
-                                        {[40, 60, 30, 80, 50, stats.cpu].map((h, i) => (
-                                            <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-700 ease-out" style={{ height: `${Math.min(h, 100)}%` }}></div>
+                                        {[40, 60, 30, 80, 50, Number(stats.cpu) || 0].map((h, i) => (
+                                            <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-700 ease-out" style={{ height: `${Math.min(Number(h) || 0, 100)}%` }}></div>
                                         ))}
                                     </div>
                                 </div>
@@ -427,7 +428,7 @@ export const MobileDashboardCard: React.FC = () => {
                                         <motion.div
                                             className="h-full bg-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
                                             initial={{ width: 0 }}
-                                            animate={{ width: `${stats.ram}%` }}
+                                            animate={{ width: `${Number(stats.ram) || 0}%` }}
                                             transition={{ duration: 1, ease: "easeOut" }}
                                         />
                                     </div>
@@ -458,7 +459,7 @@ export const MobileDashboardCard: React.FC = () => {
                                         <motion.div
                                             className="h-full bg-emerald-500/50"
                                             initial={{ width: 0 }}
-                                            animate={{ width: `${(stats.players.online / (stats.players.max || 1)) * 100}%` }}
+                                            animate={{ width: `${(Number(stats.players.online) / (Number(stats.players.max) || 1)) * 100}%` }}
                                             transition={{ duration: 1, ease: "easeOut" }}
                                         />
                                     </div>
@@ -523,21 +524,24 @@ export const MobileDashboardCard: React.FC = () => {
                                 style={{ scrollbarWidth: 'none' }}
                             >
                                 <div className="flex flex-col gap-1">
-                                    {consoleLogs.length > 0 ? (
-                                        consoleLogs.map((log, i) => (
-                                            <div key={i} className="flex gap-3 group/line items-start">
-                                                <span className="text-white/5 shrink-0 tabular-nums">{(i + 1).toString().padStart(4, '0')}</span>
-                                                <span className="break-all">
-                                                    {log.startsWith('>') ? (
-                                                        <span className="text-emerald-400 font-bold">{log}</span>
-                                                    ) : log.includes('ERROR') || log.includes('FAILED') ? (
-                                                        <span className="text-red-400/80">{log}</span>
-                                                    ) : (
-                                                        <span className="text-white/40">{log}</span>
-                                                    )}
-                                                </span>
-                                            </div>
-                                        ))
+                                    {(consoleLogs || []).length > 0 ? (
+                                        (consoleLogs || []).map((log, i) => {
+                                            const logStr = String(log || '');
+                                            return (
+                                                <div key={i} className="flex gap-3 group/line items-start">
+                                                    <span className="text-white/5 shrink-0 tabular-nums">{(i + 1).toString().padStart(4, '0')}</span>
+                                                    <span className="break-all">
+                                                        {logStr.startsWith('>') ? (
+                                                            <span className="text-emerald-400 font-bold">{logStr}</span>
+                                                        ) : (logStr.includes('ERROR') || logStr.includes('FAILED')) ? (
+                                                            <span className="text-red-400/80">{logStr}</span>
+                                                        ) : (
+                                                            <span className="text-white/40">{logStr}</span>
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            );
+                                        })
                                     ) : (
                                         <div className="h-full flex flex-col items-center justify-center py-20 text-white/10 gap-2">
                                             <span className="material-symbols-outlined text-3xl animate-pulse">terminal</span>

@@ -138,9 +138,9 @@ export class MCSSService {
 
             return {
                 cpuUsage: get('cpu', 'cpuUsage', 'CPU', 'cpu_usage') ?? 0,
-                ramUsage: (memLimit && memLimit > 0)
+                ramUsage: (typeof memLimit === 'number' && memLimit > 0 && typeof memUsed === 'number')
                     ? Math.round((memUsed / memLimit) * 100)
-                    : (get('ramUsage', 'ram', 'memoryUsage', 'memory_usage') ?? 0),
+                    : (Number(get('ramUsage', 'ram', 'memoryUsage', 'memory_usage')) || 0),
                 onlinePlayers: get('playersOnline', 'onlinePlayers', 'OnlinePlayers', 'PlayersOnline', 'players') ?? 0,
                 maxPlayers: get('playerLimit', 'maxPlayers', 'MaxPlayers', 'PlayerLimit', 'max_players') ?? 0,
                 uptime: formattedUptime
