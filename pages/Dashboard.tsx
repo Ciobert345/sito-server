@@ -448,7 +448,7 @@ const Dashboard: React.FC = () => {
                       ) : (
                         /* Minimalist Lost State */
                         <div className="flex flex-col items-center gap-6">
-                          <div className="flex flex-col items-center gap-3 animate-pulse">
+                          <div className="flex flex-col items-center gap-3">
                             <div className="size-12 rounded-full border border-red-500/20 flex items-center justify-center text-red-500/40">
                               <span className="material-symbols-outlined text-2xl">link_off</span>
                             </div>

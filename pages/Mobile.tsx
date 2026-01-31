@@ -751,11 +751,6 @@ const Mobile: React.FC = () => {
                                                     <span className="text-white font-black text-sm sm:text-base uppercase tracking-widest leading-none">
                                                         {serverStatus.online ? 'Online' : 'Offline'}
                                                     </span>
-                                                    {!serverStatus.online && (
-                                                        <span className="text-[7px] sm:text-[8px] font-black text-red-500/50 uppercase tracking-[0.1em] mt-1 leading-tight">
-                                                            Probabile fuori orario operativo
-                                                        </span>
-                                                    )}
                                                     {serverStatus.online && serverStatus.players && (
                                                         <span className="text-[7px] sm:text-[8px] font-black text-white/30 uppercase tracking-[0.15em] sm:tracking-[0.2em] mt-0.5">
                                                             {serverStatus.players.online} Nodes

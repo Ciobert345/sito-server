@@ -360,7 +360,42 @@ export const MobileDashboardCard: React.FC = () => {
                 </div>
 
                 <AnimatePresence mode="wait">
-                    {activeTab === 'overview' ? (
+                    {stats.unreachable ? (
+                        <motion.div
+                            key="unreachable-locked"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="flex flex-col items-center justify-center gap-8 h-[420px] text-center p-8 bg-black/40 rounded-xl border border-white/5 relative overflow-hidden"
+                        >
+                            <div className="flex flex-col items-center gap-6">
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="size-14 rounded-full border border-red-500/20 flex items-center justify-center text-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
+                                        <span className="material-symbols-outlined text-3xl">link_off</span>
+                                    </div>
+                                    <div className="flex flex-col items-center">
+                                        <h3 className="text-sm font-black text-white/60 uppercase tracking-[0.4em] italic mb-1">Signal Lost</h3>
+                                        <span className="text-[10px] font-mono text-red-500/30 uppercase tracking-[0.2em]">Retrying_Uplink...</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-2 px-8 py-5 bg-white/5 border border-white/10 rounded-2xl max-w-full backdrop-blur-sm">
+                                    <p className="text-[11px] font-bold text-white/30 uppercase tracking-[0.05em] leading-relaxed">
+                                        Il server potrebbe essere offline.<br />
+                                        Assicurati di non essere al di fuori<br />
+                                        dell'orario operativo.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Decorative scanning line */}
+                            <motion.div
+                                animate={{ top: ['0%', '100%', '0%'] }}
+                                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                                className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/10 to-transparent z-10"
+                            />
+                        </motion.div>
+                    ) : activeTab === 'overview' ? (
                         <motion.div
                             key="overview"
                             initial={{ opacity: 0, x: -10 }}
