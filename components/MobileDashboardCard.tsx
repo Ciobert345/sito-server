@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const MobileDashboardCard: React.FC = () => {
@@ -156,15 +156,20 @@ export const MobileDashboardCard: React.FC = () => {
 
         const fetchConsole = async () => {
             try {
-                const logs = await mcssService.getConsole(serverId, 50);
-                setConsoleLogs(logs);
+                const logs = await mcssService.getConsole(serverId, 30);
+                // Only update if logs actually changed to prevent unnecessary re-renders
+                setConsoleLogs(prev => {
+                    if (JSON.stringify(prev) === JSON.stringify(logs)) return prev;
+                    return logs;
+                });
             } catch (err) {
-                addNotification('error', 'Failed to fetch console logs.');
+                // Silent fail to avoid notification spam
+                console.error('[Console] Fetch failed:', err);
             }
         };
 
         fetchConsole();
-        const interval = setInterval(fetchConsole, 5000);
+        const interval = setInterval(fetchConsole, 10000); // Reduced to 10s for stability
         return () => clearInterval(interval);
     }, [mcssService, serverId, activeTab]);
 
@@ -196,7 +201,22 @@ export const MobileDashboardCard: React.FC = () => {
         }
     };
 
+    // Memoize console logs rendering to prevent unnecessary re-renders
+    const renderedLogs = useMemo(() => {
+        try {
+            return (consoleLogs || []).slice(-30).map((log, i) => (
+                <div key={`log-${i}`} className="mb-1">
+                    <span className="text-white/20 mr-2">|</span>{log}
+                </div>
+            ));
+        } catch (err) {
+            console.error('[Console] Render error:', err);
+            return <div className="text-red-500 text-xs">Error rendering logs</div>;
+        }
+    }, [consoleLogs]);
+
     if (!user) return null;
+
 
     if (!user.isApproved && !user.isAdmin) {
         return (
@@ -437,11 +457,7 @@ export const MobileDashboardCard: React.FC = () => {
                                                 <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
                                             </div>
                                         )}
-                                        {(consoleLogs || []).slice(-30).map((log, i) => (
-                                            <div key={i} className="mb-1">
-                                                <span className="text-white/20 mr-2">|</span>{log}
-                                            </div>
-                                        ))}
+                                        {renderedLogs}
                                     </div>
 
                                     {!gracePassed && (
