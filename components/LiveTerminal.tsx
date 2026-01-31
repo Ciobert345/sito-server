@@ -35,7 +35,7 @@ const LiveTerminal: React.FC<LiveTerminalProps> = ({ serverOnline = false }) => 
     }, [mcssService]);
 
     useEffect(() => {
-        if (!mcssService || !serverId || !serverOnline) return;
+        if (!mcssService || !serverId) return;
 
         const pollLogs = async () => {
             try {

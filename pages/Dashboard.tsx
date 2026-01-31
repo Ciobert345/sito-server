@@ -70,7 +70,7 @@ const Dashboard: React.FC = () => {
           cpu: stats.cpuUsage,
           ram: stats.ramUsage,
           players: { online: stats.onlinePlayers, max: stats.maxPlayers },
-          uptime: stats.uptime,
+          uptime: stats.uptime || '00:00:00',
           isUnreachable: false
         });
       }
@@ -473,7 +473,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Main Console Area */}
                 <div className="flex-1 relative min-h-0">
-                  <LiveTerminal serverOnline={serverStatus.statusText !== 'OFFLINE' && serverStatus.statusText !== 'SYNCING'} />
+                  <LiveTerminal serverOnline={!serverStatus.isUnreachable && serverStatus.statusText !== 'SYNCING'} />
                 </div>
               </div>
             </div>

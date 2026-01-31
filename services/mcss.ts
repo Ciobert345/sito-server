@@ -112,14 +112,26 @@ export class MCSSService {
             const memUsed = get('memoryUsed', 'ramUsage', 'Memory', 'RAM', 'ram');
             const memLimit = get('memoryLimit', 'maxMemory', 'TotalMemory', 'maxRam');
 
+            const rawUptime = get('uptime', 'Uptime', 'uptime_seconds', 'UptimeSeconds');
+            let formattedUptime = '00:00:00';
+
+            if (typeof rawUptime === 'number') {
+                const hours = Math.floor(rawUptime / 3600);
+                const minutes = Math.floor((rawUptime % 3600) / 60);
+                const seconds = rawUptime % 60;
+                formattedUptime = [hours, minutes, seconds].map(v => v.toString().padStart(2, '0')).join(':');
+            } else if (typeof rawUptime === 'string') {
+                formattedUptime = rawUptime;
+            }
+
             return {
                 cpuUsage: get('cpu', 'cpuUsage', 'CPU') ?? 0,
                 ramUsage: (memLimit && memLimit > 0)
                     ? Math.round((memUsed / memLimit) * 100)
-                    : (get('ramUsage', 'ram') ?? 0),
-                onlinePlayers: get('playersOnline', 'onlinePlayers', 'OnlinePlayers') ?? 0,
-                maxPlayers: get('playerLimit', 'maxPlayers', 'MaxPlayers') ?? 0,
-                uptime: get('uptime', 'Uptime') || '00:00:00'
+                    : (get('ramUsage', 'ram', 'memoryUsage') ?? 0),
+                onlinePlayers: get('playersOnline', 'onlinePlayers', 'OnlinePlayers', 'PlayersOnline') ?? 0,
+                maxPlayers: get('playerLimit', 'maxPlayers', 'MaxPlayers', 'PlayerLimit') ?? 0,
+                uptime: formattedUptime
             };
         } catch (err: any) {
             if (!SILENT_ERRORS) {
