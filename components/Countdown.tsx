@@ -134,22 +134,22 @@ const Countdown: React.FC<CountdownProps> = ({ onExpire }) => {
                 <div className="relative w-full">
                   {/* Glow effect - more visible on mobile */}
                   <div className={`absolute -inset-0.5 rounded-lg opacity-20 blur-sm transition-all duration-700 ${item.pulse || isMaintenance ? 'bg-red-500' : 'bg-white/10'}`}></div>
-                  
+
                   {/* Glass card container */}
                   <div className={`relative w-full aspect-[0.75] min-h-[70px] sm:min-h-[80px] rounded-lg flex items-center justify-center border transition-all duration-500 bg-[#050505] shadow-inner overflow-hidden ${isMaintenance ? 'border-red-500/40 shadow-[0_0_20px_rgba(239,68,68,0.2)]' : 'border-white/15 shadow-[0_0_15px_rgba(0,0,0,0.3)]'}`}>
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] to-transparent"></div>
-                    
+
                     {/* Number display */}
                     <span className={`text-3xl sm:text-4xl font-black text-white italic tracking-tighter transition-all duration-700 relative z-10 ${item.pulse || isMaintenance ? 'drop-shadow-[0_0_10px_rgba(239,68,68,0.5)] animate-pulse' : 'drop-shadow-[0_0_6px_rgba(255,255,255,0.08)]'}`}>
                       {formatNumber(item.value)}
                     </span>
-                    
+
                     {/* Scanline effect */}
                     <div className={`absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(255,255,255,0.015)_50%)] bg-[length:100%_3px] pointer-events-none ${isMaintenance ? 'opacity-30' : 'opacity-15'}`}></div>
                   </div>
                 </div>
-                
+
                 {/* Label */}
                 <div className="flex flex-col items-center w-full">
                   <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-[0.15em] transition-colors duration-700 ${isMaintenance ? 'text-red-500/60' : 'text-white/30'}`}>
@@ -157,7 +157,7 @@ const Countdown: React.FC<CountdownProps> = ({ onExpire }) => {
                   </span>
                 </div>
               </div>
-              
+
               {/* Separator */}
               {idx < arr.length - 1 && (
                 <div className="flex items-center justify-center h-[70px] sm:h-[80px] text-white/10 text-lg sm:text-xl font-thin opacity-20 px-0.5">

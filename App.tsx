@@ -13,7 +13,6 @@ import MobileAccount from './pages/MobileAccount';
 import Account from './pages/Account';
 import Admin from './pages/Admin';
 import ResetPassword from './pages/ResetPassword';
-import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Terminal from './components/Terminal';
@@ -425,100 +424,98 @@ const AppContent: React.FC = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Global Auth Modal Overlay */}
-            <AnimatePresence>
-              {isAuthModalOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
-                >
-                  {/* Backdrop */}
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setAuthModalOpen(false)}
-                    className="absolute inset-0 bg-black/60 backdrop-blur-md"
-                  ></motion.div>
-
-                  {/* Modal Container */}
-                  <div className="relative z-10 w-full max-w-[440px]">
-                    <LoginModal />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Global Matrix Overlay (Easter Egg) */}
-            {
-              activeEgg === 'matrix' && (
-                <div className="fixed inset-0 pointer-events-none z-[1] overflow-hidden">
-                  {Array.from({ length: 30 }).map((_, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ y: -1000, opacity: 0 }}
-                      animate={{ y: '120vh', opacity: [0, 0.4, 0.1, 0] }}
-                      transition={{
-                        duration: Math.random() * 5 + 5,
-                        repeat: Infinity,
-                        ease: "linear",
-                        delay: Math.random() * 5
-                      }}
-                      className="absolute text-emerald-500/80 font-mono text-sm md:text-base font-bold select-none blur-[0.5px] whitespace-pre"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'upright'
-                      }}
-                    >
-                      {Array.from({ length: 30 }).map(() =>
-                        String.fromCharCode(0x30A0 + Math.random() * 96)
-                      ).join(' ')}
-                    </motion.div>
-                  ))}
-                  {/* Layer 2 - Faster/Smaller */}
-                  {Array.from({ length: 40 }).map((_, i) => (
-                    <motion.div
-                      key={`layer2-${i}`}
-                      initial={{ y: -1000, opacity: 0 }}
-                      animate={{ y: '120vh', opacity: [0, 0.3, 0] }}
-                      transition={{
-                        duration: Math.random() * 4 + 3,
-                        repeat: Infinity,
-                        ease: "linear",
-                        delay: Math.random() * 5
-                      }}
-                      className="absolute text-emerald-400/40 font-mono text-xs select-none whitespace-pre"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        writingMode: 'vertical-rl',
-                        textOrientation: 'upright'
-                      }}
-                    >
-                      {Array.from({ length: 20 }).map(() =>
-                        Math.random() > 0.5 ? '1' : '0'
-                      ).join(' ')}
-                    </motion.div>
-                  ))}
-                </div>
-              )
-            }
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+
+      {/* Global Auth Modal Overlay */}
+      <AnimatePresence>
+        {isAuthModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setAuthModalOpen(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            ></motion.div>
+
+            {/* Modal Container */}
+            <div className="relative z-10 w-full max-w-[440px]">
+              <LoginModal />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Global Matrix Overlay (Easter Egg) */}
+      {
+        activeEgg === 'matrix' && (
+          <div className="fixed inset-0 pointer-events-none z-[1] overflow-hidden">
+            {Array.from({ length: 30 }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ y: -1000, opacity: 0 }}
+                animate={{ y: '120vh', opacity: [0, 0.4, 0.1, 0] }}
+                transition={{
+                  duration: Math.random() * 5 + 5,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: Math.random() * 5
+                }}
+                className="absolute text-emerald-500/80 font-mono text-sm md:text-base font-bold select-none blur-[0.5px] whitespace-pre"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  writingMode: 'vertical-rl',
+                  textOrientation: 'upright'
+                }}
+              >
+                {Array.from({ length: 30 }).map(() =>
+                  String.fromCharCode(0x30A0 + Math.random() * 96)
+                ).join(' ')}
+              </motion.div>
+            ))}
+            {/* Layer 2 - Faster/Smaller */}
+            {Array.from({ length: 40 }).map((_, i) => (
+              <motion.div
+                key={`layer2-${i}`}
+                initial={{ y: -1000, opacity: 0 }}
+                animate={{ y: '120vh', opacity: [0, 0.3, 0] }}
+                transition={{
+                  duration: Math.random() * 4 + 3,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: Math.random() * 5
+                }}
+                className="absolute text-emerald-400/40 font-mono text-xs select-none whitespace-pre"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  writingMode: 'vertical-rl',
+                  textOrientation: 'upright'
+                }}
+              >
+                {Array.from({ length: 20 }).map(() =>
+                  Math.random() > 0.5 ? '1' : '0'
+                ).join(' ')}
+              </motion.div>
+            ))}
+          </div>
+        )
+      }
+    </div >
   );
 };
 
 const App: React.FC = () => {
   return (
     <Router>
-      <ErrorBoundary>
-        <AppContent />
-      </ErrorBoundary>
+      <AppContent />
     </Router>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -6,9 +6,9 @@ export const MobileDashboardCard: React.FC = () => {
     const { mcssService, user } = useAuth();
     const [activeTab, setActiveTab] = useState<'overview' | 'console'>('overview');
 
-    // Server State
+    // Discovery & State
     const [serverId, setServerId] = useState<string | null>(null);
-    const clientIp = 'SCN_PROT_V4';
+    const consecutiveFails = useRef(0);
     const [stats, setStats] = useState<{
         online: boolean;
         status: number; // 0: Offline, 1: Online, 2: Restarting, 3: Starting, 4: Stopping
@@ -25,8 +25,8 @@ export const MobileDashboardCard: React.FC = () => {
         cpu: 0,
         ram: 0,
         latency: 0,
-        statusText: 'OFFLINE',
-        unreachable: false
+        statusText: 'SCANNING',
+        unreachable: true
     });
 
     // Notification State
@@ -54,99 +54,60 @@ export const MobileDashboardCard: React.FC = () => {
         setMounted(true);
     }, []);
 
-    // Discovery & Stats Polling merged for robustness
+    const fetchStats = useCallback(async () => {
+        if (!mcssService) return;
+        try {
+            let currentServerId = serverId;
+            if (!currentServerId) {
+                const servers = await mcssService.getServers();
+                if (servers.length > 0) {
+                    currentServerId = servers[0].serverId;
+                    setServerId(currentServerId);
+                }
+            }
+
+            if (currentServerId) {
+                const startTime = Date.now();
+                const [serverStats, servers] = await Promise.all([
+                    mcssService.getServerStats(currentServerId),
+                    mcssService.getServers()
+                ]);
+                const latency = Date.now() - startTime;
+
+                if (!serverStats || !servers) throw new Error('Incomplete data from MCSS');
+
+                const server = servers.find(s => s.serverId === currentServerId);
+                const currentStatus = server?.status ?? 0;
+
+                const statusMap: { [key: number]: string } = {
+                    0: 'OFFLINE', 1: 'ONLINE', 2: 'RESTARTING', 3: 'STARTING', 4: 'STOPPING'
+                };
+
+                consecutiveFails.current = 0; // Success: reset threshold
+                setStats({
+                    online: currentStatus === 1,
+                    status: currentStatus,
+                    statusText: statusMap[currentStatus] || 'UNKNOWN',
+                    cpu: serverStats?.cpuUsage ?? 0,
+                    ram: serverStats?.ramUsage ?? 0,
+                    players: { online: serverStats?.onlinePlayers ?? 0, max: serverStats?.maxPlayers ?? 20 },
+                    latency: latency,
+                    unreachable: false
+                });
+            }
+        } catch (err: any) {
+            consecutiveFails.current += 1;
+            // Only show Signal Lost after 3 consecutive failures (~15s)
+            if (consecutiveFails.current >= 3) {
+                setStats(prev => ({ ...prev, statusText: 'LOSS_SYNC', unreachable: true }));
+            }
+        }
+    }, [mcssService, serverId]);
+
     useEffect(() => {
-        const fetchStats = async () => {
-            const serverIp = 'server-manfredonia.ddns.net'; // Fallback IP
-            let mcssSuccess = false;
-
-            // 1. Try MCSS
-            if (mcssService) {
-                try {
-                    let currentServerId = serverId;
-                    if (!currentServerId) {
-                        const servers = await mcssService.getServers();
-                        if (servers.length > 0) {
-                            currentServerId = servers[0].serverId;
-                            setServerId(currentServerId);
-                        }
-                    }
-
-                    if (currentServerId) {
-                        const startTime = Date.now();
-                        const [serverStats, servers] = await Promise.all([
-                            mcssService.getServerStats(currentServerId),
-                            mcssService.getServers()
-                        ]);
-                        const latency = Date.now() - startTime;
-
-                        if (!serverStats || !servers) throw new Error('Incomplete data from MCSS');
-
-                        const server = servers.find(s => s.serverId === currentServerId);
-                        const currentStatus = server?.status ?? 0;
-
-                        const statusMap: { [key: number]: string } = {
-                            0: 'OFFLINE', 1: 'ONLINE', 2: 'RESTARTING', 3: 'STARTING', 4: 'STOPPING'
-                        };
-
-                        setStats({
-                            online: currentStatus === 1,
-                            status: currentStatus,
-                            statusText: statusMap[currentStatus] || 'UNKNOWN',
-                            cpu: serverStats?.cpuUsage ?? 0,
-                            ram: serverStats?.ramUsage ?? 0,
-                            players: { online: serverStats?.onlinePlayers ?? 0, max: serverStats?.maxPlayers ?? 20 },
-                            latency: latency,
-                            unreachable: false
-                        });
-                        mcssSuccess = true;
-                    }
-                } catch (err: any) {
-                    // console.warn('[MOBILE_CARD] MCSS Failed:', err.message || err);
-                }
-            }
-
-            // 2. Fallback to Simple API (mcsrvstat.us) if MCSS failed or not available, with throttle/backoff
-            if (!mcssSuccess) {
-                try {
-                    const lastTs = parseInt(localStorage.getItem('mcsrvstat_last_ts') || '0', 10);
-                    const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
-                    const now = Date.now();
-                    if (!(failCount >= 3 && (now - lastTs) < 15 * 60 * 1000) && ((now - lastTs) >= 5 * 60 * 1000)) {
-                        const response = await fetch(`https://api.mcsrvstat.us/2/${serverIp}`, { method: 'GET' });
-                        localStorage.setItem('mcsrvstat_last_ts', now.toString());
-                        if (response.ok && (response.headers.get('content-type') || '').includes('application/json')) {
-                            const data = await response.json();
-                            setStats(prev => ({
-                                online: !!data.online,
-                                status: data.online ? 1 : 0,
-                                statusText: data.online ? 'ONLINE (LTD)' : 'OFFLINE',
-                                players: { online: data.players?.online || 0, max: data.players?.max || 20 },
-                                cpu: 0,
-                                ram: 0,
-                                uptime: 'N/A',
-                                unreachable: true
-                            }));
-                        } else {
-                            localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
-                            setStats(prev => ({ ...prev, statusText: 'UNKNOWN', unreachable: true }));
-                        }
-                    }
-                } catch (error) {
-                    // console.error('[MOBILE_CARD] All fetch methods failed');
-                    try {
-                        const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
-                        localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
-                        localStorage.setItem('mcsrvstat_last_ts', Date.now().toString());
-                    } catch { }
-                    setStats(prev => ({ ...prev, unreachable: true }));
-                }
-            }
-        };
-
         fetchStats();
-        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
-        const intervalTime = stats.unreachable ? 300000 : 10000;
+        // Desktop Parity: 5s polling
+        const intervalTime = stats.unreachable ? 300000 : 5000;
         const interval = setInterval(fetchStats, intervalTime);
 
         const timer = setTimeout(() => setGracePassed(true), 4000);
@@ -155,7 +116,7 @@ export const MobileDashboardCard: React.FC = () => {
             clearInterval(interval);
             clearTimeout(timer);
         };
-    }, [mcssService, serverId, stats.unreachable]);
+    }, [fetchStats, stats.unreachable]);
 
     // Console Polling
     useEffect(() => {
@@ -256,7 +217,8 @@ export const MobileDashboardCard: React.FC = () => {
         setActionLoading(action);
         try {
             await mcssService.executeAction(serverId, action);
-            await new Promise(r => setTimeout(r, 1500));
+            await new Promise(r => setTimeout(r, 2000));
+            await fetchStats();
         } catch (err) {
             addNotification('error', `Failed to execute ${action}`);
         } finally {
