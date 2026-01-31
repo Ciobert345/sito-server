@@ -45,6 +45,13 @@ export const MobileDashboardCard: React.FC = () => {
     // Action State
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [gracePassed, setGracePassed] = useState(false);
+    const [loadProgress, setLoadProgress] = useState(0);
+
+    // Initial load progress animation (Desktop Parity)
+    useEffect(() => {
+        const timer = setTimeout(() => setLoadProgress(100), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Discovery & Stats Polling merged for robustness
     useEffect(() => {
@@ -174,8 +181,8 @@ export const MobileDashboardCard: React.FC = () => {
         // Perform initial fetch
         fetchConsole();
 
-        // 2.5s interval for a truly "live" feel
-        const interval = setInterval(fetchConsole, 2500);
+        // 2s interval for a truly "live" feel
+        const interval = setInterval(fetchConsole, 2000);
         return () => clearInterval(interval);
     }, [serverId, mcssService]);
 
@@ -192,7 +199,11 @@ export const MobileDashboardCard: React.FC = () => {
     // Auto-scroll console when logs arrive
     useEffect(() => {
         if (consoleRef.current && activeTab === 'console') {
-            consoleRef.current.scrollTop = consoleRef.current.scrollHeight;
+            const el = consoleRef.current;
+            // Use requestAnimationFrame for smoother scrolling on mobile browsers
+            requestAnimationFrame(() => {
+                el.scrollTop = el.scrollHeight;
+            });
         }
     }, [consoleLogs, activeTab]);
 
@@ -363,8 +374,8 @@ export const MobileDashboardCard: React.FC = () => {
                                                 </div>
                                                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
                                                     <div
-                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
-                                                        style={{ animation: 'fillProgress 4s cubic-bezier(0.65, 0, 0.35, 1) forwards' }}
+                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative transition-all duration-[4000ms] ease-out"
+                                                        style={{ width: `${loadProgress}%` }}
                                                     >
                                                         <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
                                                     </div>
@@ -506,8 +517,8 @@ export const MobileDashboardCard: React.FC = () => {
                                                     </div>
                                                     <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner backdrop-blur-sm">
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative"
-                                                            style={{ animation: 'fillProgress 4s cubic-bezier(0.65, 0, 0.35, 1) forwards' }}
+                                                            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative transition-all duration-[4000ms] ease-out"
+                                                            style={{ width: `${loadProgress}%` }}
                                                         >
                                                             <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
                                                         </div>
