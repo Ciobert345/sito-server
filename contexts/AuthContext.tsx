@@ -168,12 +168,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (!isMounted.current) return;
-            if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+            if ((event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'PASSWORD_RECOVERY') && session?.user) {
                 syncUser(session.user.id, session.user.email || '', session.user.user_metadata);
-            } else if (event === 'PASSWORD_RECOVERY') {
-                debugLog('PASSWORD_RECOVERY event triggered');
-                // We keep the loading state or redirect if needed, 
-                // but usually the ResetPassword page handles this.
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
                 setMcssKey(null);
@@ -218,7 +214,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     const logout = async () => { setLoading(true); try { await supabase.auth.signOut(); setUser(null); setMcssKey(null); } finally { setLoading(false); } };
     const updateProfile = async (u: any) => { if (!user) return; await supabase.from('profiles').update(u).eq('id', user.id); setUser({ ...user, ...u }); };
-    const updatePassword = async (p: string) => { await supabase.auth.updateUser({ password: p }); };
+    const updatePassword = async (p: string) => {
+        const { error } = await supabase.auth.updateUser({ password: p });
+        if (error) throw error;
+    };
     const resetPassword = async (email: string) => {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/#/reset-password`,

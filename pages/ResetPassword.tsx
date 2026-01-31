@@ -12,13 +12,18 @@ const ResetPassword: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
-    const { updatePassword, logout } = useAuth();
+    const { user, updatePassword, logout, loading: authLoading } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (password !== confirmPassword) {
             setError("Passwords mismatch");
+            return;
+        }
+
+        if (!user) {
+            setError("Session invalid or expired. Please request a new recovery link.");
             return;
         }
 
