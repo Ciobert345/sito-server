@@ -829,7 +829,7 @@ const Mobile: React.FC = () => {
                     </section>
 
                     {/* Dashboard Section - Mobile Optimized */}
-                    <section id="dashboard" className="scroll-mt-24">
+                    <section id="dashboard" key="dashboard-section" className="scroll-mt-24">
                         {!user ? (
                             <div className="glass-card bg-[#080808]/80 rounded-2xl border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden p-8 flex flex-col items-center justify-center gap-6 text-center">
                                 <div className="size-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">

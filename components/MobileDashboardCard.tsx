@@ -179,63 +179,10 @@ export const MobileDashboardCard: React.FC = () => {
     const shouldAutoScrollRef = useRef(true);
     const isInteractingRef = useRef(false);
 
-    // SCROLL TRAP
+    // SCROLL TRAP - DEACTIVATED FOR STABILITY
     useEffect(() => {
-        if (activeTab !== 'console') return;
-        const element = consoleContainerRef.current;
-        if (!element) return;
-
-        let startY = 0;
-
-        const onTouchStart = (e: TouchEvent) => {
-            startY = e.touches[0].clientY;
-            isInteractingRef.current = true;
-            const { scrollTop, scrollHeight, clientHeight } = element;
-            shouldAutoScrollRef.current = scrollTop + clientHeight >= scrollHeight - 10;
-        };
-
-        const onTouchEnd = () => {
-            isInteractingRef.current = false;
-        };
-
-        const onTouchMove = (e: TouchEvent) => {
-            const currentY = e.touches[0].clientY;
-            const distance = startY - currentY;
-            const isScrollingDown = distance > 0;
-            const isScrollingUp = distance < 0;
-            const { scrollTop, scrollHeight, clientHeight } = element;
-            const isAtTop = scrollTop <= 0;
-            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
-
-            if ((isAtTop && isScrollingUp) || (isAtBottom && isScrollingDown)) {
-                if (e.cancelable) e.preventDefault();
-            }
-            e.stopPropagation();
-        };
-
-        const onWheel = (e: WheelEvent) => {
-            const { scrollTop, scrollHeight, clientHeight } = element;
-            const isAtTop = scrollTop <= 0;
-            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
-            if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
-                if (e.cancelable) e.preventDefault();
-            }
-            e.stopPropagation();
-        };
-
-        element.addEventListener('touchstart', onTouchStart, { passive: true });
-        element.addEventListener('touchend', onTouchEnd, { passive: true });
-        element.addEventListener('touchcancel', onTouchEnd, { passive: true });
-        element.addEventListener('touchmove', onTouchMove, { passive: false });
-        element.addEventListener('wheel', onWheel, { passive: false });
-
-        return () => {
-            element.removeEventListener('touchstart', onTouchStart);
-            element.removeEventListener('touchend', onTouchEnd);
-            element.removeEventListener('touchcancel', onTouchEnd);
-            element.removeEventListener('touchmove', onTouchMove);
-            element.removeEventListener('wheel', onWheel);
-        };
+        // Disabled per reliability update to avoid fighting native browser scroll engines
+        return () => { };
     }, [activeTab]);
 
     const consoleEndRef = useRef<HTMLDivElement>(null);
@@ -368,14 +315,10 @@ export const MobileDashboardCard: React.FC = () => {
                     ))}
                 </div>
 
-                <AnimatePresence>
+                <div className="relative h-[420px]">
                     {(stats.unreachable && gracePassed) ? (
-                        <motion.div
-                            key="unreachable-locked"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="flex flex-col items-center justify-center gap-8 h-[420px] text-center p-8 bg-black/40 rounded-xl border border-white/5 relative overflow-hidden"
+                        <div
+                            className="flex flex-col items-center justify-center gap-8 h-full text-center p-8 bg-black/40 rounded-xl border border-white/5 relative overflow-hidden"
                         >
                             <div className="flex flex-col items-center gap-6">
                                 <div className="flex flex-col items-center gap-4">
@@ -409,207 +352,196 @@ export const MobileDashboardCard: React.FC = () => {
                                 transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
                                 className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/10 to-transparent z-10"
                             />
-                        </motion.div>
-                    ) : activeTab === 'overview' ? (
-                        <motion.div
-                            key="overview"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="flex flex-col gap-8 h-[420px] justify-between relative"
-                        >
-                            <AnimatePresence>
-                                {!gracePassed && (
-                                    <motion.div
-                                        key="mobile-uplink-overlay"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md rounded-2xl p-8 text-center"
-                                    >
-                                        {/* Mobile Premium Loading State */}
-                                        <div className="flex flex-col items-center gap-5 w-48">
-                                            <div className="flex flex-col items-center gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                                                    <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">Uplink Sync</span>
-                                                    <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
+                        </div>
+                    ) : (
+                        <>
+                            {activeTab === 'overview' && (
+                                <div className="flex flex-col gap-8 h-full justify-between relative">
+                                    <AnimatePresence>
+                                        {!gracePassed && (
+                                            <motion.div
+                                                key="mobile-uplink-overlay"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md rounded-2xl p-8 text-center"
+                                            >
+                                                <div className="flex flex-col items-center gap-5 w-48">
+                                                    <div className="flex flex-col items-center gap-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
+                                                            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">Uplink Sync</span>
+                                                            <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
+                                                        </div>
+                                                        <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
+                                                    </div>
+                                                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
+                                                        <motion.div
+                                                            initial={{ width: "0%" }}
+                                                            animate={{ width: "100%" }}
+                                                            transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
+                                                            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
+                                                        >
+                                                            <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
+                                                        </motion.div>
+                                                    </div>
+                                                    <div className="flex justify-center w-full opacity-20">
+                                                        <span className="text-[6px] font-mono text-white uppercase tracking-widest animate-pulse">Establishing_Secure_Relay</span>
+                                                    </div>
                                                 </div>
-                                                <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
-                                            </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
 
-                                            <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
-                                                <motion.div
-                                                    initial={{ width: "0%" }}
-                                                    animate={{ width: "100%" }}
-                                                    transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
-                                                    className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
-                                                >
-                                                    <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
-                                                </motion.div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl flex flex-col justify-between h-[120px] relative overflow-hidden group/chart">
+                                            <div className="flex justify-between items-start z-10">
+                                                <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest">CPU</span>
+                                                <span className="material-symbols-outlined text-white/20 text-sm">memory</span>
                                             </div>
-
-                                            <div className="flex justify-center w-full opacity-20">
-                                                <span className="text-[6px] font-mono text-white uppercase tracking-widest animate-pulse">Establishing_Secure_Relay</span>
+                                            <div className="flex items-baseline gap-1 z-10">
+                                                <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.cpu}</span>
+                                                <span className="text-[10px] text-white/30">%</span>
+                                            </div>
+                                            <div className="absolute inset-0 opacity-20 pointer-events-none flex items-end justify-end p-2 gap-0.5">
+                                                {[40, 60, 30, 80, 50, stats.cpu].map((h, i) => (
+                                                    <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-500" style={{ height: `${Math.min(h, 100)}%` }}></div>
+                                                ))}
                                             </div>
                                         </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl flex flex-col justify-between h-[120px] relative overflow-hidden group/chart">
-                                    <div className="flex justify-between items-start z-10">
-                                        <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest">CPU</span>
-                                        <span className="material-symbols-outlined text-white/20 text-sm">memory</span>
-                                    </div>
-                                    <div className="flex items-baseline gap-1 z-10">
-                                        <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.cpu}</span>
-                                        <span className="text-[10px] text-white/30">%</span>
-                                    </div>
-                                    <div className="absolute inset-0 opacity-20 pointer-events-none flex items-end justify-end p-2 gap-0.5">
-                                        {[40, 60, 30, 80, 50, stats.cpu].map((h, i) => (
-                                            <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-500" style={{ height: `${Math.min(h, 100)}%` }}></div>
-                                        ))}
-                                    </div>
-                                </div>
+                                        <div className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl flex flex-col justify-between h-[120px] relative overflow-hidden">
+                                            <div className="flex justify-between items-start z-10">
+                                                <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest">RAM</span>
+                                                <span className="material-symbols-outlined text-white/20 text-sm">storage</span>
+                                            </div>
+                                            <div className="flex items-baseline gap-1 z-10">
+                                                <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.ram}</span>
+                                                <span className="text-[10px] text-white/30">%</span>
+                                            </div>
+                                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
+                                                <div className="h-full bg-purple-500/50" style={{ width: `${stats.ram}%` }}></div>
+                                            </div>
+                                        </div>
 
-                                <div className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl flex flex-col justify-between h-[120px] relative overflow-hidden">
-                                    <div className="flex justify-between items-start z-10">
-                                        <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest">RAM</span>
-                                        <span className="material-symbols-outlined text-white/20 text-sm">storage</span>
-                                    </div>
-                                    <div className="flex items-baseline gap-1 z-10">
-                                        <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.ram}</span>
-                                        <span className="text-[10px] text-white/30">%</span>
-                                    </div>
-                                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
-                                        <div className="h-full bg-purple-500/50" style={{ width: `${stats.ram}%` }}></div>
-                                    </div>
-                                </div>
-
-                                <div className="col-span-2 bg-gradient-to-r from-white/[0.04] to-transparent border border-white/5 p-5 rounded-2xl flex items-center justify-between relative overflow-hidden">
-                                    <div className="flex flex-col gap-1 z-10">
-                                        <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest">Active Players</span>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.players.online}</span>
-                                            <span className="text-xs text-white/30 font-medium">/ {stats.players.max} CAP</span>
+                                        <div className="col-span-2 bg-gradient-to-r from-white/[0.04] to-transparent border border-white/5 p-5 rounded-2xl flex items-center justify-between relative overflow-hidden">
+                                            <div className="flex flex-col gap-1 z-10">
+                                                <span className="text-[9px] text-white/40 font-bold uppercase tracking-widest">Active Players</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.players.online}</span>
+                                                    <span className="text-xs text-white/30 font-medium">/ {stats.players.max} CAP</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex -space-x-2 z-10">
+                                                {Array.from({ length: Math.min(stats.players.online, 3) }).map((_, i) => (
+                                                    <div key={i} className="size-8 rounded-full bg-white/10 border border-black/50 flex items-center justify-center text-[10px] text-white/50">
+                                                        <span className="material-symbols-outlined text-sm">person</span>
+                                                    </div>
+                                                ))}
+                                                {stats.players.online > 3 && (
+                                                    <div className="size-8 rounded-full bg-white/5 border border-black/50 flex items-center justify-center text-[9px] text-white/50 font-bold">
+                                                        +{stats.players.online - 3}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black/50 to-transparent"></div>
                                         </div>
                                     </div>
-                                    <div className="flex -space-x-2 z-10">
-                                        {Array.from({ length: Math.min(stats.players.online, 3) }).map((_, i) => (
-                                            <div key={i} className="size-8 rounded-full bg-white/10 border border-black/50 flex items-center justify-center text-[10px] text-white/50">
-                                                <span className="material-symbols-outlined text-sm">person</span>
-                                            </div>
-                                        ))}
-                                        {stats.players.online > 3 && (
-                                            <div className="size-8 rounded-full bg-white/5 border border-black/50 flex items-center justify-center text-[9px] text-white/50 font-bold">
-                                                +{stats.players.online - 3}
+
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center gap-2 opacity-50">
+                                            <div className="h-px flex-1 bg-white/10"></div>
+                                            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">Manual Override</span>
+                                            <div className="h-px flex-1 bg-white/10"></div>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <button onClick={() => handleAction('Start')} disabled={stats.status !== 0 || !!actionLoading || stats.unreachable} className="relative group overflow-hidden p-0.5 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
+                                                <div className="absolute inset-0 bg-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors rounded-xl"></div>
+                                                <div className="relative bg-[#0a0a0a] rounded-[10px] h-full p-5 flex flex-col items-center justify-center gap-2 border border-white/5">
+                                                    <span className="material-symbols-outlined text-emerald-500 text-xl group-hover:scale-110 transition-transform">play_arrow</span>
+                                                    <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">Start</span>
+                                                </div>
+                                            </button>
+                                            <button onClick={() => handleAction('Restart')} disabled={stats.status !== 1 || !!actionLoading || stats.unreachable} className="relative group overflow-hidden p-0.5 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
+                                                <div className="absolute inset-0 bg-amber-500/20 group-hover:bg-amber-500/30 transition-colors rounded-xl"></div>
+                                                <div className="relative bg-[#0a0a0a] rounded-[10px] h-full p-5 flex flex-col items-center justify-center gap-2 border border-white/5">
+                                                    <span className="material-symbols-outlined text-amber-500 text-xl group-hover:rotate-180 transition-transform duration-500">sync</span>
+                                                    <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">Reboot</span>
+                                                </div>
+                                            </button>
+                                            <button onClick={() => handleAction('Stop')} disabled={stats.status !== 1 || !!actionLoading || stats.unreachable} className="relative group overflow-hidden p-0.5 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
+                                                <div className="absolute inset-0 bg-rose-500/20 group-hover:bg-rose-500/30 transition-colors rounded-xl"></div>
+                                                <div className="relative bg-[#0a0a0a] rounded-[10px] h-full p-5 flex flex-col items-center justify-center gap-2 border border-white/5">
+                                                    <span className="material-symbols-outlined text-rose-500 text-xl group-hover:scale-110 transition-transform">power_settings_new</span>
+                                                    <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">Stop</span>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'console' && (
+                                <div className="flex flex-col gap-0 h-full bg-black/40 rounded-xl border border-white/10 overflow-hidden relative">
+                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
+                                        <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
+                                    </div>
+                                    <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col">
+                                        {consoleLogs.length === 0 && !stats.unreachable && (
+                                            <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
+                                                <span className="material-symbols-outlined text-2xl animate-spin">data_usage</span>
+                                                <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
                                             </div>
                                         )}
-                                    </div>
-                                    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black/50 to-transparent"></div>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center gap-2 opacity-50">
-                                    <div className="h-px flex-1 bg-white/10"></div>
-                                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">Manual Override</span>
-                                    <div className="h-px flex-1 bg-white/10"></div>
-                                </div>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <button onClick={() => handleAction('Start')} disabled={stats.status !== 0 || !!actionLoading || stats.unreachable} className="relative group overflow-hidden p-0.5 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
-                                        <div className="absolute inset-0 bg-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors rounded-xl"></div>
-                                        <div className="relative bg-[#0a0a0a] rounded-[10px] h-full p-5 flex flex-col items-center justify-center gap-2 border border-white/5">
-                                            <span className="material-symbols-outlined text-emerald-500 text-xl group-hover:scale-110 transition-transform">play_arrow</span>
-                                            <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">Start</span>
-                                        </div>
-                                    </button>
-                                    <button onClick={() => handleAction('Restart')} disabled={stats.status !== 1 || !!actionLoading || stats.unreachable} className="relative group overflow-hidden p-0.5 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
-                                        <div className="absolute inset-0 bg-amber-500/20 group-hover:bg-amber-500/30 transition-colors rounded-xl"></div>
-                                        <div className="relative bg-[#0a0a0a] rounded-[10px] h-full p-5 flex flex-col items-center justify-center gap-2 border border-white/5">
-                                            <span className="material-symbols-outlined text-amber-500 text-xl group-hover:rotate-180 transition-transform duration-500">sync</span>
-                                            <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">Reboot</span>
-                                        </div>
-                                    </button>
-                                    <button onClick={() => handleAction('Stop')} disabled={stats.status !== 1 || !!actionLoading || stats.unreachable} className="relative group overflow-hidden p-0.5 rounded-xl transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
-                                        <div className="absolute inset-0 bg-rose-500/20 group-hover:bg-rose-500/30 transition-colors rounded-xl"></div>
-                                        <div className="relative bg-[#0a0a0a] rounded-[10px] h-full p-5 flex flex-col items-center justify-center gap-2 border border-white/5">
-                                            <span className="material-symbols-outlined text-rose-500 text-xl group-hover:scale-110 transition-transform">power_settings_new</span>
-                                            <span className="text-[9px] font-bold text-white/80 uppercase tracking-widest">Stop</span>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="console"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="flex flex-col gap-0 h-[420px] bg-black/40 rounded-xl border border-white/10 overflow-hidden relative"
-                        >
-                            <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
-                                <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
-                            </div>
-                            <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col">
-                                {consoleLogs.length === 0 && !stats.unreachable && (
-                                    <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
-                                        <span className="material-symbols-outlined text-2xl animate-spin">data_usage</span>
-                                        <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
-                                    </div>
-                                )}
-                                {(consoleLogs || []).map((log, i) => (
-                                    <div key={i} className="whitespace-pre-wrap break-all leading-tight mb-1 px-1 rounded">
-                                        <span className="text-white/20 mr-2 select-none">|</span>{log}
-                                    </div>
-                                ))}
-                                <div ref={consoleEndRef} />
-                            </div>
-
-                            <AnimatePresence>
-                                {!gracePassed && (
-                                    <motion.div
-                                        key="mobile-console-overlay"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md p-6 text-center"
-                                    >
-                                        <div className="flex flex-col items-center gap-3 w-32">
-                                            <span className="text-[8px] font-mono text-white/40 uppercase tracking-[0.2em] animate-pulse">Syncing Console</span>
-                                            <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                                <motion.div initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 5, ease: "linear" }} className="h-full bg-emerald-500/40" />
+                                        {(consoleLogs || []).map((log, i) => (
+                                            <div key={i} className="whitespace-pre-wrap break-all leading-tight mb-1 px-1 rounded">
+                                                <span className="text-white/20 mr-2 select-none">|</span>{log}
                                             </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                                        ))}
+                                        <div ref={consoleEndRef} />
+                                    </div>
 
-                            <div className={`p-2 bg-white/5 border-t border-white/10 transition-opacity ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
-                                <form onSubmit={sendCommand} className="relative flex items-center gap-2">
-                                    <span className="text-emerald-500 font-mono text-xs animate-pulse pl-2">{'>'}</span>
-                                    <input
-                                        type="text"
-                                        value={commandInput}
-                                        onChange={(e) => setCommandInput(e.target.value)}
-                                        placeholder={stats.unreachable ? "Link lost..." : "Enter validated command..."}
-                                        className="flex-1 bg-transparent border-none text-xs font-mono text-white placeholder-white/20 focus:ring-0 focus:outline-none py-2"
-                                        autoComplete="off"
-                                        disabled={stats.unreachable}
-                                    />
-                                    <button type="submit" disabled={!commandInput.trim() || stats.unreachable} className="p-1.5 hover:bg-white/10 rounded text-white/50 hover:text-white transition-colors disabled:opacity-0">
-                                        <span className="material-symbols-outlined text-sm">keyboard_return</span>
-                                    </button>
-                                </form>
-                            </div>
-                        </motion.div>
+                                    <AnimatePresence>
+                                        {!gracePassed && (
+                                            <motion.div
+                                                key="mobile-console-overlay"
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md p-6 text-center"
+                                            >
+                                                <div className="flex flex-col items-center gap-3 w-32">
+                                                    <span className="text-[8px] font-mono text-white/40 uppercase tracking-[0.2em] animate-pulse">Syncing Console</span>
+                                                    <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                                        <motion.div initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 5, ease: "linear" }} className="h-full bg-emerald-500/40" />
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+
+                                    <div className={`p-2 bg-white/5 border-t border-white/10 transition-opacity ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
+                                        <form onSubmit={sendCommand} className="relative flex items-center gap-2">
+                                            <span className="text-emerald-500 font-mono text-xs animate-pulse pl-2">{'>'}</span>
+                                            <input
+                                                type="text"
+                                                value={commandInput}
+                                                onChange={(e) => setCommandInput(e.target.value)}
+                                                placeholder={stats.unreachable ? "Link lost..." : "Enter validated command..."}
+                                                className="flex-1 bg-transparent border-none text-xs font-mono text-white placeholder-white/20 focus:ring-0 focus:outline-none py-2"
+                                                autoComplete="off"
+                                                disabled={stats.unreachable}
+                                            />
+                                            <button type="submit" disabled={!commandInput.trim() || stats.unreachable} className="p-1.5 hover:bg-white/10 rounded text-white/50 hover:text-white transition-colors disabled:opacity-0">
+                                                <span className="material-symbols-outlined text-sm">keyboard_return</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
-                </AnimatePresence>
+                </div>
             </div>
         </div>
     );

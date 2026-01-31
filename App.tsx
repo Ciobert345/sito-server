@@ -224,7 +224,7 @@ const AppContent: React.FC = () => {
 
       {/* Cinematic Perspective Void logic moved inside terminal mode container below */}
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {!isTerminalOpen ? (
           <motion.div
             key="site-normal"
