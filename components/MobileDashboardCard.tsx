@@ -166,10 +166,14 @@ export const MobileDashboardCard: React.FC = () => {
         try {
             // Fetch 100 lines to match desktop parity
             const logs = await mcssService.getConsole(serverId, 100);
-            setConsoleLogs(Array.isArray(logs) ? logs : []);
+            if (Array.isArray(logs) && logs.length > 0) {
+                // Filter out any suspicious objects or technical noise
+                const filtered = logs.filter(l => typeof l === 'string' && !l.includes('{"') && !l.includes('statusCode"'));
+                setConsoleLogs(filtered);
+            }
         } catch (err) {
-            // Silent error to keep console clean
-            setConsoleLogs([]);
+            // Sticky logic: keep existing logs on error to avoid flashing "blank" state
+            // console.warn('[MOBILE_CARD] Console fetch failed, persisting cache');
         }
     };
 
@@ -180,10 +184,10 @@ export const MobileDashboardCard: React.FC = () => {
         // Perform initial fetch
         fetchConsole();
 
-        // 3s interval for exact desktop parity
+        // 2s interval for a better balance of fluidity and stability on mobile
         const interval = setInterval(() => {
             if (!stats.unreachable) fetchConsole();
-        }, 3000);
+        }, 2000);
         return () => clearInterval(interval);
     }, [serverId, mcssService, stats.unreachable]);
 
@@ -526,38 +530,36 @@ export const MobileDashboardCard: React.FC = () => {
                                 <div className="flex flex-col gap-1">
                                     {(consoleLogs || []).length > 0 ? (
                                         (consoleLogs || []).map((log: any, i) => {
-                                            let logStr = '';
-                                            if (typeof log === 'string') {
-                                                logStr = log;
-                                            } else if (log && typeof log === 'object') {
-                                                // Try to extract common message fields or stringify
-                                                logStr = log.message || log.text || log.line || JSON.stringify(log);
-                                            } else {
-                                                logStr = String(log || '');
-                                            }
-
+                                            if (typeof log !== 'string') return null;
                                             return (
-                                                <div key={i} className="flex gap-3 group/line items-start">
-                                                    <span className="text-white/5 shrink-0 tabular-nums">{(i + 1).toString().padStart(4, '0')}</span>
+                                                <div key={i} className="flex gap-3 group/line items-start border-l-2 border-transparent hover:border-white/5 pl-1 transition-colors">
+                                                    <span className="text-white/5 shrink-0 tabular-nums select-none min-w-[28px]">{(i + 1).toString().padStart(4, '0')}</span>
                                                     <span className="break-all">
-                                                        {logStr.startsWith('>') ? (
-                                                            <span className="text-emerald-400 font-bold">{logStr}</span>
-                                                        ) : (logStr.includes('ERROR') || logStr.includes('FAILED')) ? (
-                                                            <span className="text-red-400/80">{logStr}</span>
+                                                        {log.startsWith('>') ? (
+                                                            <span className="text-emerald-400 font-bold">{log}</span>
+                                                        ) : (log.includes('ERROR') || log.includes('FAILED')) ? (
+                                                            <span className="text-red-400/80">{log}</span>
                                                         ) : (
-                                                            <span className="text-white/40">{logStr}</span>
+                                                            <span className="text-white/40">{log}</span>
                                                         )}
                                                     </span>
                                                 </div>
                                             );
                                         })
                                     ) : (
-                                        <div className="h-full flex flex-col items-center justify-center py-20 text-white/10 gap-2">
-                                            <span className="material-symbols-outlined text-3xl animate-pulse">terminal</span>
-                                            <span className="text-[8px] uppercase tracking-[0.2em]">{stats.unreachable ? "Signal lost..." : "Establishing_Neural_Link..."}</span>
+                                        <div className="h-full flex flex-col items-center justify-center py-24 text-white/5 gap-3">
+                                            <span className="material-symbols-outlined text-4xl opacity-20">terminal</span>
+                                            <div className="flex flex-col items-center gap-1">
+                                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">{stats.unreachable ? "Link Offline" : "Establishing Link"}</span>
+                                                <div className="flex gap-1">
+                                                    <div className="size-1 rounded-full bg-emerald-500/20 animate-bounce"></div>
+                                                    <div className="size-1 rounded-full bg-emerald-500/20 animate-bounce [animation-delay:0.2s]"></div>
+                                                    <div className="size-1 rounded-full bg-emerald-500/20 animate-bounce [animation-delay:0.4s]"></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
-                                    <div className="h-2"></div>
+                                    <div className="h-4"></div>
                                 </div>
                             </div>
 
