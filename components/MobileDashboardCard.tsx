@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export const MobileDashboardCard: React.FC = () => {
     const { mcssService, user } = useAuth();
@@ -145,8 +144,8 @@ export const MobileDashboardCard: React.FC = () => {
         };
 
         fetchStats();
-        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
-        const intervalTime = stats.unreachable ? 300000 : 10000;
+        // Conservative polling to reduce mobile resource usage
+        const intervalTime = stats.unreachable ? 300000 : 15000;
         const interval = setInterval(fetchStats, intervalTime);
 
         const timer = setTimeout(() => setGracePassed(true), 4000);
@@ -171,7 +170,7 @@ export const MobileDashboardCard: React.FC = () => {
         };
 
         fetchConsole();
-        const interval = setInterval(fetchConsole, 2000);
+        const interval = setInterval(fetchConsole, 5000);
         return () => clearInterval(interval);
     }, [mcssService, serverId, activeTab]);
 
@@ -250,27 +249,21 @@ export const MobileDashboardCard: React.FC = () => {
 
             {/* Notification Overlay */}
             <div className="absolute bottom-4 left-0 right-0 z-50 flex flex-col items-center gap-2 pointer-events-none px-4">
-                <AnimatePresence>
-                    {(notifications || []).map((notif) => (
-                        <motion.div
-                            key={notif.id}
-                            initial={{ opacity: 0, y: -20, scale: 0.9 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                            transition={{ duration: 0.2 }}
-                            className={`pointer-events-auto flex items-center gap-3 px-4 py-2 rounded-xl border backdrop-blur-md shadow-2xl ${notif.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
-                                notif.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
-                                    'bg-blue-500/10 border-blue-500/20 text-blue-400'
-                                }`}
-                        >
-                            <div className={`size-2 rounded-full ${notif.type === 'success' ? 'bg-emerald-500 animate-pulse' :
-                                notif.type === 'error' ? 'bg-red-500' :
-                                    'bg-blue-500'
-                                }`}></div>
-                            <span className="text-[10px] font-black uppercase tracking-widest">{notif.message}</span>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
+                {(notifications || []).map((notif) => (
+                    <div
+                        key={notif.id}
+                        className={`pointer-events-auto flex items-center gap-3 px-4 py-2 rounded-xl border backdrop-blur-md shadow-2xl ${notif.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                            notif.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
+                                'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                            }`}
+                    >
+                        <div className={`size-2 rounded-full ${notif.type === 'success' ? 'bg-emerald-500 animate-pulse' :
+                            notif.type === 'error' ? 'bg-red-500' :
+                                'bg-blue-500'
+                            }`}></div>
+                        <span className="text-[10px] font-black uppercase tracking-widest">{notif.message}</span>
+                    </div>
+                ))}
             </div>
 
             {/* Header / Status Bar */}
@@ -293,14 +286,10 @@ export const MobileDashboardCard: React.FC = () => {
 
             <div className="p-5 flex flex-col gap-6 relative">
                 <div className="flex p-1 bg-black/40 rounded-xl border border-white/5 relative items-center">
-                    {/* Active Tab Indicator - Single Pill for better stability */}
-                    <motion.div
-                        initial={false}
-                        animate={{
-                            x: activeTab === 'overview' ? '0%' : '100%'
-                        }}
-                        transition={mounted ? { type: "spring", bounce: 0.2, duration: 0.6 } : { duration: 0 }}
-                        className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white/10 rounded-lg border border-white/5 shadow-inner"
+                    {/* Active Tab Indicator - Pure CSS for maximum stability */}
+                    <div
+                        className="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white/10 rounded-lg border border-white/5 shadow-inner transition-transform duration-300 ease-out"
+                        style={{ transform: activeTab === 'console' ? 'translateX(100%)' : 'translateX(0)' }}
                     />
 
                     {['overview', 'console'].map((tab) => (
@@ -346,52 +335,34 @@ export const MobileDashboardCard: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Decorative scanning line */}
-                            <motion.div
-                                animate={{ top: ['0%', '100%', '0%'] }}
-                                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                                className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/10 to-transparent z-10"
-                            />
+
                         </div>
                     ) : (
                         <>
                             {activeTab === 'overview' && (
                                 <div className="flex flex-col gap-8 h-full justify-between relative">
-                                    <AnimatePresence>
-                                        {!gracePassed && (
-                                            <motion.div
-                                                key="mobile-uplink-overlay"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md rounded-2xl p-8 text-center"
-                                            >
-                                                <div className="flex flex-col items-center gap-5 w-48">
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                                                            <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">Uplink Sync</span>
-                                                            <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                                                        </div>
-                                                        <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
+                                    {!gracePassed && (
+                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md rounded-2xl p-8 text-center">
+                                            <div className="flex flex-col items-center gap-5 w-48">
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
+                                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">Uplink Sync</span>
+                                                        <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
                                                     </div>
-                                                    <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
-                                                        <motion.div
-                                                            initial={{ width: "0%" }}
-                                                            animate={{ width: "100%" }}
-                                                            transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
-                                                            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
-                                                        >
-                                                            <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
-                                                        </motion.div>
-                                                    </div>
-                                                    <div className="flex justify-center w-full opacity-20">
-                                                        <span className="text-[6px] font-mono text-white uppercase tracking-widest animate-pulse">Establishing_Secure_Relay</span>
+                                                    <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
+                                                </div>
+                                                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
+                                                    <div className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative" style={{ width: '100%' }}>
+                                                        <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
                                                     </div>
                                                 </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                                <div className="flex justify-center w-full opacity-20">
+                                                    <span className="text-[6px] font-mono text-white uppercase tracking-widest animate-pulse">Establishing_Secure_Relay</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white/[0.03] border border-white/5 p-5 rounded-2xl flex flex-col justify-between h-[120px] relative overflow-hidden group/chart">
@@ -501,24 +472,16 @@ export const MobileDashboardCard: React.FC = () => {
                                         <div ref={consoleEndRef} />
                                     </div>
 
-                                    <AnimatePresence>
-                                        {!gracePassed && (
-                                            <motion.div
-                                                key="mobile-console-overlay"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                exit={{ opacity: 0 }}
-                                                className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md p-6 text-center"
-                                            >
-                                                <div className="flex flex-col items-center gap-3 w-32">
-                                                    <span className="text-[8px] font-mono text-white/40 uppercase tracking-[0.2em] animate-pulse">Syncing Console</span>
-                                                    <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                                        <motion.div initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 5, ease: "linear" }} className="h-full bg-emerald-500/40" />
-                                                    </div>
+                                    {!gracePassed && (
+                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] backdrop-blur-md p-6 text-center">
+                                            <div className="flex flex-col items-center gap-3 w-32">
+                                                <span className="text-[8px] font-mono text-white/40 uppercase tracking-[0.2em] animate-pulse">Syncing Console</span>
+                                                <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
+                                                    <div className="h-full bg-emerald-500/40" style={{ width: '100%' }} />
                                                 </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     <div className={`p-2 bg-white/5 border-t border-white/10 transition-opacity ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
                                         <form onSubmit={sendCommand} className="relative flex items-center gap-2">
