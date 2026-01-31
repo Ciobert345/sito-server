@@ -168,8 +168,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (!isMounted.current) return;
-            if (event === 'SIGNED_IN' && session?.user) {
+            if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
                 syncUser(session.user.id, session.user.email || '', session.user.user_metadata);
+            } else if (event === 'PASSWORD_RECOVERY') {
+                debugLog('PASSWORD_RECOVERY event triggered');
+                // We keep the loading state or redirect if needed, 
+                // but usually the ResetPassword page handles this.
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
                 setMcssKey(null);

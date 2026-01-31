@@ -12,7 +12,7 @@ const ResetPassword: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
-    const { updatePassword } = useAuth();
+    const { updatePassword, logout } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -28,6 +28,8 @@ const ResetPassword: React.FC = () => {
         try {
             await updatePassword(password);
             setSuccess(true);
+            // Logout after reset to force a fresh login and clear any temporary session
+            await logout();
             setTimeout(() => {
                 navigate('/');
             }, 3000);
@@ -139,8 +141,6 @@ const ResetPassword: React.FC = () => {
                     </AnimatePresence>
                 </motion.div>
             </main>
-
-            <Footer />
         </div>
     );
 };
