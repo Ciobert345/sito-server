@@ -151,27 +151,29 @@ export const MobileDashboardCard: React.FC = () => {
     }, [mcssService, serverId, stats.unreachable]);
 
     // Console Polling
+    // Manual Console Refresh Logic
+    const fetchConsole = async () => {
+        if (!mcssService || !serverId) return;
+        try {
+            setActionLoading('console');
+            const logs = await mcssService.getConsole(serverId, 30);
+            setConsoleLogs(prev => {
+                if (JSON.stringify(prev) === JSON.stringify(logs)) return prev;
+                return logs;
+            });
+        } catch (err) {
+            console.error('[Console] Fetch failed:', err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    // Initial load when tab changes
     useEffect(() => {
-        if (!mcssService || !serverId || activeTab !== 'console') return;
-
-        const fetchConsole = async () => {
-            try {
-                const logs = await mcssService.getConsole(serverId, 30);
-                // Only update if logs actually changed to prevent unnecessary re-renders
-                setConsoleLogs(prev => {
-                    if (JSON.stringify(prev) === JSON.stringify(logs)) return prev;
-                    return logs;
-                });
-            } catch (err) {
-                // Silent fail to avoid notification spam
-                console.error('[Console] Fetch failed:', err);
-            }
-        };
-
-        fetchConsole();
-        const interval = setInterval(fetchConsole, 10000); // Reduced to 10s for stability
-        return () => clearInterval(interval);
-    }, [mcssService, serverId, activeTab]);
+        if (activeTab === 'console' && serverId) {
+            fetchConsole();
+        }
+    }, [activeTab, serverId]);
 
 
 
@@ -447,8 +449,15 @@ export const MobileDashboardCard: React.FC = () => {
 
                             {activeTab === 'console' && (
                                 <div className="flex flex-col h-full bg-black/40 rounded-xl border border-white/10 relative">
-                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3">
+                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center justify-between px-3">
                                         <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
+                                        <button
+                                            onClick={fetchConsole}
+                                            disabled={actionLoading === 'console'}
+                                            className="text-[8px] font-bold text-emerald-500 uppercase tracking-wider hover:text-emerald-400 disabled:opacity-50"
+                                        >
+                                            {actionLoading === 'console' ? 'Loading...' : 'REFRESH'}
+                                        </button>
                                     </div>
                                     <div className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-auto">
                                         {consoleLogs.length === 0 && !stats.unreachable && (
