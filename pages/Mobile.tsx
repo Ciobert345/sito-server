@@ -97,7 +97,7 @@ const Mobile: React.FC = () => {
                 const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
                 localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
             }
-        } catch {}
+        } catch { }
     };
 
     const fetchStatus = useCallback(async () => {
@@ -139,7 +139,7 @@ const Mobile: React.FC = () => {
                     return; // MCSS Succeeded
                 }
             } catch (err: any) {
-                console.warn('[MOBILE] MCSS Stats Fetch Failed:', err.message || err);
+                // console.warn('[MOBILE] MCSS Stats Fetch Failed:', err.message || err);
             }
         }
 
@@ -751,6 +751,11 @@ const Mobile: React.FC = () => {
                                                     <span className="text-white font-black text-sm sm:text-base uppercase tracking-widest leading-none">
                                                         {serverStatus.online ? 'Online' : 'Offline'}
                                                     </span>
+                                                    {!serverStatus.online && (
+                                                        <span className="text-[7px] sm:text-[8px] font-black text-red-500/50 uppercase tracking-[0.1em] mt-1 leading-tight">
+                                                            Probabile fuori orario operativo
+                                                        </span>
+                                                    )}
                                                     {serverStatus.online && serverStatus.players && (
                                                         <span className="text-[7px] sm:text-[8px] font-black text-white/30 uppercase tracking-[0.15em] sm:tracking-[0.2em] mt-0.5">
                                                             {serverStatus.players.online} Nodes

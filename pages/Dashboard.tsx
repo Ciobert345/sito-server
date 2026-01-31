@@ -456,6 +456,11 @@ const Dashboard: React.FC = () => {
                               <h3 className="text-xs font-black text-white/50 uppercase tracking-[0.3em] italic">Signal Lost</h3>
                               <span className="text-[8px] font-mono text-red-500/40 uppercase tracking-widest mt-1">Retrying_Uplink...</span>
                             </div>
+                            <div className="mt-4 px-6 py-3 bg-white/5 border border-white/10 rounded-xl max-w-[320px] text-center">
+                              <p className="text-[9px] font-bold text-white/40 uppercase tracking-[0.1em] leading-relaxed">
+                                Il server potrebbe essere offline. <br /> Assicurati di non essere al di fuori dell'orario operativo.
+                              </p>
+                            </div>
                           </div>
                         </div>
                       )}

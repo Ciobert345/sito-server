@@ -131,7 +131,7 @@ export const MobileDashboardCard: React.FC = () => {
                         }
                     }
                 } catch (error) {
-                    console.error('[MOBILE_CARD] All fetch methods failed');
+                    // console.error('[MOBILE_CARD] All fetch methods failed');
                     try {
                         const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
                         localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
