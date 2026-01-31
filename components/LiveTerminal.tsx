@@ -28,14 +28,14 @@ const LiveTerminal: React.FC<LiveTerminalProps> = ({ serverOnline = false }) => 
                     setServerId(servers[0].serverId);
                 }
             } catch (err) {
-                console.error('Failed to fetch servers:', err);
+                // console.error('Failed to fetch servers:', err);
             }
         };
         fetchServers();
     }, [mcssService]);
 
     useEffect(() => {
-        if (!mcssService || !serverId) return;
+        if (!mcssService || !serverId || !serverOnline) return;
 
         const pollLogs = async () => {
             try {
@@ -43,14 +43,14 @@ const LiveTerminal: React.FC<LiveTerminalProps> = ({ serverOnline = false }) => 
                 setLogs(newLogs);
                 setLoading(false);
             } catch (err) {
-                console.error('Failed to poll logs:', err);
+                // console.error('Failed to poll logs:', err);
             }
         };
 
         pollLogs();
         const interval = setInterval(pollLogs, 3000);
         return () => clearInterval(interval);
-    }, [mcssService, serverId]);
+    }, [mcssService, serverId, serverOnline]);
 
     useEffect(() => {
         if (scrollRef.current) {
