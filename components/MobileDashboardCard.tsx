@@ -42,16 +42,10 @@ export const MobileDashboardCard: React.FC = () => {
     // Console State
     const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
     const [commandInput, setCommandInput] = useState('');
-    const consoleContainerRef = useRef<HTMLDivElement>(null);
 
     // Action State
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [gracePassed, setGracePassed] = useState(false);
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     // Discovery & Stats Polling merged for robustness
     useEffect(() => {
@@ -174,28 +168,7 @@ export const MobileDashboardCard: React.FC = () => {
         return () => clearInterval(interval);
     }, [mcssService, serverId, activeTab]);
 
-    // Track if we should auto-scroll
-    const shouldAutoScrollRef = useRef(true);
-    const isInteractingRef = useRef(false);
 
-    // SCROLL TRAP - DEACTIVATED FOR STABILITY
-    useEffect(() => {
-        // Disabled per reliability update to avoid fighting native browser scroll engines
-        return () => { };
-    }, [activeTab]);
-
-    const consoleEndRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (activeTab === 'console') {
-            const timer = setTimeout(() => {
-                if (consoleEndRef.current) {
-                    consoleEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
-                }
-            }, 100);
-            return () => clearTimeout(timer);
-        }
-    }, [activeTab]);
 
     const handleAction = async (action: string) => {
         if (!mcssService || !serverId || actionLoading) return;
@@ -453,23 +426,22 @@ export const MobileDashboardCard: React.FC = () => {
                             )}
 
                             {activeTab === 'console' && (
-                                <div className="flex flex-col gap-0 h-full bg-black/40 rounded-xl border border-white/10 overflow-hidden relative">
-                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
+                                <div className="flex flex-col h-full bg-black/40 rounded-xl border border-white/10 relative">
+                                    <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3">
                                         <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
                                     </div>
-                                    <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col">
+                                    <div className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-auto">
                                         {consoleLogs.length === 0 && !stats.unreachable && (
                                             <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
-                                                <span className="material-symbols-outlined text-2xl animate-spin">data_usage</span>
+                                                <span className="material-symbols-outlined text-2xl">data_usage</span>
                                                 <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
                                             </div>
                                         )}
-                                        {(consoleLogs || []).map((log, i) => (
-                                            <div key={i} className="whitespace-pre-wrap break-all leading-tight mb-1 px-1 rounded">
-                                                <span className="text-white/20 mr-2 select-none">|</span>{log}
+                                        {(consoleLogs || []).slice(-30).map((log, i) => (
+                                            <div key={i} className="mb-1">
+                                                <span className="text-white/20 mr-2">|</span>{log}
                                             </div>
                                         ))}
-                                        <div ref={consoleEndRef} />
                                     </div>
 
                                     {!gracePassed && (
