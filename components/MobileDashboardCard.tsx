@@ -450,18 +450,28 @@ export const MobileDashboardCard: React.FC = () => {
                                             {actionLoading === 'console' ? 'Loading...' : 'REFRESH'}
                                         </button>
                                     </div>
-                                    <div className="h-[340px] bg-[#050505] relative">
-                                        <textarea
-                                            readOnly
-                                            value={logsText}
-                                            className="w-full h-full bg-transparent text-[10px] font-mono text-white/80 p-3 resize-none focus:outline-none"
-                                            style={{ WebkitAppearance: 'none', appearance: 'none' }}
-                                        />
+                                    <div className="h-[340px] bg-[#050505] relative overflow-hidden">
+                                        {/* Logs Display - Using PRE for stability + readability */}
+                                        <pre className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30">
+                                            {logsText || "No logs available. Press REFRESH to sync."}
+                                        </pre>
 
-                                        {consoleLogs.length === 0 && !stats.unreachable && (
+                                        {/* Loading Overlay - CSS Only (Safe) */}
+                                        {actionLoading === 'console' && (
+                                            <div className="absolute inset-0 bg-[#050505]/80 flex flex-col items-center justify-center z-10">
+                                                <div className="flex flex-col items-center gap-3">
+                                                    <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest animate-pulse">Syncing Uplink...</span>
+                                                    <div className="w-24 h-0.5 bg-white/10 rounded-full overflow-hidden">
+                                                        <div className="h-full bg-emerald-500 w-1/2 animate-[spin_1s_linear_infinite]" style={{ transformOrigin: 'left' }} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {consoleLogs.length === 0 && !actionLoading && !stats.unreachable && (
                                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-white/20 gap-2">
-                                                <span className="material-symbols-outlined text-2xl">data_usage</span>
-                                                <span className="text-[9px] uppercase tracking-widest">Connect</span>
+                                                <span className="material-symbols-outlined text-3xl">terminal</span>
+                                                <span className="text-[8px] uppercase tracking-[0.2em] opacity-50">Console Ready</span>
                                             </div>
                                         )}
                                     </div>
