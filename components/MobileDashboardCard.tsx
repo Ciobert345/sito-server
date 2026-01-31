@@ -181,18 +181,18 @@ export const MobileDashboardCard: React.FC = () => {
         // Perform initial fetch
         fetchConsole();
 
-        // 2s interval for a truly "live" feel
-        const interval = setInterval(fetchConsole, 2000);
+        // 1.5s interval for a truly "live" feel. Balanced for network stability.
+        const interval = setInterval(() => {
+            if (!stats.unreachable) fetchConsole();
+        }, 1500);
         return () => clearInterval(interval);
-    }, [serverId, mcssService]);
+    }, [serverId, mcssService, stats.unreachable]);
 
     // UI Loading state management when switching tabs
     useEffect(() => {
         if (activeTab === 'console' && consoleLogs.length === 0) {
-            setActionLoading('console');
-            // Small delay to allow initial background fetch to populate
-            const timer = setTimeout(() => setActionLoading(null), 1000);
-            return () => clearTimeout(timer);
+            // Initial load only if needed
+            fetchConsole();
         }
     }, [activeTab]);
 
@@ -374,8 +374,8 @@ export const MobileDashboardCard: React.FC = () => {
                                                 </div>
                                                 <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
                                                     <div
-                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative transition-all duration-[4000ms] ease-out"
-                                                        style={{ width: `${loadProgress}%` }}
+                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
+                                                        style={{ animation: 'fillProgress 4s cubic-bezier(0.65, 0, 0.35, 1) forwards' }}
                                                     >
                                                         <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
                                                     </div>
@@ -399,7 +399,7 @@ export const MobileDashboardCard: React.FC = () => {
                                             </div>
                                             <div className="absolute inset-0 opacity-20 pointer-events-none flex items-end justify-end p-2 gap-0.5">
                                                 {[40, 60, 30, 80, 50, stats.cpu].map((h, i) => (
-                                                    <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-500" style={{ height: `${Math.min(h, 100)}%` }}></div>
+                                                    <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-700 ease-out" style={{ height: `${Math.min(h, 100)}%` }}></div>
                                                 ))}
                                             </div>
                                         </div>
@@ -476,7 +476,7 @@ export const MobileDashboardCard: React.FC = () => {
                             )}
 
                             {activeTab === 'console' && (
-                                <div className="flex flex-col h-full bg-[#050505] rounded-xl border border-white/10 relative">
+                                <div className="flex flex-col h-full bg-[#050505] rounded-xl border border-white/10 relative overflow-hidden">
                                     <div className="h-6 bg-white/5 border-b border-white/5 flex items-center justify-between px-3 shrink-0">
                                         <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
                                         <div className="flex items-center gap-2">
@@ -489,63 +489,22 @@ export const MobileDashboardCard: React.FC = () => {
                                             0% { width: 0%; }
                                             100% { width: 100%; }
                                         }
-                                        @keyframes shimmer {
-                                            0% { left: -100%; }
-                                            100% { left: 100%; }
-                                        }
-                                        @keyframes slideRight {
-                                            0% { left: -100%; }
-                                            100% { left: 100%; }
-                                        }
                                     `}</style>
-                                    <div className="h-[340px] bg-[#050505] relative overflow-hidden">
-                                        {/* Logs Display - Using PRE for stability + readability */}
+                                    <div className="flex-1 min-h-0 relative">
                                         <pre
                                             ref={consoleRef}
                                             className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30"
                                         >
-                                            {logsText || (actionLoading === 'console' ? "Initialising uplink..." : "No logs available. System is waiting for data.")}
+                                            {logsText || (stats.unreachable ? "Signal lost. Attempting to reconnect..." : "Establishing neural link...")}
                                         </pre>
 
-                                        {/* Loading Overlay - Using absolute positioning for better animation stability */}
-                                        {actionLoading === 'console' && (
-                                            <div className="absolute inset-0 bg-[#050505] flex flex-col items-center justify-center z-10 transition-opacity duration-500">
-                                                <div className="flex flex-col items-center gap-4 w-full">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] animate-pulse">Establishing Link</span>
-                                                        <span className="text-white/20 font-mono text-[8px] animate-pulse">...</span>
-                                                    </div>
-                                                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner backdrop-blur-sm">
-                                                        <div
-                                                            className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative transition-all duration-[4000ms] ease-out"
-                                                            style={{ width: `${loadProgress}%` }}
-                                                        >
-                                                            <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
-                                                        </div>
-                                                    </div>
-                                                    <span className="text-[7px] font-mono text-white/20 uppercase tracking-widest mt-1">Uplink Status: Synchronizing</span>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {consoleLogs.length === 0 && !actionLoading && !stats.unreachable && (
+                                        {consoleLogs.length === 0 && !stats.unreachable && (
                                             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-white/20 gap-2">
                                                 <span className="material-symbols-outlined text-3xl">terminal</span>
                                                 <span className="text-[8px] uppercase tracking-[0.2em] opacity-50">Console Ready</span>
                                             </div>
                                         )}
                                     </div>
-
-                                    {!gracePassed && (
-                                        <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] p-6 text-center">
-                                            <div className="flex flex-col items-center gap-3 w-32">
-                                                <span className="text-[8px] font-mono text-white/40 uppercase tracking-[0.2em] animate-pulse">Syncing Console</span>
-                                                <div className="w-full h-0.5 bg-white/5 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-emerald-500/40" style={{ width: '100%' }} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
 
                                     <div className={`p-2 bg-[#050505] border-t border-white/10 ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
                                         <div className="relative flex items-center gap-2">
@@ -562,11 +521,6 @@ export const MobileDashboardCard: React.FC = () => {
                                                 placeholder={stats.unreachable ? "Link lost..." : "Enter command..."}
                                                 className="flex-1 bg-transparent border-none text-xs font-mono text-white placeholder-white/20 focus:ring-0 focus:outline-none py-2"
                                                 autoComplete="off"
-                                                autoCorrect="off"
-                                                autoCapitalize="off"
-                                                spellCheck="false"
-                                                data-form-type="other"
-                                                disabled={stats.unreachable}
                                                 style={{ WebkitAppearance: 'none', appearance: 'none' }}
                                             />
                                             <button
