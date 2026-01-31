@@ -14,6 +14,7 @@ export const MobileDashboardCard: React.FC = () => {
         cpu: number;
         ram: number;
         latency?: number;
+        uptime: string;
         statusText: string;
         unreachable: boolean;
     }>({
@@ -23,8 +24,9 @@ export const MobileDashboardCard: React.FC = () => {
         cpu: 0,
         ram: 0,
         latency: 0,
+        uptime: '00:00:00',
         statusText: 'SYNCING',
-        unreachable: true
+        unreachable: false
     });
 
     // Notification State
@@ -42,6 +44,7 @@ export const MobileDashboardCard: React.FC = () => {
     const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
     const [commandInput, setCommandInput] = useState('');
     const consoleRef = useRef<HTMLDivElement>(null);
+    const consecutiveFails = useRef(0); // Track consecutive failures to avoid flickering "Signal Lost"
 
     // Action State
     const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -89,6 +92,7 @@ export const MobileDashboardCard: React.FC = () => {
                             0: 'OFFLINE', 1: 'ONLINE', 2: 'RESTARTING', 3: 'STARTING', 4: 'STOPPING'
                         };
 
+                        consecutiveFails.current = 0; // SUCCESS: Reset threshold
                         setStats({
                             online: currentStatus === 1,
                             status: currentStatus,
@@ -97,6 +101,7 @@ export const MobileDashboardCard: React.FC = () => {
                             ram: serverStats?.ramUsage ?? 0,
                             players: { online: serverStats?.onlinePlayers ?? 0, max: serverStats?.maxPlayers ?? 20 },
                             latency: latency,
+                            uptime: serverStats?.uptime || '00:00:00',
                             unreachable: false
                         });
                         mcssSuccess = true;
@@ -117,29 +122,32 @@ export const MobileDashboardCard: React.FC = () => {
                         localStorage.setItem('mcsrvstat_last_ts', now.toString());
                         if (response.ok && (response.headers.get('content-type') || '').includes('application/json')) {
                             const data = await response.json();
+                            consecutiveFails.current = 0; // Success (fallback) resets threshold
                             setStats(prev => ({
+                                ...prev,
                                 online: !!data.online,
                                 status: data.online ? 1 : 0,
-                                statusText: data.online ? 'ONLINE (LTD)' : 'OFFLINE',
+                                statusText: data.online ? 'SIGNAL_DEGRADED' : 'OFFLINE',
                                 players: { online: data.players?.online || 0, max: data.players?.max || 20 },
-                                cpu: 0,
-                                ram: 0,
-                                uptime: 'N/A',
-                                unreachable: true
+                                unreachable: false // We have data, even if limited!
                             }));
                         } else {
-                            localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
-                            setStats(prev => ({ ...prev, statusText: 'UNKNOWN', unreachable: true }));
+                            const mcsrvFailCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
+                            localStorage.setItem('mcsrvstat_fail_count', String(mcsrvFailCount + 1));
+                            // No state update here, wait for final catch
                         }
                     }
                 } catch (error) {
-                    // console.error('[MOBILE_CARD] All fetch methods failed');
+                    consecutiveFails.current += 1;
+                    // Only show "Signal Lost" after 3 consecutive total failures (approx 15s)
+                    if (consecutiveFails.current >= 3) {
+                        setStats(prev => ({ ...prev, statusText: 'LOSS_SYNC', unreachable: true }));
+                    }
                     try {
-                        const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
-                        localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
+                        const globalFailCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
+                        localStorage.setItem('mcsrvstat_fail_count', String(globalFailCount + 1));
                         localStorage.setItem('mcsrvstat_last_ts', Date.now().toString());
-                    } catch { }
-                    setStats(prev => ({ ...prev, unreachable: true }));
+                    } catch (le) { }
                 }
             }
         };
@@ -167,13 +175,24 @@ export const MobileDashboardCard: React.FC = () => {
             // Fetch 100 lines to match desktop parity
             const logs = await mcssService.getConsole(serverId, 100);
             if (Array.isArray(logs) && logs.length > 0) {
-                // Filter out any suspicious objects or technical noise
-                const filtered = logs.filter(l => typeof l === 'string' && !l.includes('{"') && !l.includes('statusCode"'));
-                setConsoleLogs(filtered);
+                // STRICT FILTER: Only show things that look like actual Minecraft logs 
+                // OR custom command echoes (starting with >). Hide technical/JSON noise.
+                const filtered = logs.filter(l => {
+                    const logStr = String(l || '').trim();
+                    if (logStr.startsWith('>')) return true; // Command echo
+                    if (logStr.startsWith('[') && logStr.includes(']')) return true; // Standard MC log
+                    if (logStr.includes('Server thread/') || logStr.includes('INFO]:')) return true; // Common MC tags
+                    // HIDE technical noise (JSON bridge errors, proxy headers)
+                    const isNoise = logStr.includes('{"') || logStr.includes('statusCode":') || logStr.includes('Bridge Error');
+                    if (isNoise) return false;
+
+                    // FALLBACK: If it's short and doesn't look like JSON, it might be a raw message
+                    return logStr.length > 2 && !logStr.startsWith('{');
+                });
+                if (filtered.length > 0) setConsoleLogs(filtered);
             }
         } catch (err) {
             // Sticky logic: keep existing logs on error to avoid flashing "blank" state
-            // console.warn('[MOBILE_CARD] Console fetch failed, persisting cache');
         }
     };
 
