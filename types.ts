@@ -52,20 +52,11 @@ export interface InfoBanner {
   style: string;
 }
 
-export interface UpdateNotice {
-  enabled: boolean;
-  title: string;
-  subtitle: string;
-  showBadge: boolean;
-  badgeText: string;
-  features: string[];
-}
 
 export interface CountdownConfig {
   enabled: boolean;
   date: string;
   title: string;
-  expiredMessage: string;
 }
 
 export interface SiteInfo {
@@ -75,8 +66,13 @@ export interface SiteInfo {
 
 export interface Config {
   siteInfo: SiteInfo;
-  updateNotice: UpdateNotice;
   countdown: CountdownConfig;
+  isEmergencyEnabled: boolean;
+  isTerminalEnabled: boolean;
+  isIntelEnabled: boolean;
+  socials?: {
+    discord?: string;
+  };
   github: {
     repository: string;
     token?: string;
@@ -94,6 +90,12 @@ export interface Config {
   serverMetadata: {
     ip: string;
     modpackVersion: string;
+  };
+  mcss?: {
+    enabled: boolean;
+    defaultBaseUrl?: string;
+    masterStandardKey?: string;
+    masterAdminKey?: string;
   };
   // Fallback / legacy support (optional)
   serverIp?: string;

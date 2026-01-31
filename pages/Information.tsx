@@ -44,7 +44,7 @@ const Information: React.FC = () => {
       {/* Hero Section - Strict Alignment with Modpack.tsx */}
       <section className="w-full flex flex-col items-center text-center gap-6 py-6 relative">
         <h1 className="text-5xl md:text-8xl font-black tracking-tighter text-white drop-shadow-lg leading-tight uppercase italic">
-          Server <br /><span className="text-white/40">Intel</span>
+          Server <br /><span className="text-white/40">Info</span>
         </h1>
         <p className="max-w-2xl text-lg text-gray-400 font-light leading-relaxed">
           A detailed overview of the technical infrastructure and the core team orchestrating the Manfredonia Hub.

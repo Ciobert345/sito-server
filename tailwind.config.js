@@ -20,6 +20,13 @@ export default {
             animation: {
                 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'spin-slow': 'spin 8s linear infinite',
+                'scan': 'scan 3s linear infinite',
+            },
+            keyframes: {
+                scan: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(200%)' },
+                }
             }
         },
     },

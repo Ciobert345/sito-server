@@ -96,7 +96,7 @@ const Updates: React.FC = () => {
           </div>
 
           {/* Wiki Embed Wrapper */}
-          <div className="glass-card rounded-2xl overflow-hidden flex-grow flex flex-col relative group border border-white/10 min-h-[500px]">
+          <div className="glass-card rounded-2xl overflow-hidden flex-[2] flex flex-col relative group border border-white/10 min-h-[450px]">
             <div className="relative flex-grow w-full">
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20 pointer-events-none group-hover:opacity-0 transition-opacity">
                 <span className="bg-black/80 px-4 py-2 rounded-xl text-white font-bold uppercase tracking-widest text-xs border border-white/20">Interactive Wiki</span>
@@ -119,7 +119,7 @@ const Updates: React.FC = () => {
             </a>
           </div>
 
-          <div className="glass-card rounded-3xl p-6 flex flex-col gap-3 shrink-0">
+          <div className="glass-card rounded-2xl p-6 flex flex-col gap-3 flex-1 min-h-0">
             <div className="flex flex-col gap-1 text-center">
               <span className="material-symbols-outlined text-3xl text-white/30">support_agent</span>
               <h3 className="text-lg font-black text-white uppercase tracking-tight">Need Support?</h3>

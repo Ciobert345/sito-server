@@ -26,6 +26,43 @@
         font-family: 'Space Grotesk', sans-serif;
         overflow-x: hidden;
     }
+
+    /* Custom Terminal Scrollbar - Hidden but scrollable */
+    .custom-terminal-scrollbar::-webkit-scrollbar,
+    .custom-terminal-scrollbar::-webkit-scrollbar-track,
+    .custom-terminal-scrollbar::-webkit-scrollbar-thumb {
+        width: 0px !important;
+        height: 0px !important;
+        background: transparent !important;
+        display: none !important;
+    }
+
+    .custom-terminal-scrollbar {
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+        overflow-y: auto !important;
+    }
+
+    /* Intel Carousel Scrollbar - Visible and styled */
+    .intel-carousel::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .intel-carousel::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 4px;
+        margin: 0 4px;
+    }
+
+    .intel-carousel::-webkit-scrollbar-thumb {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.5), rgba(16, 185, 129, 0.7));
+        border-radius: 4px;
+        border: none;
+    }
+
+    .intel-carousel::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(90deg, rgba(16, 185, 129, 0.7), rgba(16, 185, 129, 0.9));
+    }
 }
 
 @layer components {
@@ -79,4 +116,44 @@
 
 .float-animation {
     animation: float 6s ease-in-out infinite;
+}
+
+@keyframes scanner {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(400%);
+        opacity: 0;
+    }
+}
+
+.animate-scanner {
+    animation: scanner 2s linear infinite;
+}
+
+@keyframes shimmer {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+.animate-shimmer {
+    animation: shimmer 2s infinite;
+}
+
+.bg-grid-white {
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }

@@ -1,35 +1,76 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import bgImage from '../src/assets/bk.jpg';
 import { useConfig } from '../contexts/ConfigContext';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../services/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
 import Countdown from '../components/Countdown';
+import { MobileDashboardCard } from '../components/MobileDashboardCard';
 import { getLatestRelease, getReleases } from '../utils/githubCache';
 
 // Tailwind replacements for custom animations
 // Note: Some complex animations like 'kenBurns' might be simplified or handled via standard Tailwind classes where possible, 
 // or kept if essential. For this standardization, we focus on the static "glass" aesthetic and standard interactions.
 
+interface UnlockedIntel {
+    id: string;
+    name: string;
+    description?: string;
+    image_url: string;
+    unlock_code?: string;
+}
+
 const Mobile: React.FC = () => {
-    const { config, loading } = useConfig();
+    const { config, notifications, roadmapItems: dynamicRoadmapItems, loading: configLoading, isDashboardGloballyEnabled } = useConfig();
+    const { user, mcssService, setAuthModalOpen, isAuthModalOpen, markBannerAsRead, markAllBannersAsRead, loading: authLoading } = useAuth();
+    const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('tab-access');
     const [activeFilter, setActiveFilter] = useState('all');
     const [links, setLinks] = useState<string[]>([]);
     const [linkInput, setLinkInput] = useState('');
+    const [pendingAccountNav, setPendingAccountNav] = useState(false);
+
+    // Redirect to Account page after successful login if requested
+    useEffect(() => {
+        if (user && pendingAccountNav) {
+            navigate('/mobile-account');
+            setPendingAccountNav(false);
+        }
+    }, [user, pendingAccountNav, navigate]);
+
+    // Cleanup pending nav if modal closes without login
+    useEffect(() => {
+        if (!isAuthModalOpen && !user && pendingAccountNav) {
+            setPendingAccountNav(false);
+        }
+    }, [isAuthModalOpen, user, pendingAccountNav]);
 
     // Guide Tabs State
     const [guideTab, setGuideTab] = useState<'install' | 'optimize'>('install');
     const [installTab, setInstallTab] = useState<'curseforge' | 'modrinth' | 'sklauncher'>('curseforge');
-    // const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 }); // Removed in favor of component
     const [countdownComplete, setCountdownComplete] = useState(false);
 
     // Notification System State
     const [notificationsOpen, setNotificationsOpen] = useState(false);
-    const [readIds, setReadIds] = useState<string[]>([]);
     const [pushEnabled, setPushEnabled] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
-    // Server Status State
-    const [serverStatus, setServerStatus] = useState<{ online: boolean; players?: { online: number } }>({ online: false });
+    // Get Read IDs from DB (via AuthContext)
+    const readIds = user?.read_banner_ids || [];
+
+    // Server Status State (Detailed)
+    const [serverStatus, setServerStatus] = useState<{
+        online: boolean;
+        players?: { online: number; max: number };
+        cpu?: number;
+        ram?: number;
+        uptime?: string;
+        statusText?: string;
+    }>({ online: false, statusText: 'SYNCING' });
+    const [serverId, setServerId] = useState<string | null>(null);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [latestVersion, setLatestVersion] = useState<string>('');
 
     // Updates State
@@ -37,27 +78,148 @@ const Mobile: React.FC = () => {
     const [releasesLoading, setReleasesLoading] = useState(true);
     const [expandedReleaseIndex, setExpandedReleaseIndex] = useState<number>(0);
 
+    // Unified Fetch Status Logic
+    const canCallMcsrv = () => {
+        try {
+            const lastTs = parseInt(localStorage.getItem('mcsrvstat_last_ts') || '0', 10);
+            const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
+            const now = Date.now();
+            if (failCount >= 3 && (now - lastTs) < 15 * 60 * 1000) return false; // backoff 15m after repeated failures
+            if ((now - lastTs) < 5 * 60 * 1000) return false; // throttle 5m
+            return true;
+        } catch { return true; }
+    };
+
+    const markMcsrvAttempt = (ok: boolean) => {
+        try {
+            localStorage.setItem('mcsrvstat_last_ts', Date.now().toString());
+            if (!ok) {
+                const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
+                localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
+            }
+        } catch {}
+    };
+
+    const fetchStatus = useCallback(async () => {
+        const serverIp = config?.serverMetadata?.ip || 'server-manfredonia.ddns.net';
+
+        // 1. Try MCSS (Detailed)
+        if (mcssService) {
+            try {
+                let currentServerId = serverId;
+                if (!currentServerId) {
+                    const servers = await mcssService.getServers();
+                    if (servers.length > 0) {
+                        currentServerId = servers[0].serverId;
+                        setServerId(currentServerId);
+                    }
+                }
+
+                if (currentServerId) {
+                    const [stats, servers] = await Promise.all([
+                        mcssService.getServerStats(currentServerId),
+                        mcssService.getServers()
+                    ]);
+
+                    if (!stats || !servers) throw new Error('Incomplete data from MCSS');
+
+                    const server = servers.find(s => s.serverId === currentServerId);
+                    const statusMap: { [key: number]: string } = {
+                        0: 'OFFLINE', 1: 'ONLINE', 2: 'RESTARTING', 3: 'STARTING', 4: 'STOPPING'
+                    };
+
+                    setServerStatus({
+                        online: server?.status === 1,
+                        statusText: statusMap[server?.status ?? 0] || 'UNKNOWN',
+                        cpu: stats?.cpuUsage ?? 0,
+                        ram: stats?.ramUsage ?? 0,
+                        players: { online: stats?.onlinePlayers ?? 0, max: stats?.maxPlayers ?? 20 },
+                        uptime: stats?.uptime || '00:00:00'
+                    });
+                    return; // MCSS Succeeded
+                }
+            } catch (err: any) {
+                console.warn('[MOBILE] MCSS Stats Fetch Failed:', err.message || err);
+            }
+        }
+
+        // 2. Fallback to Simple API (mcsrvstat.us)
+        try {
+            if (!canCallMcsrv()) return;
+            const response = await fetch(`https://api.mcsrvstat.us/2/${serverIp}`, { method: 'GET' });
+            const ok = response.ok;
+            if (!ok) {
+                markMcsrvAttempt(false);
+                setServerStatus(prev => ({ ...prev, statusText: 'UNKNOWN' }));
+                return;
+            }
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                markMcsrvAttempt(false);
+                setServerStatus(prev => ({ ...prev, statusText: 'UNKNOWN' }));
+                return;
+            }
+            const data = await response.json();
+            markMcsrvAttempt(true);
+            setServerStatus(prev => ({
+                ...prev,
+                online: !!data.online,
+                statusText: data.online ? 'ONLINE (LTD)' : 'OFFLINE',
+                players: { ...prev.players, online: data.players?.online || 0, max: data.players?.max || 20 }
+            }));
+        } catch (error) {
+            markMcsrvAttempt(false);
+            console.warn('[MOBILE] mcsrvstat.us unavailable or blocked; using limited status');
+            setServerStatus(prev => ({ ...prev, statusText: 'UNKNOWN' }));
+        }
+    }, [mcssService, serverId, config?.serverMetadata?.ip]);
+
+    // Initial Fetch & Interval (60s for regular pooling, 10s if active?)
+    // Using a single interval for all status updates
+    useEffect(() => {
+        if (!config) return;
+        fetchStatus();
+        const interval = setInterval(fetchStatus, 30000); // 30s is a good balance
+        return () => clearInterval(interval);
+    }, [config, fetchStatus]);
+
+    // Handle Server Actions
+    const handleServerAction = async (action: string) => {
+        if (!mcssService || !serverId || actionLoading) return;
+        setActionLoading(action);
+        try {
+            await mcssService.executeAction(serverId, action);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await fetchStatus();
+        } catch (err: any) {
+            console.error('Action failed:', err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Fetch server status and version
+    // Handle scroll target from localStorage
     useEffect(() => {
-        const fetchStatus = async () => {
-            try {
-                const response = await fetch(`https://api.mcsrvstat.us/2/${config?.serverMetadata?.ip || 'server-manfredonia.ddns.net'}`);
-                const data = await response.json();
-                setServerStatus({
-                    online: data.online,
-                    players: data.players
-                });
-            } catch (error) {
-                console.error('Error fetching server status:', error);
-            }
-        };
+        const scrollTarget = localStorage.getItem('mobileScrollTarget');
+        if (scrollTarget) {
+            localStorage.removeItem('mobileScrollTarget');
+            setTimeout(() => {
+                const element = document.getElementById(scrollTarget);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 100);
+        }
+    }, []);
 
+    // Fetch version and setup version polling
+    useEffect(() => {
         const fetchVersion = async () => {
             try {
                 const latest = await getLatestRelease('Ciobert345/Mod-server-Manfredonia');
@@ -70,10 +232,7 @@ const Mobile: React.FC = () => {
         };
 
         if (config) {
-            fetchStatus();
             fetchVersion();
-            const interval = setInterval(fetchStatus, 60000); // Update status every minute
-            return () => clearInterval(interval);
         }
     }, [config]);
 
@@ -116,18 +275,11 @@ const Mobile: React.FC = () => {
     }, [config]);
 
 
-    // Persistence and Push Logic (Copied from Navbar.tsx)
+    // Persistence and Push Logic
     useEffect(() => {
-        const savedRead = localStorage.getItem('manfredonia_read_notifications');
-        if (savedRead) setReadIds(JSON.parse(savedRead));
-
         const savedPush = localStorage.getItem('manfredonia_push_enabled');
         if (savedPush === 'true') setPushEnabled(true);
     }, []);
-
-    useEffect(() => {
-        localStorage.setItem('manfredonia_read_notifications', JSON.stringify(readIds));
-    }, [readIds]);
 
     useEffect(() => {
         if (!config?.infoBanners || !pushEnabled) return;
@@ -168,12 +320,12 @@ const Mobile: React.FC = () => {
         }
     };
 
-    const markAllAsRead = () => {
+    const markAllAsRead = async () => {
         const enabledIds = config?.infoBanners?.filter(b => b.enabled).map(b => b.id) || [];
-        setReadIds(prev => Array.from(new Set([...prev, ...enabledIds])));
+        await markAllBannersAsRead(enabledIds);
     };
 
-    const unreadCount = config?.infoBanners?.filter(b => b.enabled && !readIds.includes(b.id)).length || 0;
+    const unreadCount = notifications?.filter(b => b.enabled && !readIds.includes(b.id)).length || 0;
 
 
 
@@ -219,8 +371,16 @@ const Mobile: React.FC = () => {
 
         // Code blocks
         html = html.replace(/`([^`]+?)`/g, '<code class="bg-white/10 px-1.5 py-0.5 rounded text-yellow-300 font-mono text-xs border border-white/10">$1</code>');
-        // Links
+        // Links (Markdown)
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer" class="text-blue-400 hover:text-blue-300 underline transition-colors">$1</a>');
+
+        // Auto-link Raw URLs (excluding existing tags)
+        html = html.replace(/(<a\b[^>]*>.*?<\/a>|<code\b[^>]*>.*?<\/code>)|((?:https?:\/\/|www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*))/g, (match, tag, url) => {
+            if (tag) return tag;
+            const href = url.startsWith('http') ? url : `https://${url}`;
+            return `<a href="${href}" target="_blank" rel="noreferrer" class="text-blue-400 hover:text-blue-300 underline transition-colors break-all">${url}</a>`;
+        });
+
         // Bold
         html = html.replace(/\*\*([^*]+?)\*\*/g, '<strong class="text-white font-bold">$1</strong>');
         // Italic
@@ -256,7 +416,7 @@ const Mobile: React.FC = () => {
         'completed': 'Completed'
     };
 
-    const roadmapItems = config?.feedbackRoadmap?.sections?.roadmap?.items || [];
+    const roadmapItems = dynamicRoadmapItems || [];
     const sortedRoadmap = [...roadmapItems].sort((a, b) => {
         const columnOrder: Record<string, number> = { backlog: 0, nextup: 1, inprogress: 2, done: 3 };
         const priorityOrder: Record<string, number> = { 'Alta': 0, 'Media': 1, 'Bassa': 2, 'alta': 0, 'media': 1, 'bassa': 2 };
@@ -275,21 +435,28 @@ const Mobile: React.FC = () => {
         ? sortedRoadmap
         : sortedRoadmap.filter(item => columnToStatus[item.column] === activeFilter);
 
-    if (loading) {
-        return <div className="min-h-screen flex items-center justify-center bg-[#050505] text-white font-black uppercase tracking-widest animate-pulse">Loading...</div>;
+    if (configLoading) {
+        return <div className="min-h-screen flex items-center justify-center bg-[#050505] text-white font-black uppercase tracking-widest animate-pulse">Syncing Core...</div>;
+    }
+
+    if (authLoading) {
+        return <div className="min-h-screen flex items-center justify-center bg-[#050505] text-white font-black uppercase tracking-widest animate-pulse">Checking Identity...</div>;
     }
 
     if (!config) {
         return <div className="min-h-screen flex items-center justify-center bg-[#050505] text-white font-black uppercase tracking-widest text-red-500">Error loading configuration</div>;
     }
 
-    const enabledBanners = config.infoBanners?.filter(b => b.enabled) || [];
+    const enabledBanners = notifications?.filter(b => b.enabled) || [];
 
     return (
         <div className="bg-[#050505] min-h-screen text-white font-sans overflow-x-hidden pb-12">
 
             {/* Dynamic Navbar with Scroll Effect & Action Pill */}
-            <header className={`fixed top-0 left-0 w-full z-50 px-4 transition-all duration-300 ${scrolled ? 'py-3 bg-[#080808]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl' : 'py-5 bg-transparent backdrop-blur-sm border-b border-transparent'}`}>
+            <header
+                className={`fixed left-0 w-full z-50 px-4 transition-all duration-300 ${scrolled ? 'py-3 bg-[#080808]/90 backdrop-blur-xl border-b border-white/5 shadow-2xl' : 'py-5 bg-transparent backdrop-blur-sm border-b border-transparent'}`}
+                style={{ top: 'var(--banner-height, 0px)' }}
+            >
                 <div className="flex justify-between items-center">
                     {/* Branding: Diamond + Text */}
                     <a href="#top" className="flex items-center gap-3 group">
@@ -363,18 +530,29 @@ const Mobile: React.FC = () => {
                             </div>
                         ) : (
                             enabledBanners.map(banner => (
-                                <div key={banner.id} onClick={() => setReadIds(prev => Array.from(new Set([...prev, banner.id])))} className={`p-4 border-b border-white/5 relative group ${!readIds.includes(banner.id) ? 'bg-blue-500/[0.02]' : ''}`}>
+                                <div key={banner.id} onClick={() => markBannerAsRead(banner.id)} className={`p-4 border-b border-white/5 relative group ${!readIds.includes(banner.id) ? 'bg-blue-500/[0.04]' : 'opacity-60'}`}>
                                     <div className="flex gap-3">
-                                        <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${banner.style?.includes('red') ? 'bg-red-500/20 text-red-500' : 'bg-blue-500/20 text-blue-500'}`}>
+                                        <div className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${banner.style?.includes('red') ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                                            banner.style?.includes('purple') ? 'bg-purple-500/10 border-purple-500/20 text-purple-500' :
+                                                !readIds.includes(banner.id) ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' :
+                                                    'bg-white/5 border-white/10 text-white/20'
+                                            }`}>
                                             <span className="material-symbols-outlined text-sm">{banner.icon === 'notification' ? 'priority_high' : (banner.icon || 'info')}</span>
                                         </div>
-                                        <div className="flex flex-col gap-1">
-                                            <div className="flex items-center gap-2">
-                                                <h4 className="text-sm font-bold text-white leading-tight">{banner.title}</h4>
-                                                {!readIds.includes(banner.id) && <span className="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>}
+                                        <div className="flex flex-col gap-0.5 w-full min-w-0">
+                                            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                                                <h4 className="text-sm font-black text-white tracking-tight leading-none">{banner.title}</h4>
+                                                {banner.subtitle && (
+                                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-px rounded border ${banner.style?.includes('red') ? 'border-red-500/30 text-red-500' :
+                                                        banner.style?.includes('purple') ? 'border-purple-500/30 text-purple-500' :
+                                                            'border-blue-500/30 text-blue-500'
+                                                        }`}>
+                                                        {banner.subtitle}
+                                                    </span>
+                                                )}
+                                                {!readIds.includes(banner.id) && <span className="size-1.5 rounded-full bg-blue-500 animate-pulse ml-auto"></span>}
                                             </div>
-                                            {banner.subtitle && <p className="text-xs text-gray-400">{banner.subtitle}</p>}
-                                            <div className="text-xs text-gray-500 mt-1 leading-relaxed" dangerouslySetInnerHTML={{ __html: banner.message }} />
+                                            <div className="text-xs text-gray-300 font-medium leading-relaxed" dangerouslySetInnerHTML={{ __html: markdownToHtml(banner.message) }} />
                                         </div>
                                     </div>
                                 </div>
@@ -389,19 +567,41 @@ const Mobile: React.FC = () => {
 
 
             {/* Mobile Navigation Drawer - Nano Dock (Below Header) */}
-            <nav className={`fixed inset-x-2 z-40 bg-[#080808]/98 backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl transition-all duration-300 cubic-bezier(0.32, 0.72, 0, 1) shadow-2xl origin-top ${scrolled ? 'top-20' : 'top-24'} ${menuOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+            <nav
+                className={`fixed inset-x-2 z-40 bg-[#080808]/98 backdrop-blur-2xl border border-white/10 p-1.5 rounded-2xl transition-all duration-300 cubic-bezier(0.32, 0.72, 0, 1) shadow-2xl origin-top ${menuOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}
+                style={{ top: scrolled ? 'calc(5rem + var(--banner-height, 0px))' : 'calc(6rem + var(--banner-height, 0px))' }}
+            >
                 <div className="flex items-center justify-between gap-1">
                     {[
                         { href: "#top", icon: "schedule", label: "Status" },
                         { href: "#dashboard", icon: "terminal", label: "Dashboard" },
                         { href: "#updates", icon: "newspaper", label: "Updates" },
                         { href: "#guides", icon: "school", label: "Guides" },
-                        { href: "#richiedi-accesso", icon: "build", label: "Tools" }
+                        { href: "#richiedi-accesso", icon: "build", label: "Tools" },
+                        {
+                            id: "account-nav",
+                            icon: "badge",
+                            label: "Account",
+                            action: () => {
+                                if (user) {
+                                    navigate('/mobile-account');
+                                } else {
+                                    setPendingAccountNav(true);
+                                    setAuthModalOpen(true);
+                                }
+                            }
+                        }
                     ].map((item, idx) => (
                         <a
                             key={idx}
-                            href={item.href}
-                            onClick={closeMenu}
+                            href={item.href || '#'}
+                            onClick={(e) => {
+                                if (item.action) {
+                                    e.preventDefault();
+                                    item.action();
+                                }
+                                closeMenu();
+                            }}
                             className="group flex flex-col items-center justify-center p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all active:scale-95 flex-1 min-w-0"
                         >
                             <div className="flex items-center justify-center size-6 rounded-md bg-black/40 border border-white/5 text-white/70 group-hover:text-white transition-colors mb-1">
@@ -421,7 +621,7 @@ const Mobile: React.FC = () => {
                 ></div>
             )}
 
-            <main className="flex flex-col gap-12 pt-20 px-4">
+            <main className="flex flex-col gap-12 px-4" style={{ paddingTop: 'calc(5rem + var(--banner-height, 0px))' }}>
                 {/* Hero Section */}
                 <section id="stato-server" className="relative flex flex-col items-center gap-8 py-6">
                     {/* Background Image Overlay */}
@@ -621,134 +821,63 @@ const Mobile: React.FC = () => {
 
                 {/* Dashboard Section - Mobile Optimized */}
                 <section id="dashboard" className="scroll-mt-24">
-                    <div className="glass-card bg-[#080808]/80 rounded-2xl border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden">
-                        {/* Header Bar - Terminal Style */}
-                        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between rounded-t-[18px]">
-                            <div className="flex items-center gap-2 sm:gap-3">
-                                <div className="flex gap-1">
-                                    <div className="size-2 rounded-full bg-red-500/30"></div>
-                                    <div className="size-2 rounded-full bg-yellow-500/30"></div>
-                                    <div className="size-2 rounded-full bg-green-500/30"></div>
-                                </div>
-                                <div className="h-4 w-px bg-white/5 mx-2 hidden sm:block"></div>
-                                <div className="flex items-center gap-2 px-3 py-1.5 bg-purple-500/5 border border-purple-500/20 rounded-lg">
-                                    <span className="material-symbols-outlined text-sm text-purple-400">group</span>
-                                    <div className="flex flex-col">
-                                        <span className="text-[9px] font-black text-purple-400 uppercase tracking-widest leading-none">
-                                            {serverStatus.players?.online ?? 0} ACTIVE
-                                        </span>
-                                        <span className="text-[7px] font-black text-white/20 uppercase tracking-[0.15em] mt-0.5 hidden sm:block">Live Feed</span>
-                                    </div>
-                                </div>
-                                <div className="h-4 w-px bg-white/5 mx-2 hidden sm:block"></div>
-                                <span className="text-[8px] sm:text-[9px] font-black text-white/20 uppercase tracking-[0.3em] sm:tracking-[0.4em] hidden xs:block">
-                                    Command Deck
+                    {!user ? (
+                        <div className="glass-card bg-[#080808]/80 rounded-2xl border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] overflow-hidden p-8 flex flex-col items-center justify-center gap-6 text-center">
+                            <div className="size-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-3xl text-white/20">lock</span>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h3 className="text-xl font-black uppercase tracking-tighter text-white">Restricted Access</h3>
+                                <p className="text-[10px] uppercase tracking-widest text-white/40 max-w-[200px] mx-auto leading-relaxed">
+                                    Dashboard operations require secure identification.
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setAuthModalOpen(true)}
+                                className="group relative px-6 py-3 bg-white text-black rounded-xl font-black uppercase text-[10px] tracking-[0.2em] overflow-hidden active:scale-95 transition-all"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/5 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                                <span className="relative z-10 flex items-center gap-2">
+                                    Initialize Auth
+                                    <span className="material-symbols-outlined text-sm">login</span>
                                 </span>
+                            </button>
+                        </div>
+                    ) : !user.isApproved ? (
+                        <div className="glass-card bg-[#080808]/80 rounded-2xl border border-white/10 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] p-8 flex flex-col items-center justify-center gap-6 text-center">
+                            <div className="size-16 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+                                <span className="material-symbols-outlined text-3xl text-purple-500 animate-pulse">lock_person</span>
                             </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="material-symbols-outlined text-xs text-green-500/30">broadcast_on_home</span>
-                                <span className="text-[8px] font-black text-green-500/30 uppercase tracking-widest leading-none hidden sm:block">Stream</span>
+                            <div className="flex flex-col gap-2">
+                                <h3 className="text-xl font-black uppercase tracking-tighter text-white">Awaiting <span className="text-purple-500/50">Clearance</span></h3>
+                                <p className="text-[10px] uppercase tracking-widest text-white/40 max-w-[240px] mx-auto leading-relaxed">
+                                    Your account is verified, but you are <span className="text-purple-400">waiting for administrator approval</span> to access this unit.
+                                </p>
+                            </div>
+                            <div className="h-px bg-white/5 w-16"></div>
+                            <div className="text-[8px] font-mono text-white/20 uppercase tracking-[0.2em]">
+                                Contact admin to unlock dashboard
                             </div>
                         </div>
-
-                        {/* Content Area */}
-                        <div className="p-4 sm:p-6 flex flex-col gap-6">
-                            {/* Server Intelligence */}
-                            <div className="flex flex-col gap-4">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-[1px] bg-purple-500/40"></span>
-                                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-purple-400">Intelligence</span>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="flex flex-col gap-1.5 bg-white/[0.02] p-3 rounded-lg border border-white/5">
-                                        <span className="text-[7px] font-black text-white/20 uppercase tracking-widest">Uplink Target</span>
-                                        <span className="text-[9px] font-mono font-black text-white/80 tracking-tighter truncate">
-                                            {config?.serverMetadata?.ip || 'Connecting...'}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5 bg-white/[0.02] p-3 rounded-lg border border-white/5">
-                                        <span className="text-[7px] font-black text-white/20 uppercase tracking-widest">Latest Pack</span>
-                                        <span className="text-[9px] font-mono font-black text-white/80 tracking-tighter">
-                                            {latestVersion || config?.serverMetadata?.modpackVersion || 'v2.5'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2 p-3 bg-white/[0.02] rounded-lg border border-white/5">
-                                    <div className={`size-2 rounded-full ${serverStatus.online ? 'bg-green-500/60 shadow-[0_0_4px_#22c55e]' : 'bg-red-500/60 shadow-[0_0_4px_#ef4444]'}`}></div>
-                                    <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">
-                                        {serverStatus.online ? 'Uplink Established' : 'Node Disconnect'}
-                                    </span>
-                                </div>
+                    ) : (!isDashboardGloballyEnabled && !user.isAdmin) ? (
+                        <div className="glass-card bg-[#080808]/80 rounded-2xl border border-red-500/20 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] p-8 flex flex-col items-center justify-center gap-6 text-center">
+                            <div className="size-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.15)]">
+                                <span className="material-symbols-outlined text-3xl text-red-500 animate-pulse">sensors_off</span>
                             </div>
-
-                            {/* Access Protocol - Quick Guide */}
-                            <div className="flex flex-col gap-4 border-t border-white/5 pt-4">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-3 h-[1px] bg-blue-500/40"></span>
-                                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-blue-400">Access Protocol</span>
-                                </div>
-
-                                <div className="flex flex-col gap-3">
-                                    {[
-                                        { step: '01', title: 'Registration', desc: 'Secure credentials after Whitelist confirmation.' },
-                                        { step: '02', title: 'Discord Relay', desc: 'Navigate to #link-⛓️‍💥 channel.' },
-                                        { step: '03', title: 'Auth Gateway', desc: 'Use uplink URL and enter credentials.' }
-                                    ].map((item, idx) => (
-                                        <div key={idx} className="flex gap-3 items-start">
-                                            <div className="size-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center shrink-0 font-mono text-xs font-black text-white/20">
-                                                {item.step}
-                                            </div>
-                                            <div className="flex flex-col gap-0.5 flex-1">
-                                                <h4 className="text-xs font-black text-white uppercase tracking-widest">{item.title}</h4>
-                                                <p className="text-[9px] text-white/30 leading-relaxed">{item.desc}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                            <div className="flex flex-col gap-2">
+                                <h3 className="text-xl font-black uppercase tracking-tighter text-white">Uplink <span className="text-red-500/50">Restricted</span></h3>
+                                <p className="text-[10px] uppercase tracking-widest text-white/40 max-w-[240px] mx-auto leading-relaxed">
+                                    Mobile uplink is currently <span className="text-red-400">offline for maintenance</span>. Access restricted to level-1 administrators.
+                                </p>
                             </div>
-
-                            {/* Action Button - Open Dashboard */}
-                            <div className="flex flex-col gap-3 border-t border-white/5 pt-4">
-                                <a
-                                    href="https://server-manfredonia.ddns.net:25560/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-full py-4 bg-blue-600/10 border border-blue-500/20 text-blue-400 font-black uppercase text-xs tracking-[0.2em] rounded-xl hover:bg-blue-600/20 transition-all flex items-center justify-center gap-2 group"
-                                >
-                                    <span className="material-symbols-outlined text-lg">open_in_new</span>
-                                    <span>Open Dashboard</span>
-                                    <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                                </a>
-
-                                {/* SSL Warning */}
-                                <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-lg flex items-start gap-2">
-                                    <span className="material-symbols-outlined text-red-400 text-base shrink-0">gpp_maybe</span>
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-[9px] font-black text-red-400 uppercase tracking-widest">Security Notice</span>
-                                        <p className="text-[9px] text-white/40 leading-relaxed">
-                                            If your browser flags the connection as insecure, proceed anyway. This is normal due to our private SSL certificate.
-                                        </p>
-                                    </div>
-                                </div>
+                            <div className="h-px bg-white/5 w-16"></div>
+                            <div className="text-[8px] font-mono text-white/20 uppercase tracking-[0.2em]">
+                                Status: SYS_MAINTENANCE
                             </div>
                         </div>
-
-                        {/* Footer Bar */}
-                        <div className="px-4 sm:px-6 py-3 bg-white/[0.02] border-t border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-b-[18px]">
-                            <div className="flex items-center gap-2 font-mono text-[8px] text-white/10 uppercase tracking-widest overflow-hidden">
-                                <span className="text-purple-500/30">CMD:</span>
-                                <span className="text-white/5 truncate">access-console --target="{config?.serverMetadata?.ip || 'HUB_SVR_PROD'}"</span>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                                <div className={`size-1.5 rounded-full ${serverStatus.online ? 'bg-green-500/40' : 'bg-red-500/40'}`}></div>
-                                <span className="text-[8px] font-mono text-white/20 uppercase">
-                                    {serverStatus.online ? 'SYNCED' : 'OFFLINE'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    ) : (
+                        <MobileDashboardCard data-mobile-dashboard-card />
+                    )}
                 </section>
 
                 {/* Updates Section - Mobile Optimized */}
@@ -1169,8 +1298,8 @@ const Mobile: React.FC = () => {
                                         <div className="flex flex-col gap-2">
                                             <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest ml-1">Category</label>
                                             <div className="relative">
-                                                <select name="suggestion-type" required className="w-full appearance-none bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 transition-colors">
-                                                    <option value="" disabled selected hidden>Select Type...</option>
+                                                <select name="suggestion-type" defaultValue="" required className="w-full appearance-none bg-[#050505] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 transition-colors">
+                                                    <option value="" disabled hidden>Select Type...</option>
                                                     <option value="gameplay">Gameplay</option>
                                                     <option value="interface">Interface</option>
                                                     <option value="mod">New Mod</option>
@@ -1257,15 +1386,26 @@ const Mobile: React.FC = () => {
                                             }[status] || 'text-gray-400';
 
                                             return (
-                                                <div key={item.id} className="p-4 rounded-xl bg-[#050505] border border-white/5 flex flex-col gap-2">
+                                                <div key={item.id} className="p-4 rounded-xl bg-[#050505] border border-white/5 flex flex-col gap-3">
                                                     <div className="flex justify-between items-start">
                                                         <span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${statusColor}`}>
                                                             {statusText[status]}
                                                         </span>
                                                         <span className="text-[9px] font-mono text-white/30">{item.priority} Priority</span>
                                                     </div>
-                                                    <h4 className="font-bold text-sm text-gray-200">{item.title}</h4>
-                                                    <p className="text-xs text-gray-500">{item.type}</p>
+                                                    <div className="flex flex-col gap-1">
+                                                        <h4 className="font-bold text-sm text-gray-200">{item.title}</h4>
+                                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest">{item.type}</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 pt-2 border-t border-white/5">
+                                                        <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                                                            <div
+                                                                className="h-full bg-blue-500/40 transition-all duration-1000"
+                                                                style={{ width: `${item.progress || 0}%` }}
+                                                            />
+                                                        </div>
+                                                        <span className="text-[9px] font-mono text-white/40 tracking-tighter">{item.progress || 0}%</span>
+                                                    </div>
                                                 </div>
                                             );
                                         })}
@@ -1284,6 +1424,11 @@ const Mobile: React.FC = () => {
                         </div>
                     </div>
                 </section>
+
+
+
+
+
             </main>
 
             <footer className="px-6 py-8 text-center text-[10px] text-gray-500 uppercase tracking-widest">

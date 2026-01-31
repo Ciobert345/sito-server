@@ -5,7 +5,7 @@ import { useConfig } from '../contexts/ConfigContext';
 import { getLatestRelease } from '../utils/githubCache';
 
 const Home: React.FC = () => {
-  const { config, loading } = useConfig();
+  const { config, loading, loadStatus } = useConfig();
   const [serverStatus, setServerStatus] = useState<{ online: boolean; players?: { online: number } }>({ online: false });
   const [latestVersion, setLatestVersion] = useState<string>('');
   const [hideCountdown, setHideCountdown] = useState(false);
@@ -19,14 +19,28 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await fetch('https://api.mcsrvstat.us/2/server-manfredonia.ddns.net');
-        const data = await response.json();
-        setServerStatus({
-          online: data.online,
-          players: data.players
-        });
+        const lastTs = parseInt(localStorage.getItem('mcsrvstat_last_ts') || '0', 10);
+        const now = Date.now();
+        if ((now - lastTs) < 5 * 60 * 1000) return;
+        const response = await fetch('https://api.mcsrvstat.us/2/server-manfredonia.ddns.net', { method: 'GET' });
+        localStorage.setItem('mcsrvstat_last_ts', now.toString());
+        if (response.ok && (response.headers.get('content-type') || '').includes('application/json')) {
+          const data = await response.json();
+          setServerStatus({
+            online: !!data.online,
+            players: data.players
+          });
+        } else {
+          const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
+          localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
+        }
       } catch (error) {
         console.error('Error fetching server status:', error);
+        try {
+          const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
+          localStorage.setItem('mcsrvstat_fail_count', String(failCount + 1));
+          localStorage.setItem('mcsrvstat_last_ts', Date.now().toString());
+        } catch {}
       }
     };
 
@@ -57,42 +71,13 @@ const Home: React.FC = () => {
     navigator.clipboard.writeText(ip);
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-white font-black uppercase tracking-[0.5em] animate-pulse">Initializing Hub...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-white font-black uppercase tracking-[0.5em] animate-pulse">Syncing Core...</div>;
   if (!config) return <div className="min-h-screen flex items-center justify-center text-white font-black uppercase">Configuration Error</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-6 pb-12 flex flex-col gap-12 relative">
 
 
-      {/* Upcoming Update Box - FULL WIDTH RE-IMPLEMENTATION */}
-      {config.updateNotice.enabled && !isCountdownExpired() && (
-        <section className="w-full relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
-          <div className="relative glass-card rounded-3xl p-8 md:p-12 border border-white/10 bg-white/[0.01] hover:bg-white/[0.03] transition-all overflow-hidden">
-            <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between relative z-10">
-              <div className="flex flex-col gap-6 max-w-2xl">
-                <div className="flex items-center gap-4">
-                  <div className="px-4 py-1.5 rounded-full bg-blue-500 text-white text-[10px] font-black uppercase tracking-[0.3em] shadow-[0_0_20px_rgba(59,130,246,0.5)]">
-                    Upcoming Update
-                  </div>
-                  <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tight italic drop-shadow-glow-sm">
-                    {config.updateNotice.title}
-                  </h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {config.updateNotice.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-center gap-4 p-4 rounded-2xl bg-black/40 border border-white/5 hover:border-white/20 transition-all group/item">
-                      <span className="material-symbols-outlined text-green-400 text-xl font-variation-fill group-hover/item:scale-110 transition-transform">verified</span>
-                      <span className="text-xs text-white/60 font-bold uppercase tracking-tight" dangerouslySetInnerHTML={{ __html: feature }}></span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <span className="material-symbols-outlined absolute right-[-50px] top-1/2 -translate-y-1/2 text-[250px] text-white/[0.03] rotate-12 pointer-events-none group-hover:text-white/[0.07] group-hover:scale-110 transition-all duration-1000">rocket_launch</span>
-          </div>
-        </section>
-      )}
 
       {/* Hero Section - Technical Redesign */}
       <section className="relative pt-2 md:pt-4 flex flex-col items-center text-center gap-10">
@@ -141,7 +126,7 @@ const Home: React.FC = () => {
 
       {/* SERVER IDENTITY DASHBOARD */}
       <section className="w-full max-w-7xl mx-auto relative group mb-20">
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 via-transparent to-blue-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-1000"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-blue-500/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-40 transition-all duration-700"></div>
 
         <div className="relative glass-card rounded-3xl border border-white/10 bg-[#080808]/80 p-1 md:p-1.5 overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)]">
           {/* Header Bar - Fixed Corners Clipping */}

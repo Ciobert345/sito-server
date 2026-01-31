@@ -11,46 +11,42 @@ export const APP_CONFIG: Partial<Config> = {
 export const ROADMAP_ITEMS: RoadmapItem[] = [
   {
     id: '1',
-    title: '1.21 Update Support',
-    description: 'Preparation for the new Minecraft version blocks and mechanics.',
-    status: RoadmapStatus.PLANNED,
-    category: 'CORE',
-    comments: 12,
-    priority: 'High'
+    title: 'Kernel 4.2 Migration',
+    description: 'Upgrading core network stack to support 10Gbps egress traffic.',
+    status: RoadmapStatus.IN_PROGRESS,
+    category: 'INFRA',
+    priority: 'Critical'
   },
   {
     id: '2',
-    title: 'Global Market Rework',
-    description: 'Revamping the auction house UI and tax systems.',
+    title: 'DDoS Mitigation v3',
+    description: 'Implementing custom BGP filters for advanced L7 protection.',
     status: RoadmapStatus.PLANNED,
-    category: 'ECONOMY',
-    priority: 'Medium'
-  },
-  {
-    id: '3',
-    title: 'New Spawn Hub',
-    description: 'Cyberpunk themed spawn with interactive NPC zones.',
-    status: RoadmapStatus.IN_PROGRESS,
-    category: 'BUILD',
-    progress: 75,
-    dueDate: 'Friday',
+    category: 'SECURITY',
     priority: 'High'
   },
   {
-    id: '4',
-    title: 'Arena Beta Testing',
-    description: 'Balancing kits and map borders.',
+    id: '3',
+    title: 'Player-Sync Protocol',
+    description: 'Low-latency state replication between US and EU nodes.',
     status: RoadmapStatus.IN_PROGRESS,
-    category: 'PVP',
-    progress: 30,
+    category: 'CORE',
     priority: 'Medium'
   },
   {
-    id: '5',
-    title: 'Server Migration',
-    description: 'Moved to high-performance dedicated nodes.',
-    status: RoadmapStatus.COMPLETED,
+    id: '4',
+    title: 'AI Log Analysis',
+    description: 'Automated threat detection and anomaly reporting.',
+    status: RoadmapStatus.PLANNED,
     category: 'SYSTEM',
+    priority: 'Low'
+  },
+  {
+    id: '5',
+    title: 'Storage Array Rework',
+    description: 'Zero-downtime migration to NVMe Gen5 storage clusters.',
+    status: RoadmapStatus.COMPLETED,
+    category: 'STORAGE',
     priority: 'High'
   }
 ];
