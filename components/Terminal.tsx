@@ -792,7 +792,7 @@ const Terminal: React.FC<TerminalProps> = ({ isOpen, onClose }) => {
                     className="relative w-full h-full flex items-center justify-center pointer-events-none"
                 >
                     <motion.div
-                        className="w-full h-full max-w-[95vw] lg:max-w-6xl xl:max-w-7xl max-h-[75vh] aspect-video bg-black/60 border border-white/10 rounded-[2rem] overflow-hidden font-mono relative shadow-[0_40px_100px_-20px_rgba(0,0,0,1)] backdrop-blur-xl pointer-events-auto flex flex-col"
+                        className="w-full h-full max-w-[95vw] lg:max-w-[1100px] xl:max-w-[1280px] max-h-[75vh] aspect-video bg-black/60 border border-white/10 rounded-[2rem] overflow-hidden font-mono relative shadow-[0_40px_100px_-20px_rgba(0,0,0,1)] backdrop-blur-xl pointer-events-auto flex flex-col"
                         onClick={(e) => {
                             e.stopPropagation();
                             inputRef.current?.focus();

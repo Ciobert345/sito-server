@@ -297,8 +297,8 @@ const AppContent: React.FC = () => {
               <div className="absolute inset-0 opacity-[0.06] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]"></div>
             </div>
             {/* TERMINAL CONTAINER */}
-            <div className={`w-full h-[82vh] flex items-center justify-center relative z-10 ${isFabioOpen ? 'pr-[280px] lg:pr-[340px] xl:pr-[400px]' : ''} transition-all duration-300`}>
-              <div className={`w-full h-full flex items-center justify-center ${isFabioOpen ? 'max-w-[calc(100%-20px)]' : 'max-w-7xl'} transition-all duration-300`}>
+            <div className={`w-full h-[82vh] flex items-center justify-center relative z-10 ${isFabioOpen ? 'pr-[280px] lg:pr-[340px] xl:pr-[410px]' : (user?.isApproved || user?.isAdmin) && (config?.isTerminalEnabled || user?.isAdmin || user?.permissions?.terminal) ? 'pr-[200px]' : ''} transition-all duration-300`}>
+              <div className={`w-full h-full flex items-center justify-center ${isFabioOpen ? 'max-w-full' : 'max-w-7xl'} transition-all duration-300`}>
                 <Terminal
                   isOpen={isTerminalOpen}
                   onClose={() => setIsTerminalOpen(false)}
