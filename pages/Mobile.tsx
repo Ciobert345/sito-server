@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import bgImage from '../src/assets/bk.jpg';
 import { useConfig } from '../contexts/ConfigContext';
@@ -74,6 +74,7 @@ const Mobile: React.FC = () => {
     const [serverId, setServerId] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [latestVersion, setLatestVersion] = useState<string>('');
+    const consecutiveFails = useRef(0);
 
     // Updates State
     const [releases, setReleases] = useState<Array<{ version: string; date: string; title: string; body: string }>>([]);
@@ -130,6 +131,7 @@ const Mobile: React.FC = () => {
                         0: 'OFFLINE', 1: 'ONLINE', 2: 'RESTARTING', 3: 'STARTING', 4: 'STOPPING'
                     };
 
+                    consecutiveFails.current = 0; // Success resets threshold
                     setServerStatus({
                         online: server?.status === 1,
                         statusText: statusMap[server?.status ?? 0] || 'UNKNOWN',
@@ -142,8 +144,8 @@ const Mobile: React.FC = () => {
                     return; // MCSS Succeeded
                 }
             } catch (err: any) {
+                // MCSS failed, will try fallback or increment threshold
                 // console.warn('[MOBILE] MCSS Stats Fetch Failed:', err.message || err);
-                setServerStatus(prev => ({ ...prev, isUnreachable: true }));
             }
         }
 
@@ -165,17 +167,20 @@ const Mobile: React.FC = () => {
             }
             const data = await response.json();
             markMcsrvAttempt(true);
+            consecutiveFails.current = 0; // Success resets threshold
             setServerStatus(prev => ({
                 ...prev,
                 online: !!data.online,
                 statusText: data.online ? 'ONLINE (LTD)' : 'OFFLINE',
                 players: { ...prev.players || { online: 0, max: 20 }, online: data.players?.online || 0, max: data.players?.max || 20 },
-                isUnreachable: true // Even if fallback works, MCSS is still unreachable for primary features
+                isUnreachable: false // We have data!
             }));
         } catch (error) {
             markMcsrvAttempt(false);
-            console.warn('[MOBILE] mcsrvstat.us unavailable or blocked; using limited status');
-            setServerStatus(prev => ({ ...prev, statusText: 'UNKNOWN' }));
+            consecutiveFails.current += 1;
+            if (consecutiveFails.current >= 3) {
+                setServerStatus(prev => ({ ...prev, statusText: 'LOSS_SYNC', isUnreachable: true }));
+            }
         }
     }, [mcssService, serverId, config?.serverMetadata?.ip]);
 
@@ -185,8 +190,8 @@ const Mobile: React.FC = () => {
         if (!config) return;
         fetchStatus();
 
-        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
-        const intervalTime = serverStatus.isUnreachable ? 300000 : 30000;
+        // High frequency polling (5s) for real-time parity with Desktop
+        const intervalTime = serverStatus.isUnreachable ? 300000 : 5000;
         const interval = setInterval(fetchStatus, intervalTime);
         return () => clearInterval(interval);
     }, [config, fetchStatus, serverStatus.isUnreachable]);

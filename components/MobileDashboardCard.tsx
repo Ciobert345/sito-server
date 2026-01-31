@@ -103,55 +103,16 @@ export const MobileDashboardCard: React.FC = () => {
                         mcssSuccess = true;
                     }
                 } catch (err: any) {
-                    // console.warn('[MOBILE_CARD] MCSS Failed:', err.message || err);
-                }
-            }
-
-            // 2. Fallback to Simple API (mcsrvstat.us) if MCSS failed or not available, with throttle/backoff
-            if (!mcssSuccess) {
-                try {
-                    const lastTs = parseInt(localStorage.getItem('mcsrvstat_last_ts') || '0', 10);
-                    const failCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
-                    const now = Date.now();
-                    if (!(failCount >= 3 && (now - lastTs) < 15 * 60 * 1000) && ((now - lastTs) >= 5 * 60 * 1000)) {
-                        const response = await fetch(`https://api.mcsrvstat.us/2/${serverIp}`, { method: 'GET' });
-                        localStorage.setItem('mcsrvstat_last_ts', now.toString());
-                        if (response.ok && (response.headers.get('content-type') || '').includes('application/json')) {
-                            const data = await response.json();
-                            consecutiveFails.current = 0; // Success (fallback) resets threshold
-                            setStats(prev => ({
-                                ...prev,
-                                online: !!data.online,
-                                status: data.online ? 1 : 0,
-                                statusText: data.online ? 'SIGNAL_DEGRADED' : 'OFFLINE',
-                                players: { online: data.players?.online || 0, max: data.players?.max || 20 },
-                                unreachable: false // We have data, even if limited!
-                            }));
-                        } else {
-                            const mcsrvFailCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
-                            localStorage.setItem('mcsrvstat_fail_count', String(mcsrvFailCount + 1));
-                            // No state update here, wait for final catch
-                        }
-                    }
-                } catch (error) {
                     consecutiveFails.current += 1;
-                    // Only show "Signal Lost" after 3 consecutive total failures (approx 15s)
                     if (consecutiveFails.current >= 3) {
                         setStats(prev => ({ ...prev, statusText: 'LOSS_SYNC', unreachable: true }));
                     }
-                    try {
-                        const globalFailCount = parseInt(localStorage.getItem('mcsrvstat_fail_count') || '0', 10);
-                        localStorage.setItem('mcsrvstat_fail_count', String(globalFailCount + 1));
-                        localStorage.setItem('mcsrvstat_last_ts', Date.now().toString());
-                    } catch (le) { }
                 }
             }
         };
 
         fetchStats();
-        // Desktop timing: 5s for stats
         const interval = setInterval(fetchStats, 5000);
-
         return () => clearInterval(interval);
     }, [mcssService, serverId]);
 
@@ -281,7 +242,7 @@ export const MobileDashboardCard: React.FC = () => {
                                             <motion.div
                                                 initial={{ width: "0%" }}
                                                 animate={{ width: "100%" }}
-                                                transition={{ duration: 6, ease: [0.65, 0, 0.35, 1] }}
+                                                transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
                                                 className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative"
                                             >
                                                 <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
@@ -331,9 +292,15 @@ export const MobileDashboardCard: React.FC = () => {
                                     <span className="text-2xl font-mono font-bold text-white tracking-tighter">{stats.cpu}</span>
                                     <span className="text-[10px] text-white/30">%</span>
                                 </div>
-                                <div className="absolute inset-0 opacity-20 pointer-events-none flex items-end justify-end p-2 gap-0.5">
-                                    {[40, 60, 30, 80, 50, Number(stats.cpu) || 0].map((h, i) => (
-                                        <div key={i} className="w-1.5 bg-blue-500 rounded-t-sm transition-all duration-700 ease-out" style={{ height: `${Math.min(Number(h) || 0, 100)}%` }}></div>
+                                <div className="absolute inset-x-0 bottom-0 h-12 opacity-30 flex items-end justify-center p-2 gap-0.5">
+                                    {[0.3, 0.7, 0.5, 0.9, 0.6, 1.0].map((mult, i) => (
+                                        <motion.div
+                                            key={i}
+                                            className="w-1.5 bg-blue-500 rounded-t-sm"
+                                            initial={{ height: 0 }}
+                                            animate={{ height: `${Math.min((Number(stats.cpu) || 0) * mult, 100)}%` }}
+                                            transition={{ duration: 1.5, ease: "easeInOut" }}
+                                        />
                                     ))}
                                 </div>
                             </div>
