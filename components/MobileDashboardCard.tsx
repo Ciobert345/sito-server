@@ -42,8 +42,11 @@ export const MobileDashboardCard: React.FC = () => {
 
     // Console State
     const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
+    const [lastFetchFull, setLastFetchFull] = useState<string>(''); // For delta comparison
     const [commandInput, setCommandInput] = useState('');
     const consoleRef = useRef<HTMLDivElement>(null);
+    const logScrollRef = useRef<HTMLDivElement>(null);
+    const lastLogsRef = useRef<string[]>([]); // Fast ref for delta checks
     const consecutiveFails = useRef(0); // Track consecutive failures to avoid flickering "Signal Lost"
 
     // Action State
@@ -161,8 +164,8 @@ export const MobileDashboardCard: React.FC = () => {
 
     // Independent Sync Timer (Desktop Parity)
     useEffect(() => {
-        // Extended to 6s to ensure all data is absolutely ready (User request)
-        const timer = setTimeout(() => setGracePassed(true), 6000);
+        // Reduced to 4s for a snappier first-load experience
+        const timer = setTimeout(() => setGracePassed(true), 4000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -172,28 +175,43 @@ export const MobileDashboardCard: React.FC = () => {
     const fetchConsole = async () => {
         if (!mcssService || !serverId) return;
         try {
-            // Fetch 100 lines to match desktop parity
-            const logs = await mcssService.getConsole(serverId, 100);
-            if (Array.isArray(logs) && logs.length > 0) {
-                // STRICT FILTER: Only show things that look like actual Minecraft logs 
-                // OR custom command echoes (starting with >). Hide technical/JSON noise.
+            // Fetch 50 lines for faster delta processing
+            const logs = await mcssService.getConsole(serverId, 50);
+            if (Array.isArray(logs)) {
+                // 1. Strict Filter
                 const filtered = logs.filter(l => {
                     const logStr = String(l || '').trim();
-                    if (logStr.startsWith('>')) return true; // Command echo
-                    if (logStr.startsWith('[') && logStr.includes(']')) return true; // Standard MC log
-                    if (logStr.includes('Server thread/') || logStr.includes('INFO]:')) return true; // Common MC tags
-                    // HIDE technical noise (JSON bridge errors, proxy headers)
+                    if (logStr.startsWith('>')) return true;
+                    if (logStr.startsWith('[') && logStr.includes(']')) return true;
+                    if (logStr.includes('Server thread/') || logStr.includes('INFO]:')) return true;
                     const isNoise = logStr.includes('{"') || logStr.includes('statusCode":') || logStr.includes('Bridge Error');
-                    if (isNoise) return false;
-
-                    // FALLBACK: If it's short and doesn't look like JSON, it might be a raw message
-                    return logStr.length > 2 && !logStr.startsWith('{');
+                    return !isNoise && logStr.length > 2 && !logStr.startsWith('{');
                 });
-                if (filtered.length > 0) setConsoleLogs(filtered);
+
+                // 2. Delta Comparison & Append
+                if (filtered.length > 0) {
+                    const currentFull = filtered.join('\n');
+                    if (currentFull !== lastFetchFull) {
+                        setConsoleLogs(prev => {
+                            // Find the overlap to append only new lines
+                            const lastLineOfPrev = prev[prev.length - 1];
+                            const lastIndexInNew = filtered.lastIndexOf(lastLineOfPrev);
+
+                            let merged: string[];
+                            if (lastIndexInNew !== -1 && lastIndexInNew < filtered.length - 1) {
+                                // We found where we left off, append only the new stuff
+                                merged = [...prev, ...filtered.slice(lastIndexInNew + 1)];
+                            } else {
+                                // No clear overlap or it's totally different, use new set but cap at 150
+                                merged = filtered;
+                            }
+                            return merged.slice(-150); // Keep buffer healthy but larger
+                        });
+                        setLastFetchFull(currentFull);
+                    }
+                }
             }
-        } catch (err) {
-            // Sticky logic: keep existing logs on error to avoid flashing "blank" state
-        }
+        } catch (err) { }
     };
 
     // Background Polling - Active regardless of tab (Parity with Desktop)
@@ -219,13 +237,15 @@ export const MobileDashboardCard: React.FC = () => {
     }, [activeTab]);
 
     // Auto-scroll console when logs arrive
+    // Auto-scroll logic for cinematic terminal feel
     useEffect(() => {
-        if (consoleRef.current && activeTab === 'console') {
-            const el = consoleRef.current;
-            // Use requestAnimationFrame for smoother scrolling on mobile browsers
-            requestAnimationFrame(() => {
-                el.scrollTop = el.scrollHeight;
-            });
+        if (activeTab === 'console' && logScrollRef.current) {
+            const container = logScrollRef.current;
+            // Only scroll if we are already near the bottom (prevents hijacking user scroll)
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            if (isAtBottom) {
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            }
         }
     }, [consoleLogs, activeTab]);
 
@@ -244,18 +264,23 @@ export const MobileDashboardCard: React.FC = () => {
         }
     };
 
-    const sendCommand = async (e: React.SyntheticEvent | { preventDefault: () => void }) => {
-        e.preventDefault();
-        if (!commandInput.trim() || !mcssService || !serverId) return;
+    const sendCommand = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        if (!commandInput.trim() || !serverId || !mcssService) return;
         const cmd = commandInput;
         setCommandInput('');
+
+        // Optimistic Echo: Give immediate visual feedback
+        const timestamp = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const echo = `[${timestamp}] [Client/INFO]: > ${cmd}`;
+        setConsoleLogs(prev => [...prev.slice(-149), echo]);
+
         try {
             await mcssService.executeCommand(serverId, cmd);
-            addNotification('info', `Executed: ${cmd}`);
-            // Immediate fetch to show response (Real-time feel)
-            setTimeout(fetchConsole, 800);
-        } catch (err) {
-            addNotification('error', `Failed to send command: ${cmd}`);
+            addNotification('info', 'Command dispatched');
+            setTimeout(fetchConsole, 500); // Quick refresh after command
+        } catch (err: any) {
+            addNotification('error', `Nexus Failure: ${err.message}`);
         }
     };
 
@@ -542,20 +567,22 @@ export const MobileDashboardCard: React.FC = () => {
 
                             {/* Terminal Body (Exact LiveTerminal.tsx Logic) */}
                             <div
-                                ref={consoleRef}
-                                className="flex-1 p-4 overflow-y-auto font-mono text-[10px] leading-relaxed custom-terminal-scrollbar bg-black/20"
-                                style={{ scrollbarWidth: 'none' }}
+                                ref={logScrollRef}
+                                className="flex-1 overflow-y-auto p-4 font-mono text-[10px] leading-relaxed scrollbar-hide selection:bg-purple-500/30 overflow-x-hidden scroll-smooth"
+                                style={{ height: '420px' }}
                             >
-                                <div className="flex flex-col gap-1">
+                                <div className="flex flex-col gap-1 min-h-full">
                                     {(consoleLogs || []).length > 0 ? (
                                         (consoleLogs || []).map((log: any, i) => {
                                             if (typeof log !== 'string') return null;
+                                            // Enhanced visual tagging for optimistic echoes
+                                            const isOptimistic = log.includes('Client/INFO]: >');
                                             return (
-                                                <div key={i} className="flex gap-3 group/line items-start border-l-2 border-transparent hover:border-white/5 pl-1 transition-colors">
+                                                <div key={`${i}-${log.slice(-10)}`} className={`flex gap-3 group/line items-start border-l-2 ${isOptimistic ? 'border-purple-500/50 bg-purple-500/5' : 'border-transparent hover:border-white/5'} pl-1 transition-all duration-300`}>
                                                     <span className="text-white/5 shrink-0 tabular-nums select-none min-w-[28px]">{(i + 1).toString().padStart(4, '0')}</span>
                                                     <span className="break-all">
-                                                        {log.startsWith('>') ? (
-                                                            <span className="text-emerald-400 font-bold">{log}</span>
+                                                        {log.includes('> ') ? (
+                                                            <span className={`${isOptimistic ? 'text-purple-400 font-bold opacity-80' : 'text-emerald-400 font-bold'}`}>{log}</span>
                                                         ) : (log.includes('ERROR') || log.includes('FAILED')) ? (
                                                             <span className="text-red-400/80">{log}</span>
                                                         ) : (
@@ -599,7 +626,7 @@ export const MobileDashboardCard: React.FC = () => {
                                         disabled={!!actionLoading || stats.unreachable}
                                     />
                                     <AnimatePresence>
-                                        {actionLoading && (
+                                        {actionLoading ? (
                                             <motion.div
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
@@ -609,6 +636,15 @@ export const MobileDashboardCard: React.FC = () => {
                                                 <div className="size-1 rounded-full bg-orange-500 animate-pulse"></div>
                                                 <span className="text-[7px] font-black text-orange-500/60 uppercase tracking-widest">TRANSMITTING</span>
                                             </motion.div>
+                                        ) : (
+                                            <motion.button
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                type="submit"
+                                                className="size-8 flex items-center justify-center bg-purple-500/20 hover:bg-purple-500/40 rounded-lg text-purple-400 border border-purple-500/30 active:scale-95 transition-all"
+                                            >
+                                                <span className="material-symbols-outlined text-lg">send</span>
+                                            </motion.button>
                                         )}
                                     </AnimatePresence>
                                 </form>
