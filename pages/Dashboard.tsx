@@ -107,6 +107,9 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!user || loading) return;
 
+    // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
+    const intervalTime = serverStatus.isUnreachable ? 300000 : 5000;
+
     const interval = setInterval(() => {
       if (mcssService) {
         fetchDetailedStats();
@@ -117,9 +120,9 @@ const Dashboard: React.FC = () => {
           statusText: 'HOST LOST'
         }));
       }
-    }, 5000);
+    }, intervalTime);
     return () => clearInterval(interval);
-  }, [mcssService, user, loading, authLoading, fetchDetailedStats]);
+  }, [mcssService, user, loading, authLoading, fetchDetailedStats, serverStatus.isUnreachable]);
 
   useEffect(() => {
     // Only open the modal if we are definitely NOT loading and definitely NOT logged in

@@ -68,7 +68,8 @@ const Mobile: React.FC = () => {
         ram?: number;
         uptime?: string;
         statusText?: string;
-    }>({ online: false, statusText: 'SYNCING' });
+        isUnreachable?: boolean;
+    }>({ online: false, statusText: 'SYNCING', isUnreachable: false });
     const [serverId, setServerId] = useState<string | null>(null);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [latestVersion, setLatestVersion] = useState<string>('');
@@ -134,12 +135,14 @@ const Mobile: React.FC = () => {
                         cpu: stats?.cpuUsage ?? 0,
                         ram: stats?.ramUsage ?? 0,
                         players: { online: stats?.onlinePlayers ?? 0, max: stats?.maxPlayers ?? 20 },
-                        uptime: stats?.uptime || '00:00:00'
+                        uptime: stats?.uptime || '00:00:00',
+                        isUnreachable: false
                     });
                     return; // MCSS Succeeded
                 }
             } catch (err: any) {
                 // console.warn('[MOBILE] MCSS Stats Fetch Failed:', err.message || err);
+                setServerStatus(prev => ({ ...prev, isUnreachable: true }));
             }
         }
 
@@ -165,7 +168,8 @@ const Mobile: React.FC = () => {
                 ...prev,
                 online: !!data.online,
                 statusText: data.online ? 'ONLINE (LTD)' : 'OFFLINE',
-                players: { ...prev.players, online: data.players?.online || 0, max: data.players?.max || 20 }
+                players: { ...prev.players || { online: 0, max: 20 }, online: data.players?.online || 0, max: data.players?.max || 20 },
+                isUnreachable: true // Even if fallback works, MCSS is still unreachable for primary features
             }));
         } catch (error) {
             markMcsrvAttempt(false);
@@ -179,9 +183,12 @@ const Mobile: React.FC = () => {
     useEffect(() => {
         if (!config) return;
         fetchStatus();
-        const interval = setInterval(fetchStatus, 30000); // 30s is a good balance
+
+        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
+        const intervalTime = serverStatus.isUnreachable ? 300000 : 30000;
+        const interval = setInterval(fetchStatus, intervalTime);
         return () => clearInterval(interval);
-    }, [config, fetchStatus]);
+    }, [config, fetchStatus, serverStatus.isUnreachable]);
 
     // Handle Server Actions
     const handleServerAction = async (action: string) => {

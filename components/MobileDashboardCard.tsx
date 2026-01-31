@@ -143,7 +143,9 @@ export const MobileDashboardCard: React.FC = () => {
         };
 
         fetchStats();
-        const interval = setInterval(fetchStats, 10000); // 10s for dashboard is better
+        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
+        const intervalTime = stats.unreachable ? 300000 : 10000;
+        const interval = setInterval(fetchStats, intervalTime);
 
         const timer = setTimeout(() => setGracePassed(true), 2200);
 
@@ -151,7 +153,7 @@ export const MobileDashboardCard: React.FC = () => {
             clearInterval(interval);
             clearTimeout(timer);
         };
-    }, [mcssService, serverId]);
+    }, [mcssService, serverId, stats.unreachable]);
 
     // Console Polling
     useEffect(() => {
