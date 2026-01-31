@@ -75,7 +75,7 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             },
             mcss: {
                 enabled: db.is_dashboard_enabled ?? true,
-                defaultBaseUrl: db.mcss_api_url || '/api/mcss',
+                defaultBaseUrl: db.mcss_api_url || 'https://server-manfredonia.ddns.net:25560',
                 masterStandardKey: db.masterStandardKey || '',
                 masterAdminKey: db.masterAdminKey || ''
             }

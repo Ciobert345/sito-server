@@ -15,7 +15,7 @@ export interface MCSSStats {
     uptime: string;
 }
 
-const DEFAULT_BASE_URL = 'http://server-manfredonia.ddns.net:25560';
+const DEFAULT_BASE_URL = 'https://server-manfredonia.ddns.net:25560';
 
 export class MCSSService {
     private baseUrl: string;
