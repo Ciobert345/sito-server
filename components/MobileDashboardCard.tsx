@@ -525,8 +525,17 @@ export const MobileDashboardCard: React.FC = () => {
                             >
                                 <div className="flex flex-col gap-1">
                                     {(consoleLogs || []).length > 0 ? (
-                                        (consoleLogs || []).map((log, i) => {
-                                            const logStr = String(log || '');
+                                        (consoleLogs || []).map((log: any, i) => {
+                                            let logStr = '';
+                                            if (typeof log === 'string') {
+                                                logStr = log;
+                                            } else if (log && typeof log === 'object') {
+                                                // Try to extract common message fields or stringify
+                                                logStr = log.message || log.text || log.line || JSON.stringify(log);
+                                            } else {
+                                                logStr = String(log || '');
+                                            }
+
                                             return (
                                                 <div key={i} className="flex gap-3 group/line items-start">
                                                     <span className="text-white/5 shrink-0 tabular-nums">{(i + 1).toString().padStart(4, '0')}</span>
