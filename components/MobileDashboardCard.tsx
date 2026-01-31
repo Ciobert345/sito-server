@@ -152,26 +152,31 @@ export const MobileDashboardCard: React.FC = () => {
 
     // Console Polling
     // Manual Console Refresh Logic
+    // Auto Console Refresh (Restored & Safe)
     const fetchConsole = async () => {
         if (!mcssService || !serverId) return;
         try {
-            setActionLoading('console');
+            // No loading state for background updates to avoid UI flickering
             const logs = await mcssService.getConsole(serverId, 30);
             setConsoleLogs(prev => {
+                // Smart update: only set state if content differs
                 if (JSON.stringify(prev) === JSON.stringify(logs)) return prev;
                 return logs;
             });
         } catch (err) {
             console.error('[Console] Fetch failed:', err);
-        } finally {
-            setActionLoading(null);
         }
     };
 
-    // Initial load when tab changes
+    // Initial load + Polling
     useEffect(() => {
         if (activeTab === 'console' && serverId) {
-            fetchConsole();
+            setActionLoading('console'); // Initial loading indicator
+            fetchConsole().finally(() => setActionLoading(null));
+
+            // Polling every 4 seconds (Balance between "live" feel and stability)
+            const interval = setInterval(fetchConsole, 4000);
+            return () => clearInterval(interval);
         }
     }, [activeTab, serverId]);
 
@@ -442,27 +447,30 @@ export const MobileDashboardCard: React.FC = () => {
                                 <div className="flex flex-col h-full bg-[#050505] rounded-xl border border-white/10 relative">
                                     <div className="h-6 bg-white/5 border-b border-white/5 flex items-center justify-between px-3 shrink-0">
                                         <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
-                                        <button
-                                            onClick={fetchConsole}
-                                            disabled={actionLoading === 'console'}
-                                            className="text-[8px] font-bold text-emerald-500 uppercase tracking-wider hover:text-emerald-400 disabled:opacity-50"
-                                        >
-                                            {actionLoading === 'console' ? 'Loading...' : 'REFRESH'}
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                            <span className="text-[8px] font-bold text-emerald-500/50 uppercase tracking-widest">LIVE</span>
+                                        </div>
                                     </div>
+                                    <style>{`
+                                        @keyframes slideRight {
+                                            0% { transform: translateX(-100%); }
+                                            100% { transform: translateX(400%); }
+                                        }
+                                    `}</style>
                                     <div className="h-[340px] bg-[#050505] relative overflow-hidden">
                                         {/* Logs Display - Using PRE for stability + readability */}
                                         <pre className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30">
                                             {logsText || "No logs available. Press REFRESH to sync."}
                                         </pre>
 
-                                        {/* Loading Overlay - CSS Only (Safe) */}
+                                        {/* Loading Overlay - Valid CSS Animation */}
                                         {actionLoading === 'console' && (
-                                            <div className="absolute inset-0 bg-[#050505]/80 flex flex-col items-center justify-center z-10">
-                                                <div className="flex flex-col items-center gap-3">
-                                                    <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest animate-pulse">Syncing Uplink...</span>
-                                                    <div className="w-24 h-0.5 bg-white/10 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-emerald-500 w-1/2 animate-[spin_1s_linear_infinite]" style={{ transformOrigin: 'left' }} />
+                                            <div className="absolute inset-0 bg-[#050505]/90 flex flex-col items-center justify-center z-10 transition-all duration-300">
+                                                <div className="flex flex-col items-center gap-4">
+                                                    <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] animate-pulse">Syncing Uplink...</span>
+                                                    <div className="w-32 h-0.5 bg-white/10 rounded-full overflow-hidden relative">
+                                                        <div className="absolute top-0 left-0 h-full bg-emerald-500 w-1/3 animate-[slideRight_1s_linear_infinite]" />
                                                     </div>
                                                 </div>
                                             </div>
