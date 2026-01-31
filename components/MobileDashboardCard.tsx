@@ -240,9 +240,14 @@ export const MobileDashboardCard: React.FC = () => {
 
     const consoleEndRef = useRef<HTMLDivElement>(null);
 
-    useLayoutEffect(() => {
-        if (activeTab === 'console' && consoleEndRef.current) {
-            consoleEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+    useEffect(() => {
+        if (activeTab === 'console') {
+            const timer = setTimeout(() => {
+                if (consoleEndRef.current) {
+                    consoleEndRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
         }
     }, [activeTab]);
 
@@ -363,7 +368,7 @@ export const MobileDashboardCard: React.FC = () => {
                     ))}
                 </div>
 
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                     {(stats.unreachable && gracePassed) ? (
                         <motion.div
                             key="unreachable-locked"
@@ -551,19 +556,19 @@ export const MobileDashboardCard: React.FC = () => {
                             <div className="h-6 bg-white/5 border-b border-white/5 flex items-center px-3 gap-2">
                                 <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
                             </div>
-                            <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col-reverse">
+                            <div ref={consoleContainerRef} className="flex-1 p-3 font-mono text-[10px] text-white/80 overflow-y-auto custom-scrollbar overscroll-y-contain touch-pan-y flex flex-col">
                                 {consoleLogs.length === 0 && !stats.unreachable && (
                                     <div className="h-full flex flex-col items-center justify-center text-white/20 gap-2">
                                         <span className="material-symbols-outlined text-2xl animate-spin">data_usage</span>
                                         <span className="text-[9px] uppercase tracking-widest">Establishing Uplink...</span>
                                     </div>
                                 )}
-                                <div ref={consoleEndRef} />
-                                {consoleLogs.slice().reverse().map((log, i) => (
+                                {consoleLogs.map((log, i) => (
                                     <div key={i} className="whitespace-pre-wrap break-all leading-tight mb-1 px-1 rounded">
                                         <span className="text-white/20 mr-2 select-none">|</span>{log}
                                     </div>
                                 ))}
+                                <div ref={consoleEndRef} />
                             </div>
 
                             <AnimatePresence>

@@ -7,6 +7,7 @@ import { supabase } from '../services/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import Countdown from '../components/Countdown';
 import { MobileDashboardCard } from '../components/MobileDashboardCard';
+import ErrorBoundary from '../components/ErrorBoundary';
 import { getLatestRelease, getReleases } from '../utils/githubCache';
 
 // Tailwind replacements for custom animations
@@ -883,7 +884,9 @@ const Mobile: React.FC = () => {
                             </div>
                         </div>
                     ) : (
-                        <MobileDashboardCard data-mobile-dashboard-card />
+                        <ErrorBoundary>
+                            <MobileDashboardCard data-mobile-dashboard-card />
+                        </ErrorBoundary>
                     )}
                 </section>
 
