@@ -162,15 +162,11 @@ export const MobileDashboardCard: React.FC = () => {
     const fetchConsole = async () => {
         if (!mcssService || !serverId) return;
         try {
-            // No loading state for background updates to avoid UI flickering
-            const logs = await mcssService.getConsole(serverId, 30);
-            setConsoleLogs(prev => {
-                // Smart update: only set state if content differs
-                if (JSON.stringify(prev) === JSON.stringify(logs)) return prev;
-                return logs;
-            });
+            // Fetch 100 lines to match desktop parity
+            const logs = await mcssService.getConsole(serverId, 100);
+            setConsoleLogs(logs);
         } catch (err) {
-            console.error('[Console] Fetch failed:', err);
+            // Silent error to keep console clean
         }
     };
 
@@ -181,10 +177,10 @@ export const MobileDashboardCard: React.FC = () => {
         // Perform initial fetch
         fetchConsole();
 
-        // 1.5s interval for a truly "live" feel. Balanced for network stability.
+        // 1s interval for a truly "live" feel (Matches desktop's perceived speed)
         const interval = setInterval(() => {
             if (!stats.unreachable) fetchConsole();
-        }, 1500);
+        }, 1000);
         return () => clearInterval(interval);
     }, [serverId, mcssService, stats.unreachable]);
 
@@ -237,9 +233,9 @@ export const MobileDashboardCard: React.FC = () => {
         }
     };
 
-    // Memoize logs as a single string for textarea
+    // Memoize logs as a single string
     const logsText = useMemo(() => {
-        return (consoleLogs || []).slice(-50).join('\n');
+        return (consoleLogs || []).join('\n');
     }, [consoleLogs]);
 
     if (!user) return null;
@@ -363,25 +359,42 @@ export const MobileDashboardCard: React.FC = () => {
                                 <div className="flex flex-col gap-8 h-full justify-between relative">
                                     {!gracePassed && (
                                         <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] rounded-2xl p-8 text-center">
-                                            <div className="flex flex-col items-center gap-5 w-48">
-                                                <div className="flex flex-col items-center gap-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.3em]">Uplink Sync</span>
-                                                        <div className="size-1 rounded-full bg-emerald-500 animate-pulse"></div>
+                                            <div className="flex flex-col items-center gap-6 w-72">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="size-1 rounded-full bg-emerald-500 animate-ping"></div>
+                                                        <span className="text-[11px] font-mono font-black text-emerald-400 uppercase tracking-[0.4em] drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]">Establishing Tactical Uplink</span>
+                                                        <div className="size-1 rounded-full bg-emerald-500 animate-ping"></div>
                                                     </div>
-                                                    <span className="text-[7px] font-mono text-white/20 uppercase tracking-[0.1em]">Negotiating Handshake...</span>
+                                                    <div className="flex items-center gap-4 opacity-20 group">
+                                                        <span className="text-[8px] font-mono text-white tracking-widest animate-pulse">DH_KEY_EXCHANGE</span>
+                                                        <span className="text-[8px] font-mono text-white tracking-widest opacity-20">•</span>
+                                                        <span className="text-[8px] font-mono text-white tracking-widest animate-pulse" style={{ animationDelay: '0.5s' }}>SYNC_NODES v2.2</span>
+                                                    </div>
                                                 </div>
-                                                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner">
+
+                                                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5 relative shadow-inner backdrop-blur-sm">
+                                                    {/* Moving Shimmer (Desktop Parity) */}
                                                     <div
-                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
+                                                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"
+                                                        style={{ animation: 'shimmerScan 1.5s linear infinite' }}
+                                                    />
+
+                                                    {/* Progress Fill (Desktop Parity) */}
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative"
                                                         style={{ animation: 'fillProgress 4s cubic-bezier(0.65, 0, 0.35, 1) forwards' }}
                                                     >
                                                         <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
                                                     </div>
                                                 </div>
-                                                <div className="flex justify-center w-full opacity-20">
-                                                    <span className="text-[6px] font-mono text-white uppercase tracking-widest animate-pulse">Establishing_Secure_Relay</span>
+
+                                                <div className="flex justify-between w-full px-2 opacity-30">
+                                                    <span className="text-[8px] font-mono text-white uppercase tracking-tighter">MCSS_PROPORT_SECURE</span>
+                                                    <div className="flex items-center gap-1.5 font-mono text-[8px] text-white">
+                                                        <span>STATUS:</span>
+                                                        <span className="text-emerald-400">HANDSHAKE_OK</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -488,6 +501,10 @@ export const MobileDashboardCard: React.FC = () => {
                                         @keyframes fillProgress {
                                             0% { width: 0%; }
                                             100% { width: 100%; }
+                                        }
+                                        @keyframes shimmerScan {
+                                            0% { transform: translateX(-100%); }
+                                            100% { transform: translateX(200%); }
                                         }
                                     `}</style>
                                     <div className="flex-1 min-h-0 relative">
