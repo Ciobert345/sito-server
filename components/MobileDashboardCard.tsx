@@ -171,7 +171,11 @@ export const MobileDashboardCard: React.FC = () => {
     // Initial load + Polling
     useEffect(() => {
         if (activeTab === 'console' && serverId) {
-            setActionLoading('console'); // Initial loading indicator
+            // Only show full-screen loader if we have NO logs yet
+            if (consoleLogs.length === 0) {
+                setActionLoading('console');
+            }
+
             fetchConsole().finally(() => setActionLoading(null));
 
             // Polling every 4 seconds (Balance between "live" feel and stability)
@@ -454,24 +458,31 @@ export const MobileDashboardCard: React.FC = () => {
                                     </div>
                                     <style>{`
                                         @keyframes slideRight {
-                                            0% { transform: translateX(-100%); }
-                                            100% { transform: translateX(400%); }
+                                            0% { left: -50%; }
+                                            100% { left: 100%; }
                                         }
                                     `}</style>
                                     <div className="h-[340px] bg-[#050505] relative overflow-hidden">
                                         {/* Logs Display - Using PRE for stability + readability */}
                                         <pre className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30">
-                                            {logsText || "No logs available. Press REFRESH to sync."}
+                                            {logsText || (actionLoading === 'console' ? "Initialising uplink..." : "No logs available. System is waiting for data.")}
                                         </pre>
 
-                                        {/* Loading Overlay - Valid CSS Animation */}
+                                        {/* Loading Overlay - Using absolute positioning for better animation stability */}
                                         {actionLoading === 'console' && (
-                                            <div className="absolute inset-0 bg-[#050505]/90 flex flex-col items-center justify-center z-10 transition-all duration-300">
-                                                <div className="flex flex-col items-center gap-4">
-                                                    <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] animate-pulse">Syncing Uplink...</span>
-                                                    <div className="w-32 h-0.5 bg-white/10 rounded-full overflow-hidden relative">
-                                                        <div className="absolute top-0 left-0 h-full bg-emerald-500 w-1/3 animate-[slideRight_1s_linear_infinite]" />
+                                            <div className="absolute inset-0 bg-[#050505] flex flex-col items-center justify-center z-10 transition-opacity duration-500">
+                                                <div className="flex flex-col items-center gap-4 w-full">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[9px] font-bold text-emerald-500 uppercase tracking-[0.2em] animate-pulse">Establishing Link</span>
+                                                        <span className="text-white/20 font-mono text-[8px] animate-pulse">...</span>
                                                     </div>
+                                                    <div className="w-48 h-0.5 bg-white/5 rounded-full overflow-hidden relative border border-white/5">
+                                                        <div
+                                                            className="absolute top-0 h-full bg-emerald-500 w-1/2"
+                                                            style={{ animation: 'slideRight 1.5s infinite linear' }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-[7px] font-mono text-white/20 uppercase tracking-widest mt-1">Uplink Status: Synchronizing</span>
                                                 </div>
                                             </div>
                                         )}
