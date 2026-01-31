@@ -76,7 +76,7 @@ const LiveTerminal: React.FC<LiveTerminalProps> = ({ serverOnline = false }) => 
         }
     };
 
-    if (loading && !logs.length) {
+    if (loading && !logs.length && serverOnline) {
         return (
             <div className="flex items-center justify-center h-full text-white/10 uppercase font-black text-[10px] tracking-widest animate-pulse">
                 Establishing_Neural_Link...

@@ -473,7 +473,7 @@ const Dashboard: React.FC = () => {
 
                 {/* Main Console Area */}
                 <div className="flex-1 relative min-h-0">
-                  <LiveTerminal serverOnline={serverStatus.statusText === 'ONLINE'} />
+                  <LiveTerminal serverOnline={serverStatus.statusText !== 'OFFLINE' && serverStatus.statusText !== 'SYNCING'} />
                 </div>
               </div>
             </div>
