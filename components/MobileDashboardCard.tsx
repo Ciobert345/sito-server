@@ -41,7 +41,7 @@ export const MobileDashboardCard: React.FC = () => {
     // Console State
     const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
     const [commandInput, setCommandInput] = useState('');
-    const consoleRef = useRef<HTMLPreElement>(null);
+    const consoleRef = useRef<HTMLDivElement>(null);
 
     // Action State
     const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -153,7 +153,8 @@ export const MobileDashboardCard: React.FC = () => {
 
     // Independent Sync Timer (Desktop Parity)
     useEffect(() => {
-        const timer = setTimeout(() => setGracePassed(true), 4000);
+        // Extended to 6s to ensure all data is absolutely ready (User request)
+        const timer = setTimeout(() => setGracePassed(true), 6000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -178,10 +179,10 @@ export const MobileDashboardCard: React.FC = () => {
         // Perform initial fetch
         fetchConsole();
 
-        // 1s interval for a truly "live" feel (Matches desktop's perceived speed)
+        // 3s interval for exact desktop parity
         const interval = setInterval(() => {
             if (!stats.unreachable) fetchConsole();
-        }, 1000);
+        }, 3000);
         return () => clearInterval(interval);
     }, [serverId, mcssService, stats.unreachable]);
 
@@ -356,7 +357,7 @@ export const MobileDashboardCard: React.FC = () => {
                                             <motion.div
                                                 initial={{ width: "0%" }}
                                                 animate={{ width: "100%" }}
-                                                transition={{ duration: 4, ease: [0.65, 0, 0.35, 1] }}
+                                                transition={{ duration: 6, ease: [0.65, 0, 0.35, 1] }}
                                                 className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_20px_rgba(52,211,153,0.4)] relative"
                                             >
                                                 <div className="absolute top-0 bottom-0 right-0 w-[2px] bg-white shadow-[0_0_10px_#fff]" />
@@ -498,55 +499,85 @@ export const MobileDashboardCard: React.FC = () => {
                     )}
 
                     {activeTab === 'console' && (
-                        <div className="flex flex-col h-full bg-[#050505] rounded-xl border border-white/10 relative overflow-hidden">
-                            <div className="h-6 bg-white/5 border-b border-white/5 flex items-center justify-between px-3 shrink-0">
-                                <div className="text-[8px] font-mono text-white/30 uppercase">/var/log/server_latest.log</div>
+                        <div className="flex flex-col h-full bg-[#030303]/90 rounded-xl border border-white/10 relative overflow-hidden flex-1 shadow-2xl">
+                            {/* Terminal Header (Exact Desktop Sync) */}
+                            <div className="h-7 bg-white/[0.03] border-b border-white/5 flex items-center justify-between px-3 shrink-0">
                                 <div className="flex items-center gap-2">
-                                    <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                                    <span className="text-[8px] font-bold text-emerald-500/50 uppercase tracking-widest">LIVE</span>
+                                    <div className="flex gap-1">
+                                        <div className="size-1.5 rounded-full bg-red-500/30"></div>
+                                        <div className="size-1.5 rounded-full bg-amber-500/30"></div>
+                                        <div className="size-1.5 rounded-full bg-emerald-500/30"></div>
+                                    </div>
+                                    <span className="text-[8px] font-mono text-white/20 uppercase tracking-widest ml-1">console@manfredonia:~</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="size-1 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-[7px] font-black text-emerald-500/40 uppercase tracking-[0.2em]">Live_Feed</span>
                                 </div>
                             </div>
-                            <div className="flex-1 min-h-0 relative">
-                                <pre
-                                    ref={consoleRef}
-                                    className="w-full h-full bg-transparent text-[10px] font-mono text-white/70 p-3 overflow-auto whitespace-pre-wrap font-bold leading-relaxed selection:bg-emerald-500/30"
-                                >
-                                    {logsText || (stats.unreachable ? "Signal lost. Attempting to reconnect..." : "Establishing neural link...")}
-                                </pre>
 
-                                {consoleLogs.length === 0 && !stats.unreachable && (
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-white/20 gap-2">
-                                        <span className="material-symbols-outlined text-3xl">terminal</span>
-                                        <span className="text-[8px] uppercase tracking-[0.2em] opacity-50">Console Ready</span>
-                                    </div>
-                                )}
+                            {/* Terminal Body (Exact LiveTerminal.tsx Logic) */}
+                            <div
+                                ref={consoleRef}
+                                className="flex-1 p-4 overflow-y-auto font-mono text-[10px] leading-relaxed custom-terminal-scrollbar bg-black/20"
+                                style={{ scrollbarWidth: 'none' }}
+                            >
+                                <div className="flex flex-col gap-1">
+                                    {consoleLogs.length > 0 ? (
+                                        consoleLogs.map((log, i) => (
+                                            <div key={i} className="flex gap-3 group/line items-start">
+                                                <span className="text-white/5 shrink-0 tabular-nums">{(i + 1).toString().padStart(4, '0')}</span>
+                                                <span className="break-all">
+                                                    {log.startsWith('>') ? (
+                                                        <span className="text-emerald-400 font-bold">{log}</span>
+                                                    ) : log.includes('ERROR') || log.includes('FAILED') ? (
+                                                        <span className="text-red-400/80">{log}</span>
+                                                    ) : (
+                                                        <span className="text-white/40">{log}</span>
+                                                    )}
+                                                </span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="h-full flex flex-col items-center justify-center py-20 text-white/10 gap-2">
+                                            <span className="material-symbols-outlined text-3xl animate-pulse">terminal</span>
+                                            <span className="text-[8px] uppercase tracking-[0.2em]">{stats.unreachable ? "Signal lost..." : "Establishing_Neural_Link..."}</span>
+                                        </div>
+                                    )}
+                                    <div className="h-2"></div>
+                                </div>
                             </div>
 
-                            <div className={`p-2 bg-[#050505] border-t border-white/10 ${stats.unreachable ? 'opacity-20 pointer-events-none grayscale' : ''}`}>
-                                <div className="relative flex items-center gap-2">
-                                    <span className="text-emerald-500 font-mono text-xs pl-2">{'>'}</span>
+                            {/* Terminal Input (Exact LiveTerminal.tsx Layout) */}
+                            <div className={`px-4 py-3 bg-white/[0.01] border-t border-white/5 backdrop-blur-md transition-opacity ${stats.unreachable ? 'opacity-30 grayscale pointer-events-none' : ''}`}>
+                                <form onSubmit={(e) => { e.preventDefault(); sendCommand(e); }} className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1.5 shrink-0 opacity-40">
+                                        <span className="text-purple-400 font-bold text-[10px] tracking-tighter uppercase whitespace-nowrap">Node@Remote</span>
+                                        <span className="text-white/20 text-[10px]">:~$</span>
+                                    </div>
                                     <input
                                         type="text"
                                         value={commandInput}
                                         onChange={(e) => setCommandInput(e.target.value)}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') {
-                                                sendCommand(e);
-                                            }
-                                        }}
-                                        placeholder={stats.unreachable ? "Link lost..." : "Enter command..."}
-                                        className="flex-1 bg-transparent border-none text-xs font-mono text-white placeholder-white/20 focus:ring-0 focus:outline-none py-2"
+                                        placeholder={!stats.unreachable ? "Type tactical directive..." : "Node cluster offline. Input locked."}
                                         autoComplete="off"
-                                        style={{ WebkitAppearance: 'none', appearance: 'none' }}
+                                        className="flex-1 bg-transparent border-none text-white font-mono text-[10px] focus:outline-none placeholder:text-white/5 tracking-tight disabled:opacity-20 translate-y-[0.5px]"
+                                        disabled={!!actionLoading || stats.unreachable}
                                     />
-                                    <button
-                                        onClick={(e) => sendCommand(e)}
-                                        disabled={!commandInput.trim() || stats.unreachable}
-                                        className="p-1.5 hover:bg-white/10 rounded text-white/50 hover:text-white transition-colors disabled:opacity-0"
-                                    >
-                                        <span className="material-symbols-outlined text-sm">keyboard_return</span>
-                                    </button>
-                                </div>
+                                    <AnimatePresence>
+                                        {actionLoading && (
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="flex items-center gap-2"
+                                            >
+                                                <div className="size-1 rounded-full bg-orange-500 animate-pulse"></div>
+                                                <span className="text-[7px] font-black text-orange-500/60 uppercase tracking-widest">TRANSMITTING</span>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </form>
                             </div>
                         </div>
                     )}
