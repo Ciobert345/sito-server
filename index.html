@@ -25,6 +25,16 @@
 }
 </script>
 
+  <script>
+    // Force unregister any existing service workers to prevent "zombie" SW interference
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script>
 </head>
 
 <body>

@@ -79,14 +79,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     debugLog(`Rendering AuthProvider - Status: ${authStatus}, Loading: ${loading}`);
 
+    const lastMcssServiceRef = useRef<MCSSService | null>(null);
+    const lastMcssParamsRef = useRef<string>('');
+
     useEffect(() => {
         if (!isMounted.current) return;
+        const currentParams = `${user?.id}-${user?.isApproved}-${mcssKey}-${config?.mcss?.defaultBaseUrl}`;
+
         if (user?.isApproved && mcssKey && config?.mcss?.defaultBaseUrl) {
-            setMcssService(new MCSSService(mcssKey, config.mcss.defaultBaseUrl));
+            if (lastMcssParamsRef.current !== currentParams) {
+                const service = new MCSSService(mcssKey, config.mcss.defaultBaseUrl);
+                lastMcssServiceRef.current = service;
+                lastMcssParamsRef.current = currentParams;
+                setMcssService(service);
+            }
         } else {
-            setMcssService(null);
+            if (mcssService !== null) {
+                lastMcssServiceRef.current = null;
+                lastMcssParamsRef.current = currentParams;
+                setMcssService(null);
+            }
         }
-    }, [mcssKey, config?.mcss?.defaultBaseUrl, user?.isApproved]);
+    }, [mcssKey, config?.mcss?.defaultBaseUrl, user?.id, user?.isApproved, mcssService]);
 
     const finishLoading = (status: AuthLoadStatus = 'READY') => {
         if (!isMounted.current) return;
@@ -104,6 +118,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const syncUser = async (userId: string, email: string, metadata: any) => {
         if (updateInProgress.current) return;
+
+        // Deduplication: If we already have this user and we are ready, skip unless it's a forced refresh
+        if (user && user.id === userId && authStatus === 'READY' && !hasFinishedInitialLoad.current) {
+            return;
+        }
+
         updateInProgress.current = true;
 
         try {
@@ -121,23 +141,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const currentUnlocks = unlocksResult.data ? unlocksResult.data.map((u: any) => u.intel_id) : [];
             setUnlockedIntelIds(currentUnlocks);
 
-            setUser({
-                id: userId,
-                email: email || '',
-                username: profile?.username || metadata?.username || 'User',
-                isApproved: profile?.is_approved || false,
-                isAdmin: profile?.is_admin || false,
-                avatar_url: profile?.avatar_url,
-                mcss_config_id: profile?.mcss_config_id,
-                read_banner_ids: profile?.read_banner_ids || [],
-                clearance_level: profile?.clearance_level || 1,
-                experience_points: profile?.experience_points || 0,
-                permissions: profile?.permissions || {}
+            setUser(prev => {
+                const newUser = {
+                    id: userId,
+                    email: email || '',
+                    username: profile?.username || metadata?.username || 'User',
+                    isApproved: profile?.is_approved || false,
+                    isAdmin: profile?.is_admin || false,
+                    avatar_url: profile?.avatar_url,
+                    mcss_config_id: profile?.mcss_config_id,
+                    read_banner_ids: profile?.read_banner_ids || [],
+                    clearance_level: profile?.clearance_level || 1,
+                    experience_points: profile?.experience_points || 0,
+                    permissions: profile?.permissions || {}
+                };
+
+                // Deep equality check (simple version) to avoid unnecessary state updates
+                if (JSON.stringify(prev) === JSON.stringify(newUser)) return prev;
+                return newUser;
             });
 
             if (profile) {
                 const mcssConfig = Array.isArray(profile.mcss_config) ? profile.mcss_config[0] : profile.mcss_config;
-                setMcssKey(mcssConfig?.mcss_api_key || null);
+                const newKey = mcssConfig?.mcss_api_key || null;
+                setMcssKey(prev => prev === newKey ? prev : newKey);
             }
         } catch (err) {
             console.error('[AuthContext] Sync Error:', err);

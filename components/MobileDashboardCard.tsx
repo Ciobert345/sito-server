@@ -55,8 +55,12 @@ export const MobileDashboardCard: React.FC = () => {
     }, []);
 
     const fetchStats = useCallback(async () => {
-        if (!mcssService) return;
+        if (!mcssService) {
+            console.log('[MOBILE_CARD] Uplink not ready (mcssService is null)');
+            return;
+        }
         try {
+            console.log('[MOBILE_CARD] Fetching stats...');
             let currentServerId = serverId;
             if (!currentServerId) {
                 const servers = await mcssService.getServers();
@@ -83,6 +87,7 @@ export const MobileDashboardCard: React.FC = () => {
                     0: 'OFFLINE', 1: 'ONLINE', 2: 'RESTARTING', 3: 'STARTING', 4: 'STOPPING'
                 };
 
+                console.log('[MOBILE_CARD] Stats synced successfully');
                 consecutiveFails.current = 0; // Success: reset threshold
                 setStats({
                     online: currentStatus === 1,
@@ -96,6 +101,7 @@ export const MobileDashboardCard: React.FC = () => {
                 });
             }
         } catch (err: any) {
+            console.error('[MOBILE_CARD] Fetch failed:', err.message);
             consecutiveFails.current += 1;
             // Only show Signal Lost after 3 consecutive failures (~15s)
             if (consecutiveFails.current >= 3) {
