@@ -129,8 +129,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             setAuthStatus('SYNCING');
             debugLog(`Syncing profile: ${email}`);
-            const [profileResult, unlocksResult] = await Promise.all([
+            const [profileResult, bannersResult, unlocksResult] = await Promise.all([
                 supabase.from('profiles').select('*, mcss_config:mcss_configs!mcss_config_id(mcss_api_key)').eq('id', userId).single(),
+                supabase.from('profile_read_banners').select('banner_id').eq('profile_id', userId).then(res => res, () => ({ data: null })),
                 supabase.from('user_unlocks').select('intel_id').eq('user_id', userId)
             ]);
 
@@ -150,7 +151,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     isAdmin: profile?.is_admin || false,
                     avatar_url: profile?.avatar_url,
                     mcss_config_id: profile?.mcss_config_id,
-                    read_banner_ids: profile?.read_banner_ids || [],
+                    // Always use normalized table data as primary source
+                    read_banner_ids: bannersResult.data ? bannersResult.data.map((b: any) => b.banner_id) : [],
                     clearance_level: profile?.clearance_level || 1,
                     experience_points: profile?.experience_points || 0,
                     permissions: profile?.permissions || {}
@@ -280,8 +282,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     const uploadAvatar = async (f: File) => { if (!user) throw new Error('NA'); const ext = f.name.split('.').pop(); const path = `${user.id}/${Math.random()}.${ext}`; await supabase.storage.from('avatars').upload(path, f); const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path); await updateProfile({ avatar_url: publicUrl }); return publicUrl; };
     const verifyPassword = async (p: string) => { if (!user?.email) return false; return !(await supabase.auth.signInWithPassword({ email: user.email, password: p })).error; };
-    const markBannerAsRead = async (b: string) => { if (!user) return; const n = [...user.read_banner_ids, b]; await updateProfile({ read_banner_ids: n }); };
-    const markAllBannersAsRead = async (b: string[]) => { if (!user) return; await updateProfile({ read_banner_ids: b }); };
+    const markBannerAsRead = async (b: string) => {
+        if (!user) return;
+        const { error } = await supabase.from('profile_read_banners').insert({ profile_id: user.id, banner_id: b });
+        if (!error) setUser({ ...user, read_banner_ids: [...user.read_banner_ids, b] });
+    };
+    const markAllBannersAsRead = async (bs: string[]) => {
+        if (!user) return;
+        const inserts = bs.map(id => ({ profile_id: user.id, banner_id: id }));
+        const { error } = await supabase.from('profile_read_banners').insert(inserts);
+        if (!error) setUser({ ...user, read_banner_ids: bs });
+    };
     const addXP = async (a: number) => { if (!user) return; await updateProfile({ experience_points: user.experience_points + a }); };
     const unlockIntel = async (i: string) => { if (!user) return; if (!(await supabase.from('user_unlocks').insert({ user_id: user.id, intel_id: i })).error) setUnlockedIntelIds(p => [...p, i]); };
     const attemptUnlockWithCode = async (c: string) => { const { data } = await supabase.from('intel_assets').select('id, name').eq('unlock_code', c).single(); if (!data) return { success: false, message: 'Invalid code' }; if (unlockedIntelIds.includes(data.id)) return { success: true, message: 'Already granted' }; await unlockIntel(data.id); return { success: true, message: `Access granted: ${data.name}` }; };

@@ -333,28 +333,21 @@ const Admin: React.FC = () => {
     const deleteNotification = async (id: string) => {
         if (!confirm('Eliminare questa notifica e rimuoverla da tutti i profili utenti?')) return;
         try {
-            // 1. Cleanup: Remove this ID from all users' read_banner_ids
-            const usersToUpdate = users.filter(u => u.read_banner_ids && u.read_banner_ids.includes(id));
+            // 1. Cleanup: Remove this ID from junction table for all users
+            debugLog(`Cleaning up banner ${id} from all user profiles in junction table...`);
+            const { error: cleanupError } = await supabase
+                .from('profile_read_banners')
+                .delete()
+                .eq('banner_id', id);
 
-            if (usersToUpdate.length > 0) {
-                debugLog(`Cleaning up banner ${id} from ${usersToUpdate.length} user profiles...`);
-
-                const updates = usersToUpdate.map(async (u) => {
-                    const newReadIds = (u.read_banner_ids || []).filter(bannerId => bannerId !== id);
-                    const { error } = await supabase
-                        .from('profiles')
-                        .update({ read_banner_ids: newReadIds })
-                        .eq('id', u.id);
-
-                    if (error) {
-                        console.error(`Failed to cleanup for user ${u.username}:`, error);
-                    } else {
-                        // Optimistically update local state for this user to ensure consistency
-                        setUsers(prev => prev.map(curr => curr.id === u.id ? { ...curr, read_banner_ids: newReadIds } : curr));
-                    }
-                });
-
-                await Promise.all(updates);
+            if (cleanupError) {
+                console.error(`Failed to cleanup banner ${id}:`, cleanupError);
+            } else {
+                // Update local state for all users who had this banner read
+                setUsers(prev => prev.map(u => ({
+                    ...u,
+                    read_banner_ids: (u.read_banner_ids || []).filter(bid => bid !== id)
+                })));
             }
 
             // 2. Delete the actual notification
