@@ -111,17 +111,8 @@ export const MobileDashboardCard: React.FC = () => {
         };
     }, [fetchStats, stats.unreachable]);
 
-    // Independent Sync Timer (Desktop Parity)
-    useEffect(() => {
-        // Reduced to 4s for a snappier first-load experience, 
-        // and only if we have data or after 7s timeout
-        if (!stats.unreachable && stats.statusText !== 'SYNCING') {
-            setGracePassed(true);
-        } else {
-            const timer = setTimeout(() => setGracePassed(true), 7000);
-            return () => clearTimeout(timer);
-        }
-    }, [stats.unreachable, stats.statusText]);
+    // gracePassed is now triggered by the loading bar's onAnimationComplete
+    // to ensure perfect synchronization with the visual progress.
 
     // Console Polling
     useEffect(() => {
@@ -487,7 +478,7 @@ export const MobileDashboardCard: React.FC = () => {
                         key="uplink-overlay"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        exit={{ opacity: 0, transition: { duration: 1, ease: "easeInOut" } }}
                         className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505]/75 backdrop-blur-md p-8 text-center"
                     >
                         {!gracePassed ? (
@@ -504,7 +495,8 @@ export const MobileDashboardCard: React.FC = () => {
                                     <motion.div
                                         initial={{ width: "0%" }}
                                         animate={{ width: "100%" }}
-                                        transition={{ duration: 7, ease: [0.65, 0, 0.35, 1] }}
+                                        transition={{ duration: 5, ease: [0.65, 0, 0.35, 1] }}
+                                        onAnimationComplete={() => setGracePassed(true)}
                                         className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.3)] relative"
                                     >
                                         <div className="absolute top-0 bottom-0 right-0 w-[1px] bg-white/50 shadow-[0_0_5px_#fff]" />
@@ -536,6 +528,6 @@ export const MobileDashboardCard: React.FC = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 };
