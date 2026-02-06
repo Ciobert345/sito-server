@@ -191,6 +191,7 @@ const Mobile: React.FC = () => {
         fetchStatus();
 
         // High frequency polling (5s) for real-time parity with Desktop
+        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
         const intervalTime = serverStatus.isUnreachable ? 300000 : 5000;
         const interval = setInterval(fetchStatus, intervalTime);
         return () => clearInterval(interval);

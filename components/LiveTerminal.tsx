@@ -38,6 +38,7 @@ const LiveTerminal: React.FC<LiveTerminalProps> = ({ serverOnline = false }) => 
         if (!mcssService || !serverId) return;
 
         const pollLogs = async () => {
+            if (!serverOnline) return; // Skip polling if server is known to be offline
             try {
                 const newLogs = await mcssService.getConsole(serverId, 100);
                 setLogs(newLogs);
@@ -47,7 +48,7 @@ const LiveTerminal: React.FC<LiveTerminalProps> = ({ serverOnline = false }) => 
             }
         };
 
-        pollLogs();
+        if (serverOnline) pollLogs();
         const interval = setInterval(pollLogs, 3000);
         return () => clearInterval(interval);
     }, [mcssService, serverId, serverOnline]);

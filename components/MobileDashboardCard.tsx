@@ -102,8 +102,8 @@ export const MobileDashboardCard: React.FC = () => {
 
     useEffect(() => {
         fetchStats();
-        // Desktop Parity: 5s polling, if unreachable 30s
-        const intervalTime = stats.unreachable ? 30000 : 5000;
+        // Aggressive Backoff: If unreachable, poll much slower (5 mins) to avoid console noise
+        const intervalTime = stats.unreachable ? 300000 : 5000;
         const interval = setInterval(fetchStats, intervalTime);
 
         return () => {
@@ -119,15 +119,17 @@ export const MobileDashboardCard: React.FC = () => {
         if (!mcssService || !serverId || activeTab !== 'console') return;
 
         const fetchConsole = async () => {
+            if (stats.unreachable) return; // Skip polling if server is known to be unreachable
             try {
                 const logs = await mcssService.getConsole(serverId, 50);
                 setConsoleLogs(logs);
             } catch (err) {
-                addNotification('error', 'Failed to fetch console logs.');
+                // If console fails, we don't necessarily want to spam notifications
+                // addNotification('error', 'Failed to fetch console logs.');
             }
         };
 
-        fetchConsole();
+        if (!stats.unreachable) fetchConsole();
         const interval = setInterval(fetchConsole, 2000);
         return () => clearInterval(interval);
     }, [mcssService, serverId, activeTab]);
